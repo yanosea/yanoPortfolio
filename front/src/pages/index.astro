@@ -1,0 +1,18 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Footer from "@/components/Footer.astro";
+import Header from "@/components/Header.astro";
+import Title from "@/components/Title.astro";
+---
+
+<BaseLayout>
+  <div class="flex flex-col h-screen">
+    <Header />
+    <main class="flex items-center justify-center flex-1">
+      <div class="m-auto">
+        <Title icon="mdi:bow-arrow" title="yanosea" />
+      </div>
+    </main>
+    <Footer />
+  </div>
+</BaseLayout>

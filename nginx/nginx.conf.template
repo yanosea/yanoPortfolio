@@ -1,0 +1,22 @@
+server {
+  listen ${FRONT_PORT} ssl;
+  server_name   ${SERVER_NAME};
+
+  ssl_certificate /etc/nginx/ssl/${FRONT_SSL_CRT_FILE_NAME};
+  ssl_trusted_certificate /etc/nginx/ssl/${FRONT_SSL_INTERMEDIATE_FILE_NAME};
+  ssl_certificate_key /etc/nginx/ssl/${FRONT_SSL_PRIVATE_KEY_FILE_NAME};
+
+  gzip on;
+  gzip_min_length 1000;
+  gzip_proxied expired no-cache no-store private auth;
+  gzip_types text/plain text/css application/json application/javascript application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+
+  location / {
+    proxy_pass http://${FRONT_ASTRONODE_CONTAINER_NAME}:${FRONT_ASTRONODE_PORT};
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_cache_bypass $http_upgrade;
+  }
+}

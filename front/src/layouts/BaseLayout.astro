@@ -1,0 +1,58 @@
+---
+import { ViewTransitions } from "astro:transitions";
+
+export interface Props {
+  title?: string;
+  description?: string;
+  imageUrl?: string;
+  url?: string;
+  article?: boolean;
+}
+
+const title = Astro.props.title ? `${Astro.props.title} | yanosea` : "yanosea";
+const description = Astro.props.description || "yanosea";
+const url = new URL(Astro.props.url || "", "https://yanosea.org/").toString();
+const imageUrl = Astro.props.imageUrl || process.env.GITHUB_AVATAR_URL;
+const { article } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="image" content={imageUrl} />
+    <meta property="og:url" content={url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta
+      data-pagefind-default-meta="image[content]"
+      property="og:image"
+      content={imageUrl}
+    />
+    <meta
+      name="twitter:card"
+      content={article ? "summary_large_image" : "summary"}
+    />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+    <ViewTransitions fallback="swap" />
+  </head>
+  <body class="min-h-screen font-default font-normal text-main bg-background">
+    <slot />
+    <style>
+      @font-face {
+        font-family: "MaruMonica";
+        src: url("/fonts/x12y16pxMaruMonica.woff2") format("woff2");
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+FROM node:21.6-slim as builder
+ARG FRONT_ASTRONODE_PORT
+WORKDIR /app
+COPY . .
+RUN npm install -g pnpm && pnpm install && pnpm build
+
+FROM node:21.6-slim as runner
+ARG FRONT_ASTRONODE_PORT
+WORKDIR /app
+COPY --from=builder /app ./
+ENV HOST=0.0.0.0
+ENV PORT=$FRONT_ASTRONODE_PORT
+EXPOSE $FRONT_ASTRONODE_PORT
+CMD node ./dist/server/entry.mjs

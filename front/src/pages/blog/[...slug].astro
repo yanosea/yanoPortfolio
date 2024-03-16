@@ -1,0 +1,32 @@
+---
+import { type CollectionEntry, getCollection } from "astro:content";
+
+import PageLayout from "@/layouts/PageLayout.astro";
+import Title from "@/components/Title.astro";
+
+export const prerender = true;
+export async function getStaticPaths() {
+  const entries = await getCollection("blog");
+  return entries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: entry,
+  }));
+}
+
+type Props = CollectionEntry<"blog">;
+
+const entry = Astro.props;
+const { Content } = await entry.render();
+---
+
+<PageLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  article
+  ssg
+>
+  <article class="m-auto space-y-6">
+    <Title icon={entry.data.title_icon} title={entry.data.title} />
+    <Content />
+  </article>
+</PageLayout>
