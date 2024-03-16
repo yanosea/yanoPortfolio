@@ -1,0 +1,39 @@
+---
+import { getCollection } from "astro:content";
+
+import IconTextLink from "@/components/IconTextLink.astro";
+import PageLayout from "@/layouts/PageLayout.astro";
+import Title from "@/components/Title.astro";
+
+import moment from "moment";
+
+const entries = (await getCollection("blog")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+---
+
+<PageLayout title="blog" description="blog">
+  <Title icon="ri:book-2-fill" title="blog" />
+  <ul class="space-y-4">
+    {
+      entries.map((entry) => (
+        <li>
+          <article class="space-y-1">
+            <IconTextLink
+              href={`/blog/${entry.slug}`}
+              icon={entry.data.title_icon}
+              text={entry.data.title}
+            />
+            <p class="text-sub">
+              {moment(entry.data.date).format("YYYY-MM-DD")}
+            </p>
+            <!-- tag {entry.data.tags.map((tag) => (
+              <p>#{tag}</p>
+            ))}
+            -->
+          </article>
+        </li>
+      ))
+    }
+  </ul>
+</PageLayout>

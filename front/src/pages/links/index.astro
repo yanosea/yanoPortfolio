@@ -1,0 +1,29 @@
+---
+import { getCollection } from "astro:content";
+
+import PageLayout from "@/layouts/PageLayout.astro";
+import IconTextLink from "@/components/IconTextLink.astro";
+import Title from "@/components/Title.astro";
+
+const linksData = await getCollection("links");
+---
+
+<PageLayout title="links" description="links">
+  <Title icon="ri:links-fill" title="links" />
+  <ul>
+    {
+      linksData.map((links) => (
+        <li class="flex flex-col items-center justify-center space-y-8">
+          {links.data.links.map((link) => (
+            <IconTextLink
+              href={link.url}
+              icon={link.icon}
+              text={link.name}
+              targetBlank
+            />
+          ))}
+        </li>
+      ))
+    }
+  </ul>
+</PageLayout>
