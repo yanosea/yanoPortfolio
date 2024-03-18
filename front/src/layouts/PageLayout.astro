@@ -3,18 +3,25 @@ import BaseLayout, {
   type Props as BaseLayoutProps,
 } from "@/layouts/BaseLayout.astro";
 
+import BlogComments from "@/components/BlogComments.astro";
+
 import Footer, { type Props as FooterProps } from "@/components/Footer.astro";
 
 import Header from "@/components/Header.astro";
 
 export interface Props extends BaseLayoutProps {}
 export interface Props extends FooterProps {}
+export interface Props {
+  blogComments?: boolean;
+}
+const { blogComments } = Astro.props;
 ---
 
 <BaseLayout {...Astro.props}>
   <Header />
   <main class="max-w-screen-lg m-auto px-6 py-6 space-y-6">
     <slot />
+    {blogComments && <BlogComments />}
   </main>
   <Footer {...Astro.props} />
 </BaseLayout>
