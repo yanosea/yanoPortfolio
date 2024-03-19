@@ -1,39 +1,58 @@
 ---
 import { getCollection } from "astro:content";
 
+import { Icon } from "astro-icon/components";
 import IconTextLink from "@/components/IconTextLink.astro";
 import PageLayout from "@/layouts/PageLayout.astro";
 import Title from "@/components/Title.astro";
 
 import moment from "moment";
 
-const entries = (await getCollection("blog")).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
-);
+const tag = Astro.url.searchParams.get("tag")! || null;
+const entries = (await getCollection("blog"))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .filter((entry) => {
+    if (tag) {
+      return entry.data.tags.includes(tag);
+    }
+    return true;
+  });
 ---
 
 <PageLayout title="blog" description="blog">
   <Title icon="ri:book-2-fill" title="blog" />
-  <ul class="space-y-4">
-    {
-      entries.map((entry) => (
-        <li>
-          <article class="space-y-1">
-            <IconTextLink
-              href={`/blog/${entry.slug}`}
-              icon={entry.data.title_icon}
-              text={entry.data.title}
-            />
-            <p class="text-sub">
-              {moment(entry.data.date).format("YYYY-MM-DD")}
-            </p>
-            <!-- tag {entry.data.tags.map((tag) => (
-              <p>#{tag}</p>
-            ))}
-            -->
-          </article>
-        </li>
-      ))
-    }
-  </ul>
+  {(tag && (
+    <div class="flex flex-col items-center">
+      <span class="flex justify-center items-center mx-auto my-auto">
+          {entries.length != 0 && (
+            <Icon class="w-10 h-10 text-sub" name="ri:price-tag-3-fill" />
+            <p class="font-bold text-4xl ml-4 text-sub">entries tagged with #{tag}</p>
+          ) || (
+            <Icon class="w-10 h-10 text-sub" name="ri:price-tag-3-fill" />
+            <p class="font-bold text-4xl ml-4 text-sub">no entries tagged with #{tag} ...</p>
+          )}
+      </span>
+    </div>
+  ))}
+  {entries.map((entry) => (
+    <ul class="space-y-4">
+      <li>
+        <article class="space-y-1">
+          <IconTextLink
+            href={`/blog/${entry.slug}`}
+            icon={entry.data.title_icon}
+            text={entry.data.title}
+          />
+          <p class="text-sub">
+            {moment(entry.data.date).format("YYYY-MM-DD")}
+          </p>
+          {entry.data.tags.map((tag) => (
+            <a href={`/blog?tag=${tag}`} class="text-tag">
+              <span class="text-sub_darker hover:text-blue-600 transition-colors">#{tag}</span>
+            </a>
+          ))}
+        </article>
+      </li>
+    </ul>
+  ))}
 </PageLayout>

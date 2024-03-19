@@ -4,6 +4,8 @@ import { type CollectionEntry, getCollection } from "astro:content";
 import PageLayout from "@/layouts/PageLayout.astro";
 import Title from "@/components/Title.astro";
 
+import moment from "moment";
+
 export const prerender = true;
 export async function getStaticPaths() {
   const entries = await getCollection("blog");
@@ -29,5 +31,15 @@ const { Content } = await entry.render();
   <article class="m-auto space-y-6">
     <Title icon={entry.data.title_icon} title={entry.data.title} />
     <Content />
+    <p class="text-sub">
+      {moment(entry.data.date).format("YYYY-MM-DD")}
+    </p>
+    {entry.data.tags.map((tag) => (
+      <a href={`/blog?tag=${tag}`}>
+        <span class="text-sub_darker hover:text-blue-600 transition-colors">
+          #{tag}
+        </span>
+      </a>
+    ))}
   </article>
 </PageLayout>
