@@ -6,9 +6,8 @@ export interface Props {
   ssg?: boolean;
 }
 
-const year = new Date().getFullYear();
-
 const { ssg } = Astro.props;
+const year = new Date().getFullYear();
 ---
 
 <div class="sticky top-[100vh] w-full items-center px-6 py-6 space-y-4">

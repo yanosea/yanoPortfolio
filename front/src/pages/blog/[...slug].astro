@@ -34,12 +34,14 @@ const { Content } = await entry.render();
     <p class="text-sub">
       {moment(entry.data.date).format("YYYY-MM-DD")}
     </p>
-    {entry.data.tags.map((tag) => (
-      <a href={`/blog?tag=${tag}`}>
-        <span class="text-sub_darker hover:text-blue-600 transition-colors">
-          #{tag}
-        </span>
-      </a>
-    ))}
+    {
+      entry.data.tags.map((tag) => (
+        <a href={`/blog/tags/${tag}`}>
+          <span class="text-sub_darker hover:text-blue-600 transition-colors">
+            #{tag}
+          </span>
+        </a>
+      ))
+    }
   </article>
 </PageLayout>

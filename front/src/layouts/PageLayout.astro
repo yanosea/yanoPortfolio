@@ -2,11 +2,8 @@
 import BaseLayout, {
   type Props as BaseLayoutProps,
 } from "@/layouts/BaseLayout.astro";
-
 import BlogComments from "@/components/BlogComments.astro";
-
 import Footer, { type Props as FooterProps } from "@/components/Footer.astro";
-
 import Header from "@/components/Header.astro";
 
 export interface Props extends BaseLayoutProps {}
@@ -14,6 +11,7 @@ export interface Props extends FooterProps {}
 export interface Props {
   blogComments?: boolean;
 }
+
 const { blogComments } = Astro.props;
 ---
 

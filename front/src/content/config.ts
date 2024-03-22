@@ -19,7 +19,6 @@ const about = defineCollection({
     ),
   }),
 });
-
 const blog = defineCollection({
   type: "content",
   schema: z.object({
@@ -36,7 +35,6 @@ const blog = defineCollection({
     tags: z.array(z.string()).optional(),
   }),
 });
-
 const links = defineCollection({
   type: "content",
   schema: z.object({
