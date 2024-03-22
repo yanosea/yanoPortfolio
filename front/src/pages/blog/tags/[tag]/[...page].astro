@@ -1,46 +1,54 @@
 ---
 import IconTextLink from "@/components/IconTextLink.astro";
 import PageLayout from "@/layouts/PageLayout.astro";
+import Pagination from "@/components/Pagination.astro";
 import Title from "@/components/Title.astro";
 import {
-  getAllEntriesWithTag,
+  getAllEntries,
   getAllEntryTags,
   sortEntriesByDateDesc,
 } from "@/libs/blog";
 
 import { Icon } from "astro-icon/components";
+import type { GetStaticPathsOptions, Page } from "astro";
+import type { CollectionEntry } from "astro:content";
 import moment from "moment";
 
-const { tag } = Astro.params;
-const allEntriesWithTag = sortEntriesByDateDesc(
-  await getAllEntriesWithTag(tag),
-);
-let allEntryTags: string[] = null;
-if (allEntriesWithTag.length == 0) {
-  allEntryTags = await getAllEntryTags();
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const entries = sortEntriesByDateDesc(await getAllEntries());
+  const tags = getAllEntryTags(entries);
+
+  return tags
+    .map((tag) =>
+      paginate(
+        entries.filter((entry) =>
+          entry.data.tags.some((current) => current === tag),
+        ),
+        {
+          params: { tag },
+          pageSize: 5,
+        },
+      ),
+    )
+    .flat();
 }
+
+const { tag } = Astro.params;
+const { page } = Astro.props as {
+  page: Page<CollectionEntry<"blog">>;
+};
 ---
 
-<PageLayout
-  title={allEntriesWithTag.length == 0 ? "blog" : `blog - ${tag}`}
-  description="blog"
->
+<PageLayout title=`blog - ${tag}` description="blog">
   <Title icon="ri:book-2-fill" title="blog" />
   <div class="flex flex-col items-center">
     <span class="flex justify-center items-center mx-auto my-auto">
       {
-        (allEntriesWithTag.length != 0 && (
+        (
           <>
             <Icon class="w-10 h-10 text-sub" name="mdi:tag" />
             <p class="font-bold text-4xl ml-4 text-sub">
               entries tagged with #{tag}
-            </p>
-          </>
-        )) || (
-          <>
-            <Icon class="w-10 h-10 text-sub" name="mdi:tag-off" />
-            <p class="font-bold text-4xl ml-4 text-sub">
-              no entries tagged with #{tag} ...
             </p>
           </>
         )
@@ -48,45 +56,29 @@ if (allEntriesWithTag.length == 0) {
     </span>
   </div>
   {
-    allEntriesWithTag.length != 0 ? (
-      allEntriesWithTag.map((entry) => (
-        <ul class="space-y-4">
-          <li>
-            <article class="space-y-1">
-              <IconTextLink
-                href={`/blog/${entry.slug}`}
-                icon={entry.data.title_icon}
-                text={entry.data.title}
-              />
-              <p class="text-sub">
-                {moment(entry.data.date).format("YYYY-MM-DD")}
-              </p>
-              {entry.data.tags.map((tag) => (
-                <a href={`/blog/tags/${tag}`} class="text-tag">
-                  <span class="text-sub_darker hover:text-blue-600 transition-colors">
-                    #{tag}
-                  </span>
-                </a>
-              ))}
-            </article>
-          </li>
-        </ul>
-      ))
-    ) : (
-      <>
-        <span class="flex justify-center items-center mx-auto my-auto">
-          <p class="text-lg"> tags below are available!</p>
-        </span>
-        <span class="flex flex-wrap justify-center space-x-4">
-          {allEntryTags.map((tag) => (
-            <a href={`/blog/tags/${tag}`} class="text-tag">
-              <span class="text-main hover:text-blue-600 transition-colors">
-                #{tag}
-              </span>
-            </a>
-          ))}
-        </span>
-      </>
-    )
+    page.data.map((entry) => (
+      <ul class="space-y-4">
+        <li>
+          <article class="space-y-1">
+            <IconTextLink
+              href={`/blog/${entry.slug}`}
+              icon={entry.data.title_icon}
+              text={entry.data.title}
+            />
+            <p class="text-sub">
+              {moment(entry.data.date).format("YYYY-MM-DD")}
+            </p>
+            {entry.data.tags.map((tag) => (
+              <a href={`/blog/tags/${tag}`} class="text-tag">
+                <span class="text-sub_darker hover:text-blue-600 transition-colors">
+                  #{tag}
+                </span>
+              </a>
+            ))}
+          </article>
+        </li>
+      </ul>
+    ))
   }
+  <Pagination prev={page.url.prev} next={page.url.next} />
 </PageLayout>

@@ -1,22 +1,16 @@
 # IGNORE FOLDER
-.ssl/
 back/dist/
 front/.astro/
+front/.ssl
 front/dist/
 front/node_modules/
 
 # IGNORE FILE
-.env.dev
 .env.org
 .env.prod
 .Identifier
 back/local-start-back.sh
-dev.run
-front/pm-debug.log*
-front/arn-debug.log*
-front/arn-error.log*
 front/local-start-front.sh
-front/npm-debug.log*
-prod.run
+yanoPortfolio.run
 .DS_Store
 *.log

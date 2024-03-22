@@ -1,18 +1,29 @@
 ---
 import IconTextLink from "@/components/IconTextLink.astro";
 import PageLayout from "@/layouts/PageLayout.astro";
+import Pagination from "@/components/Pagination.astro";
 import Title from "@/components/Title.astro";
 import { getAllEntries, sortEntriesByDateDesc } from "@/libs/blog";
 
+import type { GetStaticPathsOptions, Page } from "astro";
+import type { CollectionEntry } from "astro:content";
 import moment from "moment";
 
-const allEntries = sortEntriesByDateDesc(await getAllEntries());
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  return paginate(sortEntriesByDateDesc(await getAllEntries()), {
+    pageSize: 5,
+  });
+}
+
+const { page } = Astro.props as {
+  page: Page<CollectionEntry<"blog">>;
+};
 ---
 
 <PageLayout title="blog" description="blog">
   <Title icon="ri:book-2-fill" title="blog" />
   {
-    allEntries.map((entry) => (
+    page.data.map((entry) => (
       <ul class="space-y-4">
         <li>
           <article class="space-y-1">
@@ -36,4 +47,5 @@ const allEntries = sortEntriesByDateDesc(await getAllEntries());
       </ul>
     ))
   }
+  <Pagination prev={page.url.prev} next={page.url.next} />
 </PageLayout>

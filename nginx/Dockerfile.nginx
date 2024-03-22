@@ -1,4 +1,0 @@
-FROM nginx:alpine AS runtime
-ARG FRONT_PORT
-COPY nginx.conf.template /etc/nginx/templates/nginx.conf.template
-EXPOSE $FRONT_PORT

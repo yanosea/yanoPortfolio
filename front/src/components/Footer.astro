@@ -2,16 +2,11 @@
 import IconLink from "@/components/IconLink.astro";
 import SpotifyStatus from "@/components/SpotifyStatus.astro";
 
-export interface Props {
-  ssg?: boolean;
-}
-
-const { ssg } = Astro.props;
 const year = new Date().getFullYear();
 ---
 
 <div class="sticky top-[100vh] w-full items-center px-6 py-6 space-y-4">
-  {!ssg && <SpotifyStatus />}
+  <SpotifyStatus />
   <span class="flex justify-center text-center w-full space-x-6">
     <span class="text-xl">{`© ${year} yanosea`}</span>
     <span class="flex space-x-4 border-main border-l pl-4">
@@ -28,3 +23,119 @@ const year = new Date().getFullYear();
     </span>
   </span>
 </div>
+
+<script is:inline>
+  updateTrackInfo();
+  setInterval(updateTrackInfo, 60000);
+
+  async function updateTrackInfo() {
+    const spotifyStatusElement = document.getElementById("SpotifyStatus");
+    try {
+      const [isNowPlaying, track] = await getTrackInfo();
+      spotifyStatusElement.style.display = "flex";
+      if (isNowPlaying) {
+        spotifyStatusElement.querySelector("#NowPlaying").style.display =
+          "flex";
+        spotifyStatusElement.querySelector("#LastPlayed").style.display =
+          "none";
+
+        nowPlayingElement = spotifyStatusElement.querySelector("#NowPlaying");
+
+        nowPlayingElement.querySelector("#ImgLink").href = track.trackUrl;
+        nowPlayingElement.querySelector("#ImgSrc").src = track.imageUrl;
+        nowPlayingElement.querySelector("#TrackLink").href = track.trackUrl;
+        nowPlayingElement.querySelector("#TrackName").textContent =
+          `track : ${track.trackName}`;
+        nowPlayingElement.querySelector("#AlbumLink").href = track.albumUrl;
+        nowPlayingElement.querySelector("#AlbumName").textContent =
+          `album : ${track.albumName}`;
+        nowPlayingElement.querySelector("#ArtistLink").href = track.artistUrl;
+        nowPlayingElement.querySelector("#ArtistName").textContent =
+          `artist : ${track.artistName}`;
+      } else {
+        spotifyStatusElement.querySelector("#NowPlaying").style.display =
+          "none";
+        spotifyStatusElement.querySelector("#LastPlayed").style.display =
+          "flex";
+        lastPlayedElement = spotifyStatusElement.querySelector("#LastPlayed");
+
+        lastPlayedElement.querySelector("#ImgLink").href = track.trackUrl;
+        lastPlayedElement.querySelector("#ImgSrc").src = track.imageUrl;
+        lastPlayedElement.querySelector("#PlayedAt").textContent =
+          `played at : ${track.playedAt}`;
+        lastPlayedElement.querySelector("#TrackLink").href = track.trackUrl;
+        lastPlayedElement.querySelector("#TrackName").textContent =
+          `track : ${track.trackName}`;
+        lastPlayedElement.querySelector("#AlbumLink").href = track.albumUrl;
+        lastPlayedElement.querySelector("#AlbumName").textContent =
+          `album : ${track.albumName}`;
+        lastPlayedElement.querySelector("#ArtistLink").href = track.artistUrl;
+        lastPlayedElement.querySelector("#ArtistName").textContent =
+          `artist : ${track.artistName}`;
+      }
+    } catch {
+      spotifyStatusElement.style.display = "none";
+      console.error("failed to update track info...");
+    }
+  }
+
+  async function getTrackInfo() {
+    let isNowPlaying = null;
+    let track = null;
+
+    const isDevelopment =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1";
+    const NOWPLAYING_URL = isDevelopment
+      ? "http://localhost:1323/api/nowplaying"
+      : "https://yanosea.org/api/nowplaying";
+    const LASTPLAYED_URL = isDevelopment
+      ? "http://localhost:1323/api/lastplayed"
+      : "https://yanosea.org/api/lastplayed";
+
+    try {
+      const nowPlayingResponse = await fetch(NOWPLAYING_URL);
+      console.log("fetched nowplaying!");
+      if (nowPlayingResponse.ok && nowPlayingResponse.status !== 204) {
+        const nowPlayingData = await nowPlayingResponse.json();
+        isNowPlaying = true;
+        track = {
+          imageUrl: nowPlayingData.imageUrl,
+          trackName: nowPlayingData.trackName,
+          trackUrl: nowPlayingData.trackUrl,
+          albumName: nowPlayingData.albumName,
+          albumUrl: nowPlayingData.albumUrl,
+          artistName: nowPlayingData.artistName,
+          artistUrl: nowPlayingData.artistUrl,
+        };
+      }
+    } catch {
+      console.error("failed fetching nowplaying...");
+    }
+
+    if (isNowPlaying == null) {
+      try {
+        const lastPlayedResponse = await fetch(LASTPLAYED_URL);
+        console.log("fetched lastplayed!");
+        if (lastPlayedResponse.ok && lastPlayedResponse.status !== 204) {
+          const lastPlayedData = await lastPlayedResponse.json();
+          isNowPlaying = false;
+          track = {
+            imageUrl: lastPlayedData.imageUrl,
+            playedAt: lastPlayedData.playedAt,
+            trackName: lastPlayedData.trackName,
+            trackUrl: lastPlayedData.trackUrl,
+            albumName: lastPlayedData.albumName,
+            albumUrl: lastPlayedData.albumUrl,
+            artistName: lastPlayedData.artistName,
+            artistUrl: lastPlayedData.artistUrl,
+          };
+        }
+      } catch {
+        console.error("failed fetching lastplayed...");
+      }
+    }
+
+    return [isNowPlaying, track];
+  }
+</script>
