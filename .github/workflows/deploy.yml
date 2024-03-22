@@ -27,6 +27,7 @@ jobs:
             git fetch origin main
             git reset origin/main
             git restore .
+            git clean -df
             sh ${DOCKER_START_SCRIPT}
-          exit
+            exit
           "
