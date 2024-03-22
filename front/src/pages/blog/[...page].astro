@@ -1,0 +1,39 @@
+---
+import IconTextLink from "@/components/IconTextLink.astro";
+import PageLayout from "@/layouts/PageLayout.astro";
+import Title from "@/components/Title.astro";
+import { getAllEntries, sortEntriesByDateDesc } from "@/libs/blog";
+
+import moment from "moment";
+
+const allEntries = sortEntriesByDateDesc(await getAllEntries());
+---
+
+<PageLayout title="blog" description="blog">
+  <Title icon="ri:book-2-fill" title="blog" />
+  {
+    allEntries.map((entry) => (
+      <ul class="space-y-4">
+        <li>
+          <article class="space-y-1">
+            <IconTextLink
+              href={`/blog/${entry.slug}`}
+              icon={entry.data.title_icon}
+              text={entry.data.title}
+            />
+            <p class="text-sub">
+              {moment(entry.data.date).format("YYYY-MM-DD")}
+            </p>
+            {entry.data.tags.map((tag) => (
+              <a href={`/blog/tags/${tag}`} class="text-tag">
+                <span class="text-sub_darker hover:text-blue-600 transition-colors">
+                  #{tag}
+                </span>
+              </a>
+            ))}
+          </article>
+        </li>
+      </ul>
+    ))
+  }
+</PageLayout>

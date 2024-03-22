@@ -1,67 +1,26 @@
 ---
+import { getTrackInfo } from "@/libs/spotify";
+
 import { Icon } from "astro-icon/components";
-import type { Track } from "@/types/track";
 
-let nowPlaying: Boolean = null;
-let trackInfo: Track = null;
-
-try {
-  const nowPlayingResponse = await fetch(process.env.NOWPLAYING_URL);
-  if (nowPlayingResponse.ok && nowPlayingResponse.status !== 204) {
-    const nowPlayingData = await nowPlayingResponse.json();
-    nowPlaying = true;
-    trackInfo = {
-      imageUrl: nowPlayingData.imageUrl,
-      trackName: nowPlayingData.trackName,
-      trackUrl: nowPlayingData.trackUrl,
-      albumName: nowPlayingData.albumName,
-      albumUrl: nowPlayingData.albumUrl,
-      artistName: nowPlayingData.artistName,
-      artistUrl: nowPlayingData.artistUrl,
-    };
-  }
-} catch (error) {
-  console.error(error);
-}
-
-if (nowPlaying == null) {
-  try {
-    const lastPlayedResponse = await fetch(process.env.LASTPLAYED_URL);
-    if (lastPlayedResponse.ok && lastPlayedResponse.status !== 204) {
-      const lastPlayedData = await lastPlayedResponse.json();
-      nowPlaying = false;
-      trackInfo = {
-        imageUrl: lastPlayedData.imageUrl,
-        playedAt: lastPlayedData.playedAt,
-        trackName: lastPlayedData.trackName,
-        trackUrl: lastPlayedData.trackUrl,
-        albumName: lastPlayedData.albumName,
-        albumUrl: lastPlayedData.albumUrl,
-        artistName: lastPlayedData.artistName,
-        artistUrl: lastPlayedData.artistUrl,
-      };
-    }
-  } catch (error) {
-    console.error(error);
-  }
-}
+const [isNowPlaying, track] = await getTrackInfo();
 ---
 
 {
-  nowPlaying != null && (
+  isNowPlaying != null && (
     <>
       <span class="flex flex-col sm:flex-row w-full justify-center items-center space-x-0 sm:space-x-4 space-y-2 sm:space-y-0">
         <span class="flex flex-col justify-center items-center">
-          <a href={trackInfo.trackUrl} target="_blank">
+          <a href={track.trackUrl} target="_blank">
             <span class="flex flex-col justify-center items-center space-y-1 hover:text-blue-600 transition-colors">
               <p class="flex items-center transition-colors">
                 <Icon class="w-4 h-4" name="ri:spotify-fill" />
                 <span class="ml-2">
-                  {nowPlaying ? "now playing" : "last played"}
+                  {isNowPlaying ? "now playing" : "last played"}
                 </span>
               </p>
               <img
-                src={trackInfo.imageUrl}
+                src={track.imageUrl}
                 alt="album cover"
                 class="object-scale-down h-24 w-24"
               />
@@ -73,43 +32,43 @@ if (nowPlaying == null) {
             <p class="flex justify-center sm:justify-start items-center transition-colors">
               <Icon
                 class={
-                  nowPlaying
+                  isNowPlaying
                     ? "w-4 h-4 text-emerald-500"
                     : "w-4 h-4 text-red-500"
                 }
                 name={
-                  nowPlaying ? "ri:user-follow-fill" : "ri:user-unfollow-fill"
+                  isNowPlaying ? "ri:user-follow-fill" : "ri:user-unfollow-fill"
                 }
               />
-              {nowPlaying ? (
+              {isNowPlaying ? (
                 <span class="ml-2 text-emerald-500">yanosea online!</span>
               ) : (
                 <span class="ml-2 text-red-500">yanosea offline...</span>
               )}
             </p>
           </a>
-          {!nowPlaying && (
+          {!isNowPlaying && (
             <p class="flex items-center transition-colors">
               <Icon class="w-4 h-4" name="ph:clock-fill" />
-              <span class="ml-2">Played at : {trackInfo.playedAt}</span>
+              <span class="ml-2">Played at : {track.playedAt}</span>
             </p>
           )}
-          <a href={trackInfo.trackUrl} target="_blank">
+          <a href={track.trackUrl} target="_blank">
             <p class="flex items-center transition-colors hover:text-blue-600">
               <Icon class="w-4 h-4" name="ph:music-note-fill" />
-              <span class="ml-2">track : {trackInfo.trackName}</span>
+              <span class="ml-2">track : {track.trackName}</span>
             </p>
           </a>
-          <a href={trackInfo.albumUrl} target="_blank">
+          <a href={track.albumUrl} target="_blank">
             <p class="flex items-center transition-colors hover:text-blue-600">
               <Icon class="w-4 h-4" name="ph:disc-fill" />
-              <span class="ml-2">album : {trackInfo.albumName}</span>
+              <span class="ml-2">album : {track.albumName}</span>
             </p>
           </a>
-          <a href={trackInfo.artistUrl} target="_blank">
+          <a href={track.artistUrl} target="_blank">
             <p class="flex items-center transition-colors hover:text-blue-600">
               <Icon class="w-4 h-4" name="ph:microphone-stage-fill" />
-              <span class="ml-2">artist : {trackInfo.artistName}</span>
+              <span class="ml-2">artist : {track.artistName}</span>
             </p>
           </a>
         </span>

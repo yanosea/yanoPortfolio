@@ -9,11 +9,11 @@ export interface Props {
   article?: boolean;
 }
 
-const title = Astro.props.title ? `${Astro.props.title} | yanosea` : "yanosea";
-const description = Astro.props.description || "yanosea";
-const url = new URL(Astro.props.url || "", "https://yanosea.org/").toString();
-const imageUrl = Astro.props.imageUrl || process.env.GITHUB_AVATAR_URL;
 const { article } = Astro.props;
+const description = Astro.props.description || "yanosea";
+const imageUrl = Astro.props.imageUrl || process.env.GITHUB_AVATAR_URL;
+const title = Astro.props.title ? `${Astro.props.title} | yanosea` : "yanosea";
+const url = new URL(Astro.props.url || "", "https://yanosea.org/").toString();
 ---
 
 <!doctype html>
