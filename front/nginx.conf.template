@@ -1,6 +1,10 @@
 server {
+  listen 80;
+  return 301 https://$host$request_uri;
+}
+server {
   listen ${FRONT_PORT} ssl;
-  server_name   ${SERVER_NAME};
+  server_name ${SERVER_NAME};
 
   ssl_certificate /etc/nginx/ssl/${FRONT_SSL_CRT_FILE_NAME};
   ssl_trusted_certificate /etc/nginx/ssl/${FRONT_SSL_INTERMEDIATE_FILE_NAME};
