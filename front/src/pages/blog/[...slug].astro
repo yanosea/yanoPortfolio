@@ -6,7 +6,6 @@ import Title from "@/components/Title.astro";
 
 import moment from "moment";
 
-export const prerender = true;
 export async function getStaticPaths() {
   const entries = await getCollection("blog");
   return entries.map((entry) => ({
@@ -25,7 +24,6 @@ const { Content } = await entry.render();
   title={entry.data.title}
   description={entry.data.description}
   article
-  ssg
   blogComments
 >
   <article class="m-auto space-y-6">

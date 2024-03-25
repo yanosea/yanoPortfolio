@@ -1,0 +1,29 @@
+---
+type Props = {
+  prev?: string;
+  next?: string;
+};
+
+const { prev, next } = Astro.props;
+---
+
+{
+  (
+    <span class="flex justify-between">
+      {prev ? (
+        <a href={prev} class="text-left hover:text-blue-600">
+          ← prev
+        </a>
+      ) : (
+        <div class="flex-1" />
+      )}
+      {next ? (
+        <a href={next} class="text-right hover:text-blue-600">
+          next →
+        </a>
+      ) : (
+        <div class="flex-1" />
+      )}
+    </span>
+  )
+}

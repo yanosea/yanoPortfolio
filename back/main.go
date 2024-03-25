@@ -18,6 +18,13 @@ func main() {
 	port := os.Getenv("BACK_PORT")
 	if port == "" {
 		port = "1323"
+
+	}
+	if port == "1323" {
+		e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+			AllowOrigins: []string{"*"},
+			AllowMethods: []string{echo.GET},
+		}))
 	}
 	e.Logger.Fatal(e.Start(":" + port))
 }

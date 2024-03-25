@@ -5,15 +5,10 @@ export type Entries = CollectionEntry<"blog">[];
 export async function getAllEntries(): Promise<Entries> {
   return await getCollection("blog");
 }
-export async function getAllEntriesWithTag(tag: string): Promise<Entries> {
-  var allEntries = await getCollection("blog");
-  return allEntries.filter((entry) => entry.data.tags.includes(tag));
-}
-export async function getAllEntryTags(): Promise<string[]> {
-  var allEntries = await getCollection("blog");
+export function getAllEntryTags(entries: Entries): string[] {
   return [
     ...new Set(
-      allEntries.flatMap((entry) => entry.data.tags || []),
+      entries.flatMap((entry) => entry.data.tags || []),
     ),
   ].sort();
 }
