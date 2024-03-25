@@ -1,7 +1,7 @@
 # IGNORE FOLDER
 back/dist/
 front/.astro/
-front/.ssl
+front/.ssl/
 front/dist/
 front/node_modules/
 
