@@ -1,4 +1,4 @@
-/** @type {import('tailwindcss').Config} */
+/** @type {import("tailwindcss").Config} */
 module.exports = {
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
   theme: {
@@ -11,8 +11,16 @@ module.exports = {
         sub: "#81A1C1",
         sub_darker: "#5E81AC",
         background: "#2E3440",
-      }
+      },
+      typography: {
+        DEFAULT: {
+          css: {
+          },
+        },
+      },
     }
   },
-  plugins: []
+  plugins: [
+    require("@tailwindcss/typography"),
+  ]
 };

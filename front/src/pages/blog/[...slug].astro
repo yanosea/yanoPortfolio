@@ -28,7 +28,9 @@ const { Content } = await entry.render();
 >
   <article class="m-auto space-y-6">
     <Title icon={entry.data.title_icon} title={entry.data.title} />
-    <Content />
+    <div class="prose space-y-6">
+      <Content />
+    </div>
     <p class="text-sub">
       {moment(entry.data.date).format("YYYY-MM-DD")}
     </p>
