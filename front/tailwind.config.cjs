@@ -12,12 +12,17 @@ module.exports = {
         sub_darker: "#5E81AC",
         background: "#2E3440",
       },
-      typography: {
+      typography: (theme) => ({
         DEFAULT: {
           css: {
+            maxWidth: "100%",
+            color: theme('colors.main'),
+            'h1, h2, h3, h4, h5, h6': {
+              color: theme('colors.main'),
+            },
           },
         },
-      },
+      }),
     }
   },
   plugins: [
