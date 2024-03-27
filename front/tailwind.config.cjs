@@ -17,8 +17,15 @@ module.exports = {
           css: {
             maxWidth: "100%",
             color: theme("colors.main"),
-            "h1, h2, h3, h4, h5, h6": {
+            "h1, h2, h3, h4, h5, h6, strong": {
               color: theme("colors.main"),
+            },
+            a: {
+              color: theme("colors.main"),
+              "&:hover": {
+                color: theme("colors.blue.600"),
+                "transition-duration": "150ms",
+              },
             },
           },
         },
