@@ -5,6 +5,4 @@ if [ ! -e "yanoPortfolio.run" ]; then
 fi
 docker-compose down
 docker image prune -af
-mv .env .env.prod
-mv .env.org .env
 rm yanoPortfolio.run

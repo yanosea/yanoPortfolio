@@ -9,25 +9,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST_IP }}
+          username: ${{ secrets.SSH_USER_NAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY}}
-          SSH_USER_NAME: ${{ secrets.SSH_USER_NAME}}
-          SSH_HOST_IP: ${{ secrets.SSH_HOST_IP}}
-          SSH_PORT: ${{ secrets.SSH_PORT}}
           REPOSITORY_PATH: ${{ secrets.REPOSITORY_PATH }}
           DOCKER_STOP_SCRIPT: ${{ secrets.DOCKER_STOP_SCRIPT }}
           DOCKER_START_SCRIPT: ${{ secrets.DOCKER_START_SCRIPT }}
-        run: |
-          mkdir -p .ssh chmod 700 .ssh
-          echo "$SSH_PRIVATE_KEY" > .ssh/private_key
-          chmod 600 .ssh/private_key
-          ssh -tt -o StrictHostKeyChecking=no -i .ssh/private_key ${SSH_USER_NAME}@${SSH_HOST_IP} -p ${SSH_PORT} "
-            cd ${REPOSITORY_PATH}
-            sh ${DOCKER_STOP_SCRIPT}
-            git fetch origin main
-            git reset origin/main
-            git restore .
-            git clean -df
-            sh ${DOCKER_START_SCRIPT}
-            exit
-          "
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+          SSL_PATH: ${{ secrets.SSL_PATH }}
+          SSL_CRT: ${{ secrets.SSL_CRT }}
+          SSL_CRT_FILE_NAME: ${{ secrets.SSL_CRT_FILE_NAME }}
+          SSL_PRIVATE_KEY: ${{ secrets.SSL_PRIVATE_KEY }}
+          SSL_PRIVATE_KEY_FILE_NAME: ${{ secrets.SSL_PRIVATE_KEY_FILE_NAME }}
+        script: |
+          cd ${REPOSITORY_PATH}
+          sh ${DOCKER_STOP_SCRIPT}
+          cd
+          rm -fr ${REPOSITORY_PATH}
+          git clone https://github.com/yanosea/yanoPortfolio.git ${REPOSITORY_PATH}
+          cd ${REPOSITORY_PATH}
+          echo ${ENV_FILE} > .env
+          mkdir ${SSL_PATH}
+          echo ${SSL_CRT} > ${SSL_PATH}/${SSL_CRT_FILE_NAME}
+          echo ${SSL_PRIVATE_KEY} > ${SSL_PATH}/${SSL_PRIVATE_KEY_FILE_NAME}
+          sh ${DOCKER_START_SCRIPT}
