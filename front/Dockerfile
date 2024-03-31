@@ -1,6 +1,7 @@
 FROM node:21.6-slim as builder
 WORKDIR /app
-COPY package*.json ./
+COPY package.json ./
+COPY pnpm-lock.yaml ./
 RUN npm install -g pnpm && pnpm install
 COPY . .
 RUN pnpm build
