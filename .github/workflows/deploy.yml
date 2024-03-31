@@ -10,30 +10,20 @@ jobs:
     steps:
       - name: deploy
         uses: appleboy/ssh-action@master
-        env:
-          REPOSITORY_PATH: ${{ secrets.REPOSITORY_PATH }}
-          DOCKER_STOP_SCRIPT: ${{ secrets.DOCKER_STOP_SCRIPT }}
-          DOCKER_START_SCRIPT: ${{ secrets.DOCKER_START_SCRIPT }}
-          ENV_FILE: ${{ secrets.ENV_FILE }}
-          SSL_PATH: ${{ secrets.SSL_PATH }}
-          SSL_CRT: ${{ secrets.SSL_CRT }}
-          SSL_CRT_FILE_NAME: ${{ secrets.SSL_CRT_FILE_NAME }}
-          SSL_PRIVATE_KEY: ${{ secrets.SSL_PRIVATE_KEY }}
-          SSL_PRIVATE_KEY_FILE_NAME: ${{ secrets.SSL_PRIVATE_KEY_FILE_NAME }}
         with:
           host: ${{ secrets.SSH_HOST_IP }}
           username: ${{ secrets.SSH_USER_NAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            cd ${REPOSITORY_PATH}
-            sh ${DOCKER_STOP_SCRIPT}
+            cd ${{ secrets.REPOSITORY_PATH }}
+            sh ${{ secrets.DOCKER_STOP_SCRIPT }}
             cd
-            rm -fr ${REPOSITORY_PATH}
-            git clone https://github.com/yanosea/yanoPortfolio.git ${REPOSITORY_PATH}
-            cd ${REPOSITORY_PATH}
-            echo ${ENV_FILE} > .env
-            mkdir ${SSL_PATH}
-            echo ${SSL_CRT} > ${SSL_PATH}/${SSL_CRT_FILE_NAME}
-            echo ${SSL_PRIVATE_KEY} > ${SSL_PATH}/${SSL_PRIVATE_KEY_FILE_NAME}
-            sh ${DOCKER_START_SCRIPT}
+            rm -fr ${{ secrets.REPOSITORY_PATH }}
+            git clone ${{ secrets.REPOSITORY_URL }} ${{ secrets.REPOSITORY_PATH }}
+            cd ${{ secrets.REPOSITORY_PATH }}
+            echo ${{ secrets.ENV_FILE }} > .env
+            mkdir -p  ${{ secrets.SSL_PATH }}
+            echo ${{ secrets.SSL_CRT }} > ${{ secrets.SSL_PATH }}/${{ secrets.SSL_CRT_FILE_NAME }}
+            echo ${{ secrets.SSL_PRIVATE_KEY }} > ${{ secrets.SSL_PATH }}/${{ secrets.SSL_PRIVATE_KEY_FILE_NAME }}
+            sh ${{ secrets.DOCKER_START_SCRIPT }}
