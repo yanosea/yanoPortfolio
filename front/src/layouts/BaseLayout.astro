@@ -42,6 +42,17 @@ const url = new URL(Astro.props.url || "", "https://yanosea.org/").toString();
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageUrl} />
     <ViewTransitions fallback="swap" />
+    <script
+      type="text/partytown"
+      src="https://www.googletagmanager.com/gtag/js?id=G-SDLQKC1YPM"></script>
+    <script type="text/partytown">
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-SDLQKC1YPM");
+    </script>
   </head>
   <body class="min-h-screen font-default font-normal text-main bg-background">
     <slot />
