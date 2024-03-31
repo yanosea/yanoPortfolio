@@ -7,7 +7,6 @@ server {
   server_name ${SERVER_NAME};
 
   ssl_certificate /etc/nginx/ssl/${FRONT_SSL_CRT_FILE_NAME};
-  ssl_trusted_certificate /etc/nginx/ssl/${FRONT_SSL_INTERMEDIATE_FILE_NAME};
   ssl_certificate_key /etc/nginx/ssl/${FRONT_SSL_PRIVATE_KEY_FILE_NAME};
 
   root   /usr/share/nginx/html;
