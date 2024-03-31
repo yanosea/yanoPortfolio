@@ -22,8 +22,8 @@ jobs:
             rm -fr ${{ secrets.REPOSITORY_PATH }}
             git clone ${{ secrets.REPOSITORY_URL }} ${{ secrets.REPOSITORY_PATH }}
             cd ${{ secrets.REPOSITORY_PATH }}
-            echo `${{ secrets.ENV_FILE }}` > .env
+            echo "${{ secrets.ENV_FILE }}" > .env
             mkdir -p  ${{ secrets.SSL_PATH }}
-            echo `${{ secrets.SSL_CRT }}` > ${{ secrets.SSL_PATH }}/${{ secrets.SSL_CRT_FILE_NAME }}
-            echo `${{ secrets.SSL_PRIVATE_KEY }}` > ${{ secrets.SSL_PATH }}/${{ secrets.SSL_PRIVATE_KEY_FILE_NAME }}
+            echo "${{ secrets.SSL_CRT }}" > ${{ secrets.SSL_PATH }}/${{ secrets.SSL_CRT_FILE_NAME }}
+            echo "${{ secrets.SSL_PRIVATE_KEY }}" > ${{ secrets.SSL_PATH }}/${{ secrets.SSL_PRIVATE_KEY_FILE_NAME }}
             sh ${{ secrets.DOCKER_START_SCRIPT }}
