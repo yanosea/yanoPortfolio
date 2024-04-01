@@ -1,7 +1,23 @@
 export function getThisYear(): number {
   return new Date().getFullYear();
 }
-export async function getLatestVersion(): Promise<string | null> {
+
+export async function setLatestVersion() {
+  const yanoPortfolioVersionElement = document.getElementById(
+    "yanopPortfolioVersion",
+  );
+  const latestVersion: string = await getLatestVersion();
+  if (!latestVersion) {
+    yanoPortfolioVersionElement.style.display = "none";
+    console.error("failed getting latest version info...");
+    return;
+  }
+
+  yanoPortfolioVersionElement.style.display = "flex";
+  yanoPortfolioVersionElement.textContent = latestVersion;
+}
+
+async function getLatestVersion(): Promise<string | null> {
   const url: string =
     "https://api.github.com/repos/yanosea/yanoPortfolio/releases/latest";
   try {
