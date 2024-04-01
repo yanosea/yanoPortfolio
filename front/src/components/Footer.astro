@@ -1,14 +1,17 @@
 ---
 import IconLink from "@/components/IconLink.astro";
 import SpotifyStatus from "@/components/SpotifyStatus.astro";
+import { getThisYear, getLatestVersion } from "@/libs/common.ts";
 
-const year = new Date().getFullYear();
+const thisYear = getThisYear();
+const latestVersion = await getLatestVersion();
 ---
 
 <div class="sticky top-[100vh] w-full items-center px-6 py-6 space-y-4">
   <SpotifyStatus />
-  <span class="flex justify-center text-center w-full space-x-6">
-    <span class="text-xl">{`© ${year} yanosea`}</span>
+  <span class="flex justify-center text-center w-full space-x-4">
+    <span class="text-lg">{`© ${thisYear} yanosea`}</span>
+    <span class="text-lg">{`${latestVersion}`}</span>
     <span class="flex space-x-4 border-main border-l pl-4">
       <IconLink
         icon="ri:github-fill"
