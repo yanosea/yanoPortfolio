@@ -1,5 +1,9 @@
-export function getThisYear(): number {
-  return new Date().getFullYear();
+export async function setCopyRight() {
+  const yanoPortfolioCopyRightElement = document.getElementById(
+    "yanopPortfolioCopyRight",
+  );
+  const thisYear: number = new Date().getFullYear();
+  yanoPortfolioCopyRightElement.textContent = `© ${thisYear} yanosea`;
 }
 
 export async function setLatestVersion() {
