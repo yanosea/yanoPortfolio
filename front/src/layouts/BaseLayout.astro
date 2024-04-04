@@ -54,7 +54,38 @@ const url = new URL(Astro.props.url || "", "https://yanosea.org/").toString();
       gtag("config", "G-SDLQKC1YPM");
     </script>
   </head>
-  <body class="min-h-screen font-default font-normal text-main bg-background">
+  <body
+    class="min-h-screen font-default font-normal text-main dark:text-main-dark bg-background dark:bg-background-dark"
+  >
+    <script is:inline>
+      (function () {
+        var storageKey = "currentTheme";
+        var classNameDark = "dark";
+
+        var preferDarkQuery = "(prefers-color-scheme: dark)";
+        var mql = window.matchMedia(preferDarkQuery);
+        var supportsColorSchemeQuery = mql.media === preferDarkQuery;
+        var localStorageTheme = null;
+        try {
+          localStorageTheme = localStorage.getItem(storageKey);
+        } catch (err) {}
+        var localStorageExists = localStorageTheme !== null;
+
+        if (localStorageExists) {
+          if (localStorageTheme === classNameDark) {
+            setClassOnDocumentBody();
+          }
+        } else if (supportsColorSchemeQuery) {
+          setClassOnDocumentBody();
+          localStorage.setItem(storageKey, classNameDark);
+        }
+
+        function setClassOnDocumentBody() {
+          var html = document.getElementsByTagName("html")[0];
+          html.classList.add(classNameDark);
+        }
+      })();
+    </script>
     <slot />
     <style>
       @font-face {
