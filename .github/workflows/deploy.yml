@@ -16,6 +16,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            pacman -Syyu --noconfirm
             cd ${{ secrets.REPOSITORY_PATH }}
             sh ${{ secrets.DOCKER_STOP_SCRIPT }}
             cd
