@@ -70,7 +70,7 @@ const { page } = Astro.props as {
             </p>
             {entry.data.tags.map((tag) => (
               <a href={`/blog/tags/${tag}`} class="text-tag">
-                <span class="text-sub_darker hover:text-blue-600 transition-colors">
+                <span class="text-sub-darker dark:text-sub-darker-dark hover:text-blue transition-colors">
                   #{tag}
                 </span>
               </a>

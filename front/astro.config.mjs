@@ -1,5 +1,4 @@
 import { defineConfig } from "astro/config";
-import compress from "astro-compress";
 import icon from "astro-icon";
 import mdx from "@astrojs/mdx";
 import partytown from "@astrojs/partytown";
@@ -10,13 +9,17 @@ const FRONT_PORT = parseInt(process.env.FRONT_PORT , 10) || 4321;
 
 export default defineConfig({
   integrations: [
-    compress(),
     icon(),
     mdx(),
     partytown({
       config: {
         forward: ["dataLayer.push"],
       },
+    }),
+    (await import("@playform/compress")).default({
+      Exclude: [
+        ".*hoisted.*"
+      ],
     }),
     sitemap(),
     tailwind(),

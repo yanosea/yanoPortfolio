@@ -1,0 +1,125 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<button onclick="toggleTheme()">
+  <Icon class="w-6 h-6 text-yellow hidden dark:block hover:text-yellow-lighter" name="ri:sun-fill" />
+  <Icon class="w-6 h-6 text-purple block dark:hidden hover:text-purple-lighter" name="ri:moon-fill" />
+</button>
+
+<script is:inline>
+  function pageTransition() {
+    let currentTheme = localStorage.getItem("currentTheme");
+    if (currentTheme === null) {
+      initializeTheme();
+    } else {
+      setTheme(currentTheme, false);
+    }
+  }
+
+  function initializeTheme() {
+    let theme = window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+    setTheme(theme, false);
+  }
+
+  function setTheme(currentTheme, isToggle) {
+    if (currentTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("currentTheme", "dark");
+      addEventListener('message', event => {
+        if (event.origin !== 'https://utteranc.es') {
+          return;
+        }
+        const message = {
+          type: 'set-theme',
+          theme: 'github-dark'
+        };
+        const utterances = document.querySelector('iframe').contentWindow;
+        utterances.postMessage(message, 'https://utteranc.es');
+      });
+      if (isToggle) {
+        document.body.classList.add("fadeindarkclass");
+        document.body.classList.remove("fadeinlightclass");
+        document
+          .querySelector("iframe.utterances-frame")
+          .contentWindow.postMessage(
+            { type: "set-theme", theme: "github-dark"},
+            "https://utteranc.es/"
+          );
+      }
+    } else if (currentTheme === "light") {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("currentTheme", "light");
+      addEventListener('message', event => {
+        if (event.origin !== 'https://utteranc.es') {
+          return;
+        }
+        const message = {
+          type: 'set-theme',
+          theme: 'github-light'
+        };
+        const utterances = document.querySelector('iframe').contentWindow;
+        utterances.postMessage(message, 'https://utteranc.es');
+      });
+      if (isToggle) {
+        document.body.classList.add("fadeinlightclass");
+        document.body.classList.remove("fadeindarkclass");
+        document
+          .querySelector("iframe.utterances-frame")
+          .contentWindow.postMessage(
+            { type: "set-theme", theme: "github-light"},
+            "https://utteranc.es/"
+          );
+      }
+    } else {
+      initializeTheme();
+    }
+  }
+
+  function toggleTheme() {
+    let currentTheme = localStorage.getItem("currentTheme");
+    if (currentTheme === "dark") {
+      setTheme("light", true);
+    } else if (currentTheme === "light") {
+      setTheme("dark", true);
+    } else {
+      initializeTheme();
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", pageTransition);
+  document.addEventListener("astro:after-swap", pageTransition);
+</script>
+
+<style>
+  @keyframes fadein {
+    0% {
+      opacity: 0;
+      background-color: #D8DEE9;
+    }
+
+    100% {
+      opacity: 1;
+      background-color: #D8DEE9;
+    }
+  }
+  body.fadeinlightclass {
+    animation: fadein 1s forwards;
+  }
+  @keyframes fadeindark {
+    0% {
+      opacity: 0;
+      background-color: #3B4252;
+    }
+
+    100% {
+      opacity: 1;
+      background-color: #3B4252;
+    }
+  }
+  body.fadeindarkclass {
+    animation: fadeindark 1s forwards;
+  }
+</style>

@@ -11,14 +11,14 @@ const { prev, next } = Astro.props;
   (
     <span class="flex justify-between">
       {prev ? (
-        <a href={prev} class="text-left hover:text-blue-600">
+        <a href={prev} class="text-left hover:text-blue">
           ← prev
         </a>
       ) : (
         <div class="flex-1" />
       )}
       {next ? (
-        <a href={next} class="text-right hover:text-blue-600">
+        <a href={next} class="text-right hover:text-blue">
           next →
         </a>
       ) : (
