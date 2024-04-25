@@ -95,6 +95,14 @@ const url = new URL(Astro.props.url || "", "https://yanosea.org/").toString();
         font-style: normal;
         font-display: swap;
       }
+      @font-face {
+        font-family: "PlemolJP";
+        src: url("/fonts/PlemolJPConsoleNF.woff2") format("woff2");
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+        size-adjust: 75%;
+      }
     </style>
   </body>
 </html>

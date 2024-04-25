@@ -3,8 +3,14 @@ import { Icon } from "astro-icon/components";
 ---
 
 <button onclick="toggleTheme()">
-  <Icon class="w-6 h-6 text-yellow hidden dark:block hover:text-yellow-lighter" name="ri:sun-fill" />
-  <Icon class="w-6 h-6 text-purple block dark:hidden hover:text-purple-lighter" name="ri:moon-fill" />
+  <Icon
+    class="w-6 h-6 text-yellow hidden dark:block hover:text-yellow-lighter"
+    name="ri:sun-fill"
+  />
+  <Icon
+    class="w-6 h-6 text-purple block dark:hidden hover:text-purple-lighter"
+    name="ri:moon-fill"
+  />
 </button>
 
 <script is:inline>
@@ -24,54 +30,56 @@ import { Icon } from "astro-icon/components";
     setTheme(theme, false);
   }
 
-  function setTheme(currentTheme, isToggle) {
-    if (currentTheme === "dark") {
+  function setTheme(theme, isToggle) {
+    if (theme === "dark") {
       document.documentElement.classList.add("dark");
       localStorage.setItem("currentTheme", "dark");
-      addEventListener('message', event => {
-        if (event.origin !== 'https://utteranc.es') {
+      addEventListener("message", (event) => {
+        if (event.origin !== "https://utteranc.es") {
           return;
         }
         const message = {
-          type: 'set-theme',
-          theme: 'github-dark'
+          type: "set-theme",
+          theme: "github-dark",
         };
-        const utterances = document.querySelector('iframe').contentWindow;
-        utterances.postMessage(message, 'https://utteranc.es');
+        const utterances = document.querySelector("iframe").contentWindow;
+        utterances.postMessage(message, "https://utteranc.es");
       });
       if (isToggle) {
         document.body.classList.add("fadeindarkclass");
         document.body.classList.remove("fadeinlightclass");
-        document
-          .querySelector("iframe.utterances-frame")
-          .contentWindow.postMessage(
-            { type: "set-theme", theme: "github-dark"},
-            "https://utteranc.es/"
+        const blogComments = document.querySelector("iframe.utterances-frame");
+        if (blogComments) {
+          blogComments.contentWindow.postMessage(
+            { type: "set-theme", theme: "github-dark" },
+            "https://utteranc.es/",
           );
+        }
       }
-    } else if (currentTheme === "light") {
+    } else if (theme === "light") {
       document.documentElement.classList.remove("dark");
       localStorage.setItem("currentTheme", "light");
-      addEventListener('message', event => {
-        if (event.origin !== 'https://utteranc.es') {
+      addEventListener("message", (event) => {
+        if (event.origin !== "https://utteranc.es") {
           return;
         }
         const message = {
-          type: 'set-theme',
-          theme: 'github-light'
+          type: "set-theme",
+          theme: "github-light",
         };
-        const utterances = document.querySelector('iframe').contentWindow;
-        utterances.postMessage(message, 'https://utteranc.es');
+        const utterances = document.querySelector("iframe").contentWindow;
+        utterances.postMessage(message, "https://utteranc.es");
       });
       if (isToggle) {
         document.body.classList.add("fadeinlightclass");
         document.body.classList.remove("fadeindarkclass");
-        document
-          .querySelector("iframe.utterances-frame")
-          .contentWindow.postMessage(
-            { type: "set-theme", theme: "github-light"},
-            "https://utteranc.es/"
+        const blogComments = document.querySelector("iframe.utterances-frame");
+        if (blogComments) {
+          blogComments.contentWindow.postMessage(
+            { type: "set-theme", theme: "github-light" },
+            "https://utteranc.es/",
           );
+        }
       }
     } else {
       initializeTheme();
@@ -97,12 +105,11 @@ import { Icon } from "astro-icon/components";
   @keyframes fadein {
     0% {
       opacity: 0;
-      background-color: #D8DEE9;
+      background-color: #d8dee9;
     }
-
     100% {
       opacity: 1;
-      background-color: #D8DEE9;
+      background-color: #d8dee9;
     }
   }
   body.fadeinlightclass {
@@ -111,12 +118,11 @@ import { Icon } from "astro-icon/components";
   @keyframes fadeindark {
     0% {
       opacity: 0;
-      background-color: #3B4252;
+      background-color: #3b4252;
     }
-
     100% {
       opacity: 1;
-      background-color: #3B4252;
+      background-color: #3b4252;
     }
   }
   body.fadeindarkclass {

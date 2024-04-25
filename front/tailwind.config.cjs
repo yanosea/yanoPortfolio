@@ -5,7 +5,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        default: ["MaruMonica", "sans-serif"]
+        default: ["MaruMonica", "sans-serif"],
+        PlemolJP: ["PlemolJP", "sans-serif"]
       },
       colors: {
         "main": "#3B4252",
