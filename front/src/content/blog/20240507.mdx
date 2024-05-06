@@ -1,0 +1,293 @@
+---
+date: 2024-05-07
+title: "このサイトの構成について"
+title_icon: "mdi:bow-arrow"
+description: "yanosea.orgの技術構成"
+images:
+  - url: "/images/blog/20240507/dog.webp"
+    alt: "いつの日か撮った置物の犬"
+  - url: "/images/blog/20240507/yanosea-org-diagram.webp"
+    alt: "yanosea.orgの構成図"
+  - url: "/images/blog/20240507/fee-vps.webp"
+    alt: "VPSの料金"
+  - url: "/images/blog/20240507/fee-domain.webp"
+    alt: "ドメインの料金"
+  - url: "/images/blog/20240507/fee-ssl.webp"
+    alt: "SSL証明書発行の料金"
+
+tags: ["tech", "astro", "golang", "docker", "xserver"]
+---
+
+<img src={frontmatter.images[0].url} alt={frontmatter.images[0].alt} />
+<p class="text-right text-sub">{frontmatter.images[0].alt}</p>
+
+# 🐤 はじめに
+
+こんにちは。yanoseaです。  
+このサイトをデプロイしてから見えてきた、「あれもしたい、これもしたい」を色々やっていました。  
+現時点で自分が納得するところまで手直しできたので、このタイミングでこのサイトの構成について書いてみたいと思います。  
+筆者が記事執筆初心者のため、<a href="https://qiita.com/mkt_hanada/items/923bbf9a9e51d6aa16b3" target="_blank" rel="noopener noreferrer">こちらの記事</a>を参考に書いていきます。
+
+- この記事はなに？
+  - アウトプットを頑張っていく！という目標にむけて手始めにこのサイトの技術構成を解説兼備忘録として書き残しておいたものです
+  - 個人サイトを開設したい方は参考になるかもしれません
+
+- この記事の想定読者は？
+  - 筆者 (備忘録なので)
+  - 個人サイトを開設してみたい方
+
+- この記事のねらいは？
+  - 筆者のアウトプット実践
+  - 筆者の備忘録
+  - 各技術についての情報を少しでも解説する
+
+# ⚠️ ご注意
+
+- 内容に筆者の個人的な解釈を多分に含んでいることにご注意ください
+- 間違った内容を書いている可能性があるためお気付きの場合はコメントやTwitter等でお気兼ねなくご指摘いただけますと幸いです
+
+# 🏁 結論
+
+構成は下図のとおりです。
+
+<img src={frontmatter.images[1].url} alt={frontmatter.images[1].alt} />
+
+## 🏗️  インフラ
+
+このサイトは<a href="https://vps.xserver.ne.jp" target="_blank" rel="noopener noreferrer">Xserver VPS</a>のLinuxマシンにデプロイされています。  
+昨今だと<a href="https://www.netlify.com" target="_blank" rel="noopener noreferrer">Netlify</a>や<a href="https://vercel.com" target="_blank" rel="noopener noreferrer">Vercel</a>にデプロイするのがパフォーマンス面やコスト面で優れていると思っています。では、何故VPS上にデプロイしているのか？それは...。
+
+- どこからでもSSHでいじれるLinuxマシンが欲しかった (建前)
+- 先にVPSやドメインを契約してしまった (本音)
+
+自分のサイトを作りたいと思っていたけれどなかなか動けなかったので、自分を追い込むために先んじてインフラに投資したからです。  
+結果的にどこでもLinuxマシンに接続して色々試せる環境を手に入れたので、これはこれでいいかと自分に腑に落とさせています。  
+ただ、やはりパフォーマンスとコストは大事なので1年の契約が切れる頃には乗り換えられるように準備ようかなと早々に考えています。
+
+参考程度にXserverに支払った金額を書いておきます。キャンペーンがちょっとありがたいですね。
+
+VPS料金 : ￥8,311
+
+<img src={frontmatter.images[2].url} alt={frontmatter.images[2].alt} />
+
+ドメイン料金 : ￥946
+
+<img src={frontmatter.images[3].url} alt={frontmatter.images[3].alt} />
+
+SSL証明書発行料金 : ￥1,045
+
+<img src={frontmatter.images[4].url} alt={frontmatter.images[4].alt} />
+
+合計 : ￥10,302
+
+Xserverを選択した技術的な理由は特にありません。  
+契約した当時のTwitterのTLが「Xserverはいいぞ」と盛り上がっていたので飛びついただけです。
+
+## 🖥️  サーバー構成
+
+OSはArch Linuxを採用しています。Archを選択した理由はメインの私用PCのWindowsのWSLで使っているためです。  
+そして、このサイトはそのVPSのLinux上で稼働する2台のDockerコンテナで運用しています。  
+ひとつはWebサーバーが稼働しているコンテナで、もうひとつはAPIサーバーが稼働しているコンテナです。
+
+このVPS自体はXserverの設定からポート80と443をWebサーバー用に開放しています。  
+また、GitHub Actionsおよび筆者が接続するためにエフェメラルポートを一つを開放してSSH接続に使用しています。  
+SSH接続するためにsshdの設定をしていますが、ここではこれ以上触れないでおきます。
+
+### 🐋 Docker
+
+サーバー運用にあたって、コンテナを用いて稼働させることにしました。  
+Dockerを選択した理由はVPSを必要以上に汚したくなかったのと、VPSを引っ越すことになっても再利用できると考えたからです。  
+恥ずかしながら業務で使用したことがなかったので、使ってみたかったというのもあります。
+
+`docker-compose`を使用してDockerコンテナの起動や終了をコントロールしています。複数のコンテナの操作・管理を簡単にしてくれるツールです。  
+`Dockerfile`と呼ばれるコンテナの設定ファイルをWebサーバーの分とAPIサーバーの分で2つ用意し、  
+`docker-compose`用の設定ファイル`docker-compose.yml`からそれらを参照します。  
+インフラをコード化しておく、いわゆる`Infrastracture as Code (IaC)`というやつですね。  
+一般に以下のメリットがあると言われています。
+
+- なるべく手作業を減らし、ヒューマンエラーを防止する
+- 保守性の向上
+
+個人的には設定ファイルを見れば使用しているコンテナが一目でわかるところにメリットを感じています。
+
+`docker-compose.yml`は以下のとおりです。
+
+```yml
+version: "3.8"
+
+services:
+  back:
+    container_name: $BACK_CONTAINER_NAME
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+      args:
+        - BACK_PORT=$BACK_PORT
+    ports:
+      - $BACK_PORT:$BACK_PORT
+    env_file: .env
+
+  front:
+    container_name: $FRONT_CONTAINER_NAME
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+      args:
+        - FRONT_PORT=$FRONT_PORT
+    ports:
+      - $FRONT_PORT:$FRONT_PORT
+    env_file: .env
+    volumes:
+      - ./$FRONT_SSL_PATH:/etc/nginx/ssl:ro
+```
+
+2つのコンテナ設定が`services`配下に書かれているのがお分かりいただけるかと思います。  
+`back`と命名されているものがAPIサーバーのコンテナで、`front`と命名されているものがWebサーバーのコンテナです。  
+
+`$BACK_PORT`などの環境変数を使用していますが、これは`.env`ファイルで設定しているものです。  
+`.env`という名前のファイルが`docker-compose.yml`と同階層に配置してあれば、`docker-compose`実行時に読み込んで、`docker-compose.yml`の中で展開してくれます。  
+このおかげで`docker-compose`を使用するshellに環境変数を設定しておく必要がなくなります。
+
+また、Webサーバー側のコンテナに`$FRONT_SSL_PATH`という環境変数を使用しています。中身はVPSのとあるパスです。  
+このパスに向けてGitHub Actionsとsecrets変数を用いてSSL証明書と鍵ファイルを書き込み、  
+Webサーバー側のコンテナにマウントしてhttps接続に対応しています。
+
+#### 🌐 Webサーバー (front)
+
+WebサーバーはNginxを採用しました。  
+Nginxを採用した理由ですが、まずシェアの観点からNginxとApacheの二択に絞っていました。  
+最終的には業務での運用経験があまりないNginxを選択するに至りました。
+
+公開先のディレクトリに<a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>でビルドした静的サイトを配置しています。  
+このコンテナの設定にあたるDockerfileは以下のとおりです。
+
+```Dockerfile
+FROM node:21.6-slim as builder
+WORKDIR /app
+COPY package.json ./
+COPY pnpm-lock.yaml ./
+RUN npm install -g pnpm && pnpm install
+COPY . .
+RUN pnpm build
+
+FROM nginx:alpine AS runtime
+ARG FRONT_PORT
+COPY nginx.conf.template /etc/nginx/templates/nginx.conf.template
+COPY --from=builder /app/dist /usr/share/nginx/html
+EXPOSE $FRONT_PORT
+```
+
+ポイントは2点あります。
+
+1. マルチビルドステージの採用  
+  Nginxのコンテナ起動時に`Astroで静的サイトのビルド`と`Nginxの立ち上げとビルドした静的サイトのデプロイ`の2ステップを踏むようにしています。  
+  これにより立ち上がったコンテナ内にソースコードやnode_modulesなどの不要なファイル群が残ってしまうことを防ぐことができ、  
+  コンテナの軽量化とクリーンな環境でのNginx稼動が実現しています。
+
+2. Nginx設定ファイルの適用  
+  `COPY nginx.conf.template /etc/nginx/templates/nginx.conf.template`でnginxの設定のテンプレートファイルをコンテナ内へコピーしています。  
+  これにより立ち上がったコンテナで稼働するNginxのリバースプロキシやSSLなどの設定を事前にファイルで保持しておくことができます。
+
+#### 📡 APIサーバー(back)
+
+Golangでビルドしたバイナリを実行してAPIサーバーを立てています。  
+.envファイルにエフェメラルポート番号を定義して、`docker-compose.yml`経由で`Dockerfile`へ渡してListenさせています。  
+クライアントからAPIのエンドポイントへのアクセスをNginxで一度受け止めて、リバースプロキシでAPIサーバーへのリクエストをルーティングしています。  
+このコンテナの設定にあたるDockerfileは以下のとおりです。
+
+```Dockerfile
+FROM golang:1.22 as builder
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . ./
+RUN CGO_ENABLED=0 GOOS=linux go build -o /main .
+
+FROM alpine:latest
+ARG BACK_PORT
+RUN apk --no-cache add ca-certificates
+WORKDIR /app
+COPY --from=builder /main ./
+EXPOSE $BACK_PORT
+CMD ["./main"]
+```
+
+こちらもマルチビルドステージを採用しています。  
+APIサーバーではSpotifyのWeb APIを実行して筆者の再生中、または最後に再生したSpotify上の楽曲の情報を取得してクライアントに返却しています。
+
+## 🧑‍🚀 フロントエンド実装
+
+フロントエンドは<a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>というWebフレームワークを使用しました。  
+Astroについては<a href="https://qiita.com/udayaan/items/24ecb2f5f4608fc1df4c" target="_blank" rel="noopener noreferrer">こちらの記事</a>がとても分かりやすく簡潔に書かれていたため、この紹介のみとさせていただきます。  
+CSSフレームワークには<a href="https://tailwindcss.com" target="_blank" rel="noopener noreferrer">tailwindcss</a>を使用しています。
+
+筆者は昨今話題によく上がるモダンなフロントエンド技術を今までの業務で使用したことがありません。  
+(.NET MVC + jQuery とかSpring Boot + jQuery みたいな構成をずっとやっていました。業務システム開発あるある？)  
+主観ですがフロントエンド周りの技術は複雑で難しいイメージがあり、シンプルかつ管理が楽なものが良いと考えたためこれらの採用に至りました。  
+今後はReactやVue.jsなどを使ったものを作って遊んでみたいです。
+
+## 🐀 バックエンド実装
+
+バックエンドは<a href="https://go.dev" target="_blank" rel="noopener noreferrer">Golang</a>を採用しました。 Web API フレームワークとして<a href="https://echo.labstack.com" target="_blank" rel="noopener noreferrer">Echo</a>を採用しました。  
+Golangを選択した理由はTwitterでつながりのある方たちがよく使ってらっしゃり、筆者自身も業務で経験のない比較的モダンな言語を使ってみたかったからです。  
+Echoは単純に「Go API フレームワーク」なんて検索をかけて、一番注目度が高いように見えたからです。  
+結果的にシンプルに書けるものだったのでかなり気に入っています。
+
+## 🚀 CD
+
+デプロイはGitHub Actionsで自動化しています。デプロイはmainブランチにpushされた時に実行されます。  
+リポジトリの設定でmainブランチに直接pushするのは制限しているため、PRをマージした時のみ実行されます。
+
+workflowの設定ファイルは以下のとおりです。
+
+```yml
+name: deploy
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST_IP }}
+          username: ${{ secrets.SSH_USER_NAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            sudo pacman -Syyu --noconfirm
+            cd ${{ secrets.REPOSITORY_PATH }}
+            sh ${{ secrets.DOCKER_STOP_SCRIPT }}
+            cd
+            rm -fr ${{ secrets.REPOSITORY_PATH }}
+            git clone ${{ secrets.REPOSITORY_URL }} ${{ secrets.REPOSITORY_PATH }}
+            cd ${{ secrets.REPOSITORY_PATH }}
+            echo "${{ secrets.ENV_FILE }}" > .env
+            mkdir -p  ${{ secrets.SSL_PATH }}
+            echo "${{ secrets.SSL_CRT }}" > ${{ secrets.SSL_PATH }}/${{ secrets.SSL_CRT_FILE_NAME }}
+            echo "${{ secrets.SSL_PRIVATE_KEY }}" > ${{ secrets.SSL_PATH }}/${{ secrets.SSL_PRIVATE_KEY_FILE_NAME }}
+            sh ${{ secrets.DOCKER_START_SCRIPT }}
+```
+
+ワークフローは以下のステップを踏んでいます。
+
+1. secrets変数を使用してVPSへSSH接続
+2. 各コンテナの終了用スクリプトの実行
+3. ローカルリポジトリの削除
+4. ポートフォリオサイト用リポジトリのクローン
+5. secrets変数を使用して本番環境用.envファイルを作成
+6. secrets変数を使用してWEBサーバーのコンテナにマウントするSSL証明書関連ファイルを作成
+7. 各コンテナの開始用スクリプトの実行
+
+# 🐔 おわりに
+
+ここまで読んでいただきありがとうございます。(ほんと心から...。)  
+拙い文章でしたが、ある程度ねらいを達成できるような内容を書けたかなと思っています。
+
+以降はもっとライトな記事を雑に投稿していこうと思っています。よろしければまた記事を読んでいただければ幸いです！
+
+ではまた!

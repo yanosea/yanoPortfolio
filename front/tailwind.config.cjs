@@ -41,6 +41,12 @@ module.exports = {
                 "transition-duration": "150ms",
               },
             },
+            "ll > li::marker": {
+              color: theme("colors.main"),
+            },
+            "ul > li::marker": {
+              color: theme("colors.main"),
+            },
             code: {
               color: theme("colors.sub"),
             },
@@ -65,6 +71,12 @@ module.exports = {
                 color: theme("colors.blue"),
                 "transition-duration": "150ms",
               },
+            },
+            "ol > li::marker": {
+              color: theme("colors.main-dark"),
+            },
+            "ul > li::marker": {
+              color: theme("colors.main-dark"),
             },
             code: {
               color: theme("colors.sub-dark"),
