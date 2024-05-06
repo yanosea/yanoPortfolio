@@ -24,6 +24,7 @@ const { Content } = await entry.render();
   title=`${entry.data.title} - blog`
   description={entry.data.description}
   article
+  imageUrl={entry.data.images[0].url}
   blogComments
 >
   <article class="m-auto space-y-6">
