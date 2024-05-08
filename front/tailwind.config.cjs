@@ -10,12 +10,12 @@ module.exports = {
       },
       colors: {
         "main": "#3B4252",
-        "main-dark": "#D8DEE9",
+        "main-dark": "#E5E9F0",
         "sub": "#81A1C1",
         "sub-dark": "#81A1C1",
         "sub-darker": "#5E81AC",
         "sub-darker-dark": "#5E81AC",
-        "background": "#D8DEE9",
+        "background": "#E5E9F0",
         "background-dark": "#3B4252",
         "red": "#BF616A",
         "orange": "#D08770",
@@ -25,7 +25,9 @@ module.exports = {
         "purple": "#B48EAD",
         "purple-lighter": "#C69ABE",
         "blue": "#5E81AC",
-      },
+        "gray": "#D8DEE9",
+        "gray-dark": "#4C566A",
+     },
       typography: (theme) => ({
         DEFAULT: {
           css: {

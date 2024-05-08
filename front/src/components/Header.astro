@@ -1,11 +1,15 @@
 ---
 import IconLink from "@/components/IconLink.astro";
 import MainLinks from "@/components//MainLinks.astro";
+
+const { borderVisible = false } = Astro.props;
 ---
 
-<div class="flex sticky bottom-[100vh] w-full justify-between px-6 py-6">
+<div
+  class={`flex sticky top-0 w-full justify-between bg-background dark:bg-background-dark ${borderVisible ? "border-b border-gray dark:border-gray-dark" : ""} px-6 py-6 z-10`}
+>
   <IconLink icon="ri:home-4-fill" href="/" />
-  <div class="flex flex-row items-center space-x-4">
+  <div class="flex flex-row items-center space-x-2 sm:space-x-4">
     <MainLinks />
   </div>
 </div>
