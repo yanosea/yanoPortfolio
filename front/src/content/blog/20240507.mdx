@@ -161,7 +161,7 @@ Nginxを採用した理由ですが、まずシェアの観点からNginxとApac
 公開先のディレクトリに<a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>でビルドした静的サイトを配置しています。  
 このコンテナの設定にあたるDockerfileは以下のとおりです。
 
-```Dockerfile
+```dockerfile
 FROM node:21.6-slim as builder
 WORKDIR /app
 COPY package.json ./
@@ -195,7 +195,7 @@ Golangでビルドしたバイナリを実行してAPIサーバーを立てて�
 クライアントからAPIのエンドポイントへのアクセスをNginxで一度受け止めて、リバースプロキシでAPIサーバーへのリクエストをルーティングしています。  
 このコンテナの設定にあたるDockerfileは以下のとおりです。
 
-```Dockerfile
+```dockerfile
 FROM golang:1.22 as builder
 WORKDIR /app
 COPY go.mod go.sum ./
