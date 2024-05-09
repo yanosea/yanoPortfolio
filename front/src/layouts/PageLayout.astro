@@ -15,7 +15,7 @@ const { blogComments } = Astro.props;
 ---
 
 <BaseLayout {...Astro.props}>
-  <Header borderVisible={true} />
+  <Header borderVisible={true} isSticky={true} />
   <main class="max-w-screen-lg m-auto px-6 py-6 space-y-6">
     <slot />
     {blogComments && <BlogComments />}
