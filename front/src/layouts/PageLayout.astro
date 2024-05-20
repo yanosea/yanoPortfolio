@@ -2,23 +2,23 @@
 import BaseLayout, {
   type Props as BaseLayoutProps,
 } from "@/layouts/BaseLayout.astro";
-import BlogComments from "@/components/BlogComments.astro";
 import Footer from "@/components/Footer.astro";
 import Header from "@/components/Header.astro";
 
 export interface Props extends BaseLayoutProps {}
 export interface Props {
-  blogComments?: boolean;
+  blogPage?: boolean;
 }
 
-const { blogComments } = Astro.props;
+const { blogPage } = Astro.props;
 ---
 
 <BaseLayout {...Astro.props}>
   <Header borderVisible={true} isSticky={true} />
-  <main class="max-w-screen-lg m-auto px-6 py-6 space-y-6">
+  <main
+    class=`${blogPage ? "max-w-screen-xl" : "max-w-screen-lg"} m-auto px-6 py-6 space-y-6`
+  >
     <slot />
-    {blogComments && <BlogComments />}
   </main>
   <Footer />
 </BaseLayout>
