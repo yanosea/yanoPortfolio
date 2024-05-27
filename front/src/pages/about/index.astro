@@ -20,7 +20,7 @@ const { Content } = await about[0].render();
             class="object-fill mx-auto"
           />
           <li>
-            <p class="text-4xl font-bold">
+            <p class="text-2xl font-bold">
               {about.data.greeting.subject}
             </p>
           </li>
@@ -29,7 +29,7 @@ const { Content } = await about[0].render();
           </li>
           {about.data.likes.map((like) => (
             <li>
-              <p class="text-2xl font-bold">
+              <p class="text-xl font-bold">
                 {like.subject}
               </p>
             </li>

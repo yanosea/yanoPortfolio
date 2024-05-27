@@ -26,20 +26,22 @@ import { Icon } from "astro-icon/components";
   }
 
   function initializeFont() {
-    setFont("MaruMonica", false);
+    setFont("default", false);
   }
 
   function setFont(font, isToggle) {
-    if (font === "MaruMonica") {
-      document.body.style.fontFamily = "MaruMonica";
-      localStorage.setItem("currentFont", "MaruMonica");
+    if (font === "default") {
+      document.body.classList.add("font-default");
+      document.body.classList.remove("font-normal");
+      localStorage.setItem("currentFont", "default");
       document.getElementById("pixelizeButton").classList.add("hidden");
       document.getElementById("pixelizeButton").classList.remove("block");
       document.getElementById("unpixelizeButton").classList.remove("hidden");
       document.getElementById("unpixelizeButton").classList.add("block");
-    } else if (font === "PlemolJP") {
-      document.body.style.fontFamily = "PlemolJP";
-      localStorage.setItem("currentFont", "PlemolJP");
+    } else if (font === "normal") {
+      document.body.classList.add("font-normal");
+      document.body.classList.remove("font-default");
+      localStorage.setItem("currentFont", "normal");
       document.getElementById("unpixelizeButton").classList.add("hidden");
       document.getElementById("unpixelizeButton").classList.remove("block");
       document.getElementById("pixelizeButton").classList.remove("hidden");
@@ -68,10 +70,10 @@ import { Icon } from "astro-icon/components";
 
   function toggleFont() {
     let currentFont = localStorage.getItem("currentFont");
-    if (currentFont === "MaruMonica") {
-      setFont("PlemolJP", true);
-    } else if (currentFont === "PlemolJP") {
-      setFont("MaruMonica", true);
+    if (currentFont === "default") {
+      setFont("normal", true);
+    } else if (currentFont === "normal") {
+      setFont("default", true);
     } else {
       initializeFont();
     }

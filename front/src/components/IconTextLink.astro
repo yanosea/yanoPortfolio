@@ -20,5 +20,5 @@ const { href, icon, icon_color, text, text_color, targetBlank } = Astro.props;
   rel={targetBlank ? "noopener noreferrer" : undefined}
 >
   <Icon class=`w-6 h-6 ${icon_color}` name={icon} />
-  <span class=`ml-2 text-lg tracking-widest ${text_color}`>{text}</span>
+  <span class=`ml-2 text-sm tracking-widest ${text_color}`>{text}</span>
 </a>
