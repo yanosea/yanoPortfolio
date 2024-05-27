@@ -46,12 +46,27 @@ const url = new URL(Astro.props.url || "", "https://yanosea.org/").toString();
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageUrl} />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.css"
+      rel="stylesheet"
+    />
+    <script
+      data-astro-rerun
+      is:inline
+      src="https://code.jquery.com/jquery-1.12.4.min.js"
+      type="text/javascript"></script>
+    <script
+      data-astro-rerun
+      is:inline
+      src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"
+      type="text/javascript"></script>
     <ViewTransitions fallback="swap" />
     <script
+      data-astro-rerun
       is:inline
       type="text/partytown"
       src="https://www.googletagmanager.com/gtag/js?id=G-SDLQKC1YPM"></script>
-    <script is:inline type="text/partytown">
+    <script data-astro-rerun is:inline type="text/partytown">
       window.dataLayer = window.dataLayer || [];
       function gtag() {
         dataLayer.push(arguments);

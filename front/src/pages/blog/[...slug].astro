@@ -31,7 +31,17 @@ const { Content, headings } = await entry.render();
 >
   <article class="max-w-full space-y-6">
     <Title icon={entry.data.title_icon} title={entry.data.title} />
-    <img src={entry.data.images[0].url} alt={entry.data.images[0].alt} />
+    <a
+      href={entry.data.images[0].url}
+      data-lightbox={entry.data.images[0].alt}
+      data-title={entry.data.images[0].alt}
+    >
+      <img
+        src={entry.data.images[0].url}
+        alt={entry.data.images[0].alt}
+        class="object-fill mx-auto"
+      />
+    </a>
     <p class="text-right text-sub">{entry.data.images[0].alt}</p>
     <div class="prose dark:prose-dark space-y-6">
       {
