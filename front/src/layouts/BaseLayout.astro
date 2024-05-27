@@ -1,4 +1,7 @@
 ---
+import "@fontsource/dotgothic16/japanese-400.css";
+import "@fontsource/zen-kaku-gothic-new/japanese-400.css";
+
 import { ViewTransitions } from "astro:transitions";
 
 export interface Props {
@@ -45,9 +48,10 @@ const url = new URL(Astro.props.url || "", "https://yanosea.org/").toString();
     <meta name="twitter:image" content={imageUrl} />
     <ViewTransitions fallback="swap" />
     <script
+      is:inline
       type="text/partytown"
       src="https://www.googletagmanager.com/gtag/js?id=G-SDLQKC1YPM"></script>
-    <script type="text/partytown">
+    <script is:inline type="text/partytown">
       window.dataLayer = window.dataLayer || [];
       function gtag() {
         dataLayer.push(arguments);
@@ -57,7 +61,7 @@ const url = new URL(Astro.props.url || "", "https://yanosea.org/").toString();
     </script>
   </head>
   <body
-    class="min-h-screen font-default font-normal text-main dark:text-main-dark bg-background dark:bg-background-dark"
+    class="min-h-screen font-default text-sm text-main dark:text-main-dark bg-background dark:bg-background-dark"
   >
     <script is:inline>
       (function () {
@@ -89,22 +93,5 @@ const url = new URL(Astro.props.url || "", "https://yanosea.org/").toString();
       })();
     </script>
     <slot />
-    <style>
-      @font-face {
-        font-family: "MaruMonica";
-        src: url("/fonts/x12y16pxMaruMonica.woff2") format("woff2");
-        font-weight: normal;
-        font-style: normal;
-        font-display: swap;
-      }
-      @font-face {
-        font-family: "PlemolJP";
-        src: url("/fonts/PlemolJPConsoleNF.woff2") format("woff2");
-        font-weight: normal;
-        font-style: normal;
-        font-display: swap;
-        size-adjust: 75%;
-      }
-    </style>
   </body>
 </html>

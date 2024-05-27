@@ -13,7 +13,7 @@ const linksData = await getCollection("links");
   <ul>
     {
       linksData.map((links) => (
-        <li class="flex flex-col items-center justify-center space-y-8">
+        <li class="flex flex-col items-center justify-center space-y-10">
           {links.data.links.map((link) => (
             <IconTextLink
               href={link.url}

@@ -5,8 +5,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        default: ["MaruMonica", "sans-serif"],
-        PlemolJP: ["PlemolJP", "sans-serif"]
+        default: ["DotGothic16", "sans-serif"],
+        normal: ["Zen Kaku Gothic New", "sans-serif"]
       },
       colors: {
         "main": "#3B4252",
@@ -27,10 +27,11 @@ module.exports = {
         "blue": "#5E81AC",
         "gray": "#D8DEE9",
         "gray-dark": "#4C566A",
-     },
+      },
       typography: (theme) => ({
         DEFAULT: {
           css: {
+            fontSize: '14px',
             maxWidth: "100%",
             color: theme("colors.main"),
             "h1, h2, h3, h4, h5, h6, strong": {
@@ -62,6 +63,7 @@ module.exports = {
         },
         dark: {
           css: {
+            fontSize: '14px',
             maxWidth: "100%",
             color: theme("colors.main-dark"),
             "h1, h2, h3, h4, h5, h6, strong": {
