@@ -1,7 +1,9 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
 
+import BlogComments from "@/components/BlogComments.astro";
 import PageLayout from "@/layouts/PageLayout.astro";
+import TableOfContents from "@/components/TableOfContents.astro";
 import Title from "@/components/Title.astro";
 
 import moment from "moment";
@@ -17,7 +19,7 @@ export async function getStaticPaths() {
 type Props = CollectionEntry<"blog">;
 
 const entry = Astro.props;
-const { Content } = await entry.render();
+const { Content, headings } = await entry.render();
 ---
 
 <PageLayout
@@ -25,12 +27,32 @@ const { Content } = await entry.render();
   description={entry.data.description}
   article
   imageUrl=`https://yanosea.org${entry.data.images[0].url}`
-  blogComments
+  blogPage={true}
 >
-  <article class="m-auto space-y-6">
+  <article class="max-w-full space-y-6">
     <Title icon={entry.data.title_icon} title={entry.data.title} />
+    <img src={entry.data.images[0].url} alt={entry.data.images[0].alt} />
+    <p class="text-right text-sub">{entry.data.images[0].alt}</p>
     <div class="prose dark:prose-dark space-y-6">
-      <Content />
+      {
+        headings.length > 0 && (
+          <nav class="block lg:hidden">
+            <TableOfContents headings={headings} />
+          </nav>
+        )
+      }
+      <div class="lg:flex lg:space-x-6">
+        <div class="w-full lg:w-3/4">
+          <Content />
+        </div>
+        {
+          headings.length > 0 && (
+            <nav class="hidden lg:block lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-3rem)] lg:w-1/4">
+              <TableOfContents headings={headings} />
+            </nav>
+          )
+        }
+      </div>
     </div>
     <p class="text-sub">
       {moment(entry.data.date).format("YYYY-MM-DD")}
@@ -44,5 +66,6 @@ const { Content } = await entry.render();
         </a>
       ))
     }
+    <BlogComments />
   </article>
 </PageLayout>
