@@ -5,9 +5,10 @@ import SpotifyStatus from "@/components/SpotifyStatus.astro";
 
 <div class="sticky top-[100vh] w-full items-center px-6 py-6 space-y-4">
   <SpotifyStatus />
-  <span class="flex justify-center text-center w-full space-x-4">
-    <span id="yanopPortfolioCopyRight" class="text-sm" transition:persist
+  <span class="flex justify-center text-center w-full space-x-3">
+    <span id="yanopPortfolioCopyRightYear" class="text-sm" transition:persist
     ></span>
+    <span class="text-sm">yanosea</span>
     <span id="yanopPortfolioVersion" class="text-sm" transition:persist></span>
     <span
       class="flex space-x-4 border-main dark:border-main-dark border-l pl-4"
@@ -28,10 +29,10 @@ import SpotifyStatus from "@/components/SpotifyStatus.astro";
 </div>
 
 <script>
-  import { setCopyRight } from "../libs/common.ts";
+  import { setCopyRightYear } from "../libs/common.ts";
   import { setLatestVersion } from "../libs/common.ts";
   import { updateSpotifyStatus } from "../libs/spotify.ts";
-  await setCopyRight();
+  await setCopyRightYear();
   await setLatestVersion();
   setInterval(updateSpotifyStatus, 60000);
   await updateSpotifyStatus();
