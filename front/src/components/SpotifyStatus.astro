@@ -9,22 +9,22 @@ import { Icon } from "astro-icon/components";
     style="display: none"
   >
     <span class="flex flex-col justify-center items-center">
-      <a id="nowPlayingImgLink" href="" target="_blank">
-        <span
-          class="flex flex-col justify-center items-center space-y-1 hover:text-blue transition-colors"
-        >
-          <p class="flex items-center transition-colors">
-            <Icon class="w-4 h-4" name="ri:spotify-fill" />
-            <span class="ml-2">now playing</span>
-          </p>
+      <span
+        class="flex flex-col justify-center items-center space-y-1 hover:text-blue transition-colors"
+      >
+        <p class="flex items-center transition-colors">
+          <Icon class="w-4 h-4" name="ri:spotify-fill" />
+          <span class="ml-2">now playing</span>
+        </p>
+        <a id="nowPlayingImgLink">
           <img
             id="nowPlayingImgSrc"
             src=""
             alt="album cover"
             class="object-scale-down h-24 w-24"
           />
-        </span>
-      </a>
+        </a>
+      </span>
     </span>
     <span class="flex flex-col justify-center space-y-1">
       <a
@@ -65,22 +65,22 @@ import { Icon } from "astro-icon/components";
     style="display: none"
   >
     <span class="flex flex-col justify-center items-center">
-      <a id="lastPlayedImgLink" href="" target="_blank">
-        <span
-          class="flex flex-col justify-center items-center space-y-1 hover:text-blue transition-colors"
-        >
-          <p class="flex items-center transition-colors">
-            <Icon class="w-4 h-4" name="ri:spotify-fill" />
-            <span class="ml-2">last played</span>
-          </p>
+      <span
+        class="flex flex-col justify-center items-center space-y-1 hover:text-blue transition-colors"
+      >
+        <p class="flex items-center transition-colors">
+          <Icon class="w-4 h-4" name="ri:spotify-fill" />
+          <span class="ml-2">last played</span>
+        </p>
+        <a id="lastPlayedImgLink">
           <img
             id="lastPlayedImgSrc"
             src=""
             alt="album cover"
             class="object-scale-down h-24 w-24"
           />
-        </span>
-      </a>
+        </a>
+      </span>
     </span>
     <span class="flex flex-col justify-center space-y-1">
       <a
