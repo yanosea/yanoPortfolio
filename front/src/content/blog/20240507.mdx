@@ -54,7 +54,8 @@ tags: ["tech", "astro", "golang", "docker", "xserver"]
 ## 🏗️  インフラ
 
 このサイトは<a href="https://vps.xserver.ne.jp" target="_blank" rel="noopener noreferrer">Xserver VPS</a>のLinuxマシンにデプロイされています。  
-昨今だと<a href="https://www.netlify.com" target="_blank" rel="noopener noreferrer">Netlify</a>や<a href="https://vercel.com" target="_blank" rel="noopener noreferrer">Vercel</a>にデプロイするのがパフォーマンス面やコスト面で優れていると思っています。では、何故VPS上にデプロイしているのか？それは...。
+昨今だと<a href="https://www.netlify.com" target="_blank" rel="noopener noreferrer">Netlify</a>や<a href="https://vercel.com" target="_blank" rel="noopener noreferrer">Vercel</a>にデプロイするのがパフォーマンス面やコスト面で優れていると思っています。  
+では、何故VPS上にデプロイしているのか？それは...。
 
 - どこからでもSSHでいじれるLinuxマシンが欲しかった (建前)
 - 先にVPSやドメインを契約してしまった (本音)
@@ -104,7 +105,8 @@ SSH接続するためにsshdの設定をしていますが、ここではこれ�
 Dockerを選択した理由はVPSを必要以上に汚したくなかったのと、VPSを引っ越すことになっても再利用できると考えたからです。  
 恥ずかしながら業務で使用したことがなかったので、使ってみたかったというのもあります。
 
-`docker-compose`を使用してDockerコンテナの起動や終了をコントロールしています。複数のコンテナの操作・管理を簡単にしてくれるツールです。  
+`docker-compose`を使用してDockerコンテナの起動や終了をコントロールしています。  
+複数のコンテナの操作・管理を簡単にしてくれるツールです。  
 `Dockerfile`と呼ばれるコンテナの設定ファイルをWebサーバーの分とAPIサーバーの分で2つ用意し、  
 `docker-compose`用の設定ファイル`docker-compose.yml`からそれらを参照します。  
 インフラをコード化しておく、いわゆる`Infrastracture as Code (IaC)`というやつですね。  
@@ -150,7 +152,8 @@ services:
 `back`と命名されているものがAPIサーバーのコンテナで、`front`と命名されているものがWebサーバーのコンテナです。  
 
 `$BACK_PORT`などの環境変数を使用していますが、これは`.env`ファイルで設定しているものです。  
-`.env`という名前のファイルが`docker-compose.yml`と同階層に配置してあれば、`docker-compose`実行時に読み込んで、`docker-compose.yml`の中で展開してくれます。  
+`.env`という名前のファイルが`docker-compose.yml`と同階層に配置してあれば、  
+`docker-compose`実行時に読み込んで`docker-compose.yml`の中で展開してくれます。  
 このおかげで`docker-compose`を使用するshellに環境変数を設定しておく必要がなくなります。
 
 また、Webサーバー側のコンテナに`$FRONT_SSL_PATH`という環境変数を使用しています。中身はVPSのとあるパスです。  
@@ -184,20 +187,23 @@ EXPOSE $FRONT_PORT
 
 ポイントは2点あります。
 
-1. マルチビルドステージの採用  
-  Nginxのコンテナ起動時に`Astroで静的サイトのビルド`と`Nginxの立ち上げとビルドした静的サイトのデプロイ`の2ステップを踏むようにしています。  
+1. マルチステージビルドの採用  
+  Nginxのコンテナ起動時に`Astroで静的サイトのビルド`と`Nginxの立ち上げとビルドした静的サイトのデプロイ`の  
+  2ステップを踏むようにしています。  
   これにより立ち上がったコンテナ内にソースコードやnode_modulesなどの不要なファイル群が残ってしまうことを防ぐことができ、  
   コンテナの軽量化とクリーンな環境でのNginx稼動が実現しています。
 
 2. Nginx設定ファイルの適用  
-  `COPY nginx.conf.template /etc/nginx/templates/nginx.conf.template`でnginxの設定のテンプレートファイルをコンテナ内へコピーしています。  
+  `COPY nginx.conf.template /etc/nginx/templates/nginx.conf.template`で  
+  nginxの設定のテンプレートファイルをコンテナ内へコピーしています。  
   これにより立ち上がったコンテナで稼働するNginxのリバースプロキシやSSLなどの設定を事前にファイルで保持しておくことができます。
 
 #### 📡 APIサーバー(back)
 
 Golangでビルドしたバイナリを実行してAPIサーバーを立てています。  
 .envファイルにエフェメラルポート番号を定義して、`docker-compose.yml`経由で`Dockerfile`へ渡してListenさせています。  
-クライアントからAPIのエンドポイントへのアクセスをNginxで一度受け止めて、リバースプロキシでAPIサーバーへのリクエストをルーティングしています。  
+クライアントからAPIのエンドポイントへのアクセスをNginxで一度受け止めて、  
+リバースプロキシでAPIサーバーへのリクエストをルーティングしています。  
 このコンテナの設定にあたるDockerfileは以下のとおりです。
 
 ```dockerfile
@@ -217,8 +223,9 @@ EXPOSE $BACK_PORT
 CMD ["./main"]
 ```
 
-こちらもマルチビルドステージを採用しています。  
-APIサーバーではSpotifyのWeb APIを実行して筆者の再生中、または最後に再生したSpotify上の楽曲の情報を取得してクライアントに返却しています。
+こちらもマルチステージビルドを採用しています。  
+APIサーバーではSpotifyのWeb APIを実行して筆者の再生中、または最後に再生したSpotify上の楽曲の情報を取得して  
+クライアントに返却しています。
 
 ## 🧑‍🚀 フロントエンド実装
 
@@ -228,13 +235,15 @@ CSSフレームワークには<a href="https://tailwindcss.com" target="_blank" 
 
 筆者は昨今話題によく上がるモダンなフロントエンド技術を今までの業務で使用したことがありません。  
 (.NET MVC + jQuery とかSpring Boot + jQuery みたいな構成をずっとやっていました。業務システム開発あるある？)  
-主観ですがフロントエンド周りの技術は複雑で難しいイメージがあり、シンプルかつ管理が楽なものが良いと考えたためこれらの採用に至りました。  
+主観ですがフロントエンド周りの技術は複雑で難しいイメージがあり、  
+シンプルかつ管理が楽なものが良いと考えたためこれらの採用に至りました。  
 今後はReactやVue.jsなどを使ったものを作って遊んでみたいです。
 
 ## 🐀 バックエンド実装
 
 バックエンドは<a href="https://go.dev" target="_blank" rel="noopener noreferrer">Golang</a>を採用しました。 Web API フレームワークとして<a href="https://echo.labstack.com" target="_blank" rel="noopener noreferrer">Echo</a>を採用しました。  
-Golangを選択した理由はTwitterでつながりのある方たちがよく使ってらっしゃり、筆者自身も業務で経験のない比較的モダンな言語を使ってみたかったからです。  
+Golangを選択した理由はTwitterでつながりのある方たちがよく使ってらっしゃり、  
+筆者自身も業務で経験のない比較的モダンな言語を使ってみたかったからです。  
 Echoは単純に「Go API フレームワーク」なんて検索をかけて、一番注目度が高いように見えたからです。  
 結果的にシンプルに書けるものだったのでかなり気に入っています。
 
@@ -295,4 +304,4 @@ jobs:
 
 以降はもっとライトな記事を雑に投稿していこうと思っています。よろしければまた記事を読んでいただければ幸いです！
 
-ではまた!
+ではまた！
