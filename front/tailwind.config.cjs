@@ -34,7 +34,12 @@ module.exports = {
             fontSize: '14px',
             maxWidth: "100%",
             color: theme("colors.main"),
-            "h1, h2, h3, h4, h5, h6, strong": {
+            "h1, h2, h3, h4, h5, h6": {
+              color: theme("colors.main"),
+              marginTop: "-90px",
+              paddingTop: "90px",
+            },
+            strong: {
               color: theme("colors.main"),
             },
             a: {
@@ -66,7 +71,12 @@ module.exports = {
             fontSize: '14px',
             maxWidth: "100%",
             color: theme("colors.main-dark"),
-            "h1, h2, h3, h4, h5, h6, strong": {
+            "h1, h2, h3, h4, h5, h6": {
+              color: theme("colors.main-dark"),
+              marginTop: "-90px",
+              paddingTop: "90px",
+            },
+            strong: {
               color: theme("colors.main-dark"),
             },
             a: {
