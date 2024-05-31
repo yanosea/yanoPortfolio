@@ -6,6 +6,9 @@ export async function setCopyRightYear() {
 
 export async function setLatestVersion() {
   const yanoPortfolioVersionElement = document.getElementById("yanopPortfolioVersion");
+  const yanoPortfolioVersionLinkElement = document.getElementById(
+    "yanopPortfolioVersionLink",
+  ) as HTMLAnchorElement;
   const latestVersion: string = await getLatestVersion();
   if (!latestVersion) {
     yanoPortfolioVersionElement.style.display = "none";
@@ -15,6 +18,8 @@ export async function setLatestVersion() {
 
   yanoPortfolioVersionElement.style.display = "flex";
   yanoPortfolioVersionElement.textContent = latestVersion;
+  yanoPortfolioVersionLinkElement.href =
+    "https://github.com/yanosea/yanoPortfolio/releases/tag/" + latestVersion;
 }
 
 async function getLatestVersion(): Promise<string | null> {
