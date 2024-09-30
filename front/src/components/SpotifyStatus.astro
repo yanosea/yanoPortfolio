@@ -43,20 +43,19 @@ import { Icon } from "astro-icon/components";
       <a id="nowPlayingTrackLink" href="" target="_blank" transition:persist>
         <p class="flex items-center transition-colors hover:text-blue">
           <Icon class="w-4 h-4" name="ph:music-note-fill" />
-          <span id="nowPlayingTrackName" class="ml-2" transition:persist></span>
+          <span id="nowPlayingTrackName" class="ml-2 truncate max-w-xs sm:max-w-full" transition:persist></span>
         </p>
       </a>
       <a id="nowPlayingAlbumLink" href="" target="_blank" transition:persist>
         <p class="flex items-center transition-colors hover:text-blue">
           <Icon class="w-4 h-4" name="ph:disc-fill" />
-          <span id="nowPlayingAlbumName" class="ml-2" transition:persist></span>
+          <span id="nowPlayingAlbumName" class="ml-2 truncate max-w-xs sm:max-w-full" transition:persist></span>
         </p>
       </a>
       <a id="nowPlayingArtistLink" href="" target="_blank" transition:persist>
         <p class="flex items-center transition-colors hover:text-blue">
           <Icon class="w-4 h-4" name="ph:microphone-stage-fill" />
-          <span id="nowPlayingArtistName" class="ml-2" transition:persist
-          ></span>
+          <span id="nowPlayingArtistName" class="ml-2 truncate max-w-xs sm:max-w-full" transition:persist></span>
         </p>
       </a>
     </span>
@@ -101,25 +100,24 @@ import { Icon } from "astro-icon/components";
       </a>
       <p class="flex items-center transition-colors">
         <Icon class="w-4 h-4" name="ph:clock-fill" />
-        <span id="lastPlayedPlayedAt" class="ml-2" transition:persist></span>
+        <span id="lastPlayedPlayedAt" class="ml-2 truncate max-w-xs sm:max-w-full" transition:persist></span>
       </p>
       <a id="lastPlayedTrackLink" href="" target="_blank" transition:persist>
         <p class="flex items-center transition-colors hover:text-blue">
           <Icon class="w-4 h-4" name="ph:music-note-fill" />
-          <span id="lastPlayedTrackName" class="ml-2" transition:persist></span>
+          <span id="lastPlayedTrackName" class="ml-2 truncate max-w-xs sm:max-w-full" transition:persist></span>
         </p>
       </a>
       <a id="lastPlayedAlbumLink" href="" target="_blank" transition:persist>
         <p class="flex items-center transition-colors hover:text-blue">
           <Icon class="w-4 h-4" name="ph:disc-fill" />
-          <span id="lastPlayedAlbumName" class="ml-2" transition:persist></span>
+          <span id="lastPlayedAlbumName" class="ml-2 truncate max-w-xs sm:max-w-full" transition:persist></span>
         </p>
       </a>
       <a id="lastPlayedArtistLink" href="" target="_blank" transition:persist>
         <p class="flex items-center transition-colors hover:text-blue">
           <Icon class="w-4 h-4" name="ph:microphone-stage-fill" />
-          <span id="lastPlayedArtistName" class="ml-2" transition:persist
-          ></span>
+          <span id="lastPlayedArtistName" class="ml-2 truncate max-w-xs sm:max-w-full" transition:persist></span>
         </p>
       </a>
     </span>
