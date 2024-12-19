@@ -1,4 +1,4 @@
-FROM node:21.6-slim as builder
+FROM node:23.4-slim as builder
 WORKDIR /app
 COPY package.json ./
 COPY pnpm-lock.yaml ./
