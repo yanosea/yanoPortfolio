@@ -2,7 +2,7 @@
 import "@fontsource/dotgothic16/japanese-400.css";
 import "@fontsource/zen-kaku-gothic-new/japanese-400.css";
 
-import { ViewTransitions } from "astro:transitions";
+import { ClientRouter } from "astro:transitions";
 
 export interface Props {
   title?: string;
@@ -60,7 +60,7 @@ const url = new URL(Astro.props.url || "", "https://yanosea.org/").toString();
       is:inline
       src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"
       type="text/javascript"></script>
-    <ViewTransitions fallback="swap" />
+    <ClientRouter fallback="swap" />
     <script
       data-astro-rerun
       is:inline
