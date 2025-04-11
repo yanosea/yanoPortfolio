@@ -30,8 +30,8 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0
       '@fontsource/zen-kaku-gothic-new':
-        specifier: ^5.1.0
-        version: 5.1.0
+        specifier: ^5.2.5
+        version: 5.2.5
       '@iconify-json/file-icons':
         specifier: ^1.2.1
         version: 1.2.1
@@ -490,8 +490,8 @@ packages:
   '@fontsource/dotgothic16@5.1.0':
     resolution: {integrity: sha512-lKd8FRUAJe31WyaF3KwiqEYvIB2G22FMJtmDC+xHFBBRvdZQWa4txVMiDFV0l4tEYgM+x9ZBrkcQrOhYznrgvA==}
 
-  '@fontsource/zen-kaku-gothic-new@5.1.0':
-    resolution: {integrity: sha512-Iadu+wXoLs320Qy7Ihxz69A565PunVTi8ha8swxaMsdbJf8tkcGx/PfRL7uba/1DZdkA/mii/DQKgRxbYoZDVw==}
+  '@fontsource/zen-kaku-gothic-new@5.2.5':
+    resolution: {integrity: sha512-z70JbquTUdH0gleBQtt/1IG5iLeW+sb2M3JUNFdbL7Ma3CXR6Tz7ajr8NEY+Jug/3sLJ8uOgJBNXqc7GrWxrEA==}
 
   '@iconify-json/file-icons@1.2.1':
     resolution: {integrity: sha512-ciDy+wGZpF2QELM5aGVTwsvh6l3puPbdrIy+L9sVAv1tvSHWFZB2UuadfiLODlVtZFUrzuO404NxESwH88MY1Q==}
@@ -3297,7 +3297,7 @@ snapshots:
 
   '@fontsource/dotgothic16@5.1.0': {}
 
-  '@fontsource/zen-kaku-gothic-new@5.1.0': {}
+  '@fontsource/zen-kaku-gothic-new@5.2.5': {}
 
   '@iconify-json/file-icons@1.2.1':
     dependencies:
