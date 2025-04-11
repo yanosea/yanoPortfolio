@@ -29,7 +29,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -51,9 +51,7 @@ jobs:
       if: ${{ matrix.language == 'javascript' }}
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
-        cache: 'npm'
-        cache-dependency-path: 'front/package-lock.json'
+        node-version: '21.6.2'
 
     # Go specific build steps
     - name: Build Go code
@@ -64,11 +62,16 @@ jobs:
         go build -v ./...
 
     # JavaScript/TypeScript specific build steps
-    - name: Build JavaScript/TypeScript code
+    - name: Install JavaScript dependencies
       if: ${{ matrix.language == 'javascript' }}
       run: |
         cd front
-        npm ci
+        npm install --no-audit --prefer-offline
+
+    - name: Build JavaScript code
+      if: ${{ matrix.language == 'javascript' }}
+      run: |
+        cd front
         npm run build
 
     # Perform CodeQL Analysis
