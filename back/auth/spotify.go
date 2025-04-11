@@ -19,15 +19,6 @@ import (
 	spotifyauth "github.com/zmb3/spotify/v2/auth"
 )
 
-const (
-	AUTH_ENV_SPOTIFY_ID                        = "SPOTIFY_ID"
-	AUTH_ENV_SPOTIFY_SECRET                    = "SPOTIFY_SECRET"
-	AUTH_ENV_SPOTIFY_REDIRECT_URI              = "SPOTIFY_REDIRECT_URI"
-	AUTH_ENV_SPOTIFY_REFRESH_TOKEN             = "SPOTIFY_REFRESH_TOKEN"
-	AUTH_ERROR_MESSAGE_AUTH_FAILURE            = "Authentication failed..."
-	AUTH_ERROR_MESSAGE_TEMPLATE_REFRESH_FAILED = "Refresh failed..."
-)
-
 func Authenticate() (*spotify.Client, error) {
 	port, err := getPortFromUri(os.Getenv("SPOTIFY_REDIRECT_URI"))
 	if err != nil {
@@ -48,13 +39,13 @@ func Authenticate() (*spotify.Client, error) {
 			spotifyauth.ScopeUserLibraryRead,
 			spotifyauth.ScopeUserLibraryModify,
 		),
-		spotifyauth.WithClientID(os.Getenv(AUTH_ENV_SPOTIFY_ID)),
-		spotifyauth.WithClientSecret(os.Getenv(AUTH_ENV_SPOTIFY_SECRET)),
-		spotifyauth.WithRedirectURL(os.Getenv(AUTH_ENV_SPOTIFY_REDIRECT_URI)),
+		spotifyauth.WithClientID(os.Getenv("SPOTIFY_ID")),
+		spotifyauth.WithClientSecret(os.Getenv("SPOTIFY_SECRET")),
+		spotifyauth.WithRedirectURL(os.Getenv("SPOTIFY_REDIRECT_URI")),
 	)
 
-	if os.Getenv(AUTH_ENV_SPOTIFY_REFRESH_TOKEN) != "" {
-		return refresh(authenticator, os.Getenv(AUTH_ENV_SPOTIFY_REFRESH_TOKEN))
+	if os.Getenv("SPOTIFY_REFRESH_TOKEN") != "" {
+		return refresh(authenticator, os.Getenv("SPOTIFY_REFRESH_TOKEN"))
 	}
 
 	http.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +53,7 @@ func Authenticate() (*spotify.Client, error) {
 
 		if err != nil {
 			log.Error(err)
-			http.Error(w, AUTH_ERROR_MESSAGE_AUTH_FAILURE, http.StatusForbidden)
+			http.Error(w, "failed to get token", http.StatusInternalServerError)
 			return
 		}
 
@@ -77,13 +68,11 @@ func Authenticate() (*spotify.Client, error) {
 	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {})
-	go func() error {
+	go func() {
 		err := http.ListenAndServe(":"+port, nil)
-		if err != nil {
+		if err != nil && err != http.ErrServerClosed {
 			log.Error(err)
-			return err
 		}
-		return nil
 	}()
 	client = <-channel
 
@@ -98,7 +87,7 @@ func refresh(authenticator *spotifyauth.Authenticator, refreshToken string) (*sp
 
 	client := spotify.New(authenticator.Client(context.Background(), tok))
 	if client == nil {
-		return nil, errors.New(AUTH_ERROR_MESSAGE_TEMPLATE_REFRESH_FAILED)
+		return nil, errors.New("failed to create client")
 	}
 
 	return client, nil

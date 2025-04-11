@@ -1,0 +1,81 @@
+# CodeQL Configuration for yanoPortfolio
+# This workflow file is configured to analyze both Go (backend) and JavaScript/TypeScript (frontend)
+name: "CodeQL"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '35 3 * * 3'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'go', 'javascript' ]
+        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby', 'swift' ]
+        # 'javascript' analysis covers both JavaScript and TypeScript
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        queries: +security-extended
+
+    # Set up Go environment for Go code analysis
+    - name: Set up Go
+      if: ${{ matrix.language == 'go' }}
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.24'
+        check-latest: true
+
+    # Set up Node.js environment for JavaScript/TypeScript code analysis
+    - name: Set up Node.js
+      if: ${{ matrix.language == 'javascript' }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: '21.6.2'
+
+    # Go specific build steps
+    - name: Build Go code
+      if: ${{ matrix.language == 'go' }}
+      run: |
+        cd back
+        go mod download
+        go build -v ./...
+
+    # JavaScript/TypeScript specific build steps
+    - name: Install JavaScript dependencies
+      if: ${{ matrix.language == 'javascript' }}
+      run: |
+        cd front
+        npm install --no-audit --prefer-offline
+
+    - name: Build JavaScript code
+      if: ${{ matrix.language == 'javascript' }}
+      run: |
+        cd front
+        npm run build
+
+    # Perform CodeQL Analysis
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"

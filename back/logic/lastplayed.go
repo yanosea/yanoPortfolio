@@ -41,7 +41,7 @@ func Lastplayed() (*LastPlayedResponse, error) {
 		return nil, err
 	}
 
-	if lastPlayedTracks == nil || len(lastPlayedTracks) == 0 {
+	if len(lastPlayedTracks) == 0 {
 		return &LastPlayedResponse{
 			Body: nil,
 		}, nil
