@@ -23,7 +23,7 @@ endif
 start:
 	@set -e; \
 	if [ -e $(RUN_FILE) ]; then \
-		echo "yanoPortfolio is running"; \
+		echo "yanoPortfolio is running..."; \
 		exit 1; \
 	fi; \
 	docker-compose -f docker-compose.yml build --no-cache --progress=plain
@@ -34,7 +34,7 @@ start:
 stop:
 	@set -e; \
 	if [ ! -e $(RUN_FILE) ]; then \
-		echo "yanoPortfolio is not running"; \
+		echo "yanoPortfolio is not running..."; \
 		exit 1; \
 	fi; \
 	docker-compose down
@@ -80,6 +80,7 @@ dev.back.start:
 		exit 1; \
 	fi; \
 	cd $(BACK_DIR) && \
+	echo "starting backend server..." && \
 	set -a && source ../$(DEV_ENV_FILE) && set +a && \
 	go run main.go > /dev/null 2>&1 & \
 	sleep 2 && \
@@ -182,7 +183,7 @@ dev.front.start:
 	fi; \
 	echo $$SERVER_PID > $(FRONT_PID_FILE) && \
 	echo ""; \
-	echo "frontend server started on port $(FRONT_PORT) (PID: $$SERVER_PID)..."; \
+	echo "frontend server started on port $(FRONT_PORT) (PID: $$SERVER_PID)!"; \
 	echo "";
 
 # stop frontend server
