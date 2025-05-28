@@ -6,11 +6,9 @@ front/dist/
 front/node_modules/
 
 # IGNORE FILE
-.env.org
-.env.prod
+.env.dev
 .Identifier
-back/local-start-back.sh
-front/local-start-front.sh
-yanoPortfolio.run
 .DS_Store
+.yanoPortfolio.run
 *.log
+*.pid
