@@ -18,7 +18,7 @@ jobs:
           script: |
             sudo pacman -Syyu --noconfirm
             cd ${{ secrets.REPOSITORY_PATH }}
-            sh ${{ secrets.DOCKER_STOP_SCRIPT }}
+            make stop
             cd
             rm -fr ${{ secrets.REPOSITORY_PATH }}
             git clone ${{ secrets.REPOSITORY_URL }} ${{ secrets.REPOSITORY_PATH }}
@@ -27,4 +27,4 @@ jobs:
             mkdir -p  ${{ secrets.SSL_PATH }}
             echo "${{ secrets.SSL_CRT }}" > ${{ secrets.SSL_PATH }}/${{ secrets.SSL_CRT_FILE_NAME }}
             echo "${{ secrets.SSL_PRIVATE_KEY }}" > ${{ secrets.SSL_PATH }}/${{ secrets.SSL_PRIVATE_KEY_FILE_NAME }}
-            sh ${{ secrets.DOCKER_START_SCRIPT }}
+            make start
