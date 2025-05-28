@@ -157,13 +157,21 @@ dev.front.start:
 	fi; \
 	cd $(FRONT_DIR) && \
 	echo "" && \
-	echo "installing npm packages..." && \
-	npm install && \
+	echo "checking for pnpm..." && \
+	if command -v pnpm >/dev/null 2>&1; then \
+		echo "pnpm found, using it directly..." && \
+		PACKAGE_MANAGER="pnpm"; \
+	else \
+		echo "pnpm not found, installing via npx..." && \
+		PACKAGE_MANAGER="npx pnpm"; \
+	fi && \
+	echo "installing packages with $$PACKAGE_MANAGER..." && \
+	$$PACKAGE_MANAGER install && \
 	echo "Packages installed successfully." && \
 	echo "" && \
 	echo "starting frontend server..." && \
 	set -a && source ../$(DEV_ENV_FILE) && set +a && \
-	npm start > /dev/null 2>&1 & \
+	$$PACKAGE_MANAGER start > /dev/null 2>&1 & \
 	sleep 3 && \
 	SERVER_PID=$$(lsof -i:$(FRONT_PORT) -t); \
 	if [ -z "$$SERVER_PID" ]; then \
