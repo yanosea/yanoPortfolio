@@ -1,0 +1,23 @@
+{
+  "feature_name": "cloudflare-pages-migration",
+  "project_description": "`./spotify-blog-migration.md`に沿って移行したい。",
+  "created_at": "2025-08-06T18:52:00Z",
+  "updated_at": "2025-08-06T18:52:00Z",
+  "language": "japanese",
+  "phase": "tasks_generated",
+  "approvals": {
+    "requirements": {
+      "generated": true,
+      "approved": true
+    },
+    "design": {
+      "generated": true,
+      "approved": true
+    },
+    "tasks": {
+      "generated": true,
+      "approved": false
+    }
+  },
+  "ready_for_implementation": false
+}
