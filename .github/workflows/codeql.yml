@@ -2,6 +2,8 @@
 # This workflow file is configured to analyze JavaScript/TypeScript (frontend and Deno backend)
 name: "CodeQL"
 on:
+  push:
+    branches: ["main"]
   pull_request:
     branches: ["main"]
   schedule:
