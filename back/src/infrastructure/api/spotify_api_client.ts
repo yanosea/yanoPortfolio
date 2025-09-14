@@ -359,6 +359,33 @@ export class SpotifyApiClient implements TrackRepository {
         : "";
       // get primary artist
       const primaryArtist = spotifyTrack.artists[0];
+      // format playedAt to yyyy/MM/dd HH:mm:ss format in JST if available
+      let formattedPlayedAt: string | undefined;
+      if (playedAt) {
+        const datePlayedAt = new Date(playedAt);
+        // convert to JST (UTC+9)
+        const jstDatePlayedAt = new Date(
+          datePlayedAt.getTime() + (9 * 60 * 60 * 1000),
+        );
+        // format to yyyy/MM/dd HH:mm:ss
+        const year = jstDatePlayedAt.getUTCFullYear();
+        const month = String(jstDatePlayedAt.getUTCMonth() + 1).padStart(
+          2,
+          "0",
+        );
+        const day = String(jstDatePlayedAt.getUTCDate()).padStart(2, "0");
+        const hours = String(jstDatePlayedAt.getUTCHours()).padStart(2, "0");
+        const minutes = String(jstDatePlayedAt.getUTCMinutes()).padStart(
+          2,
+          "0",
+        );
+        const seconds = String(jstDatePlayedAt.getUTCSeconds()).padStart(
+          2,
+          "0",
+        );
+        formattedPlayedAt =
+          `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+      }
       // reconstruct domain track entity
       const trackResult = Track.reconstruct(
         imageUrl,
@@ -368,7 +395,7 @@ export class SpotifyApiClient implements TrackRepository {
         spotifyTrack.album.external_urls.spotify,
         primaryArtist.name,
         primaryArtist.external_urls.spotify,
-        playedAt,
+        formattedPlayedAt,
       );
       // handle potential reconstruction errors
       if (trackResult instanceof DomainError) {
