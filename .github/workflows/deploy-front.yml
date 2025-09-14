@@ -51,7 +51,7 @@ jobs:
         run: |
           if ! wrangler pages project list 2>/dev/null | grep -q "yanoportfolio-front"; then
             echo "Creating Pages project: yanoportfolio-front"
-            wrangler pages project create yanoportfolio-front --compatibility-date=2025-09-14
+            wrangler pages project create yanoportfolio-front --production-branch main --compatibility-date $(date +%Y-%m-%d)
           else
             echo "Pages project yanoportfolio-front already exists"
           fi
