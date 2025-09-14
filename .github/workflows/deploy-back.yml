@@ -1,0 +1,106 @@
+name: Deploy to Cloudflare Workers (Denoflare)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "back/**"
+      - ".github/workflows/deploy-back.yml"
+  workflow_dispatch:
+env:
+  DENO_VERSION: "v2.x"
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Setup Wrangler
+        run: npm install -g wrangler
+
+      - name: Ensure Worker exists
+        run: |
+          cd back
+          # Try to get worker info, create if doesn't exist
+          if ! wrangler worker list 2>/dev/null | grep -q "yanoportfolio-api"; then
+            echo "Creating Worker: yanoportfolio-api"
+            echo 'export default { fetch() { return new Response("Worker created"); } }' > temp-worker.js
+            wrangler deploy temp-worker.js --name yanoportfolio-api --routes "api.yanosea.org/*"
+            rm temp-worker.js
+          else
+            echo "Worker yanoportfolio-api already exists"
+          fi
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Generate .denoflare config
+        run: |
+          cd back
+          envsubst < .denoflare.template > .denoflare
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
+          YANOPORTFOLIO_BACK_CACHE: ${{ secrets.YANOPORTFOLIO_BACK_CACHE }}
+
+      - name: Deploy Workers
+        run: make deploy.back
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Test deployed endpoints
+        if: success()
+        run: |
+          echo "🧪 Testing deployed endpoints..."
+
+          # Wait a moment for deployment to propagate
+          sleep 10
+
+          # Production API URL
+          API_URL="https://api.yanosea.org"
+
+          # Spotify API endpoints
+          echo "Testing Spotify endpoints..."
+          NOW_PLAYING_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$API_URL/spotify/now-playing" || echo "000")
+          LAST_PLAYED_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$API_URL/spotify/last-played" || echo "000")
+
+          if [[ "$NOW_PLAYING_STATUS" =~ ^(200|204)$ ]]; then
+            echo "✅ Now playing endpoint OK ($NOW_PLAYING_STATUS)"
+          else
+            echo "⚠️ Now playing endpoint status: $NOW_PLAYING_STATUS"
+          fi
+
+          if [[ "$LAST_PLAYED_STATUS" =~ ^(200|204)$ ]]; then
+            echo "✅ Last played endpoint OK ($LAST_PLAYED_STATUS)"
+          else
+            echo "⚠️ Last played endpoint status: $LAST_PLAYED_STATUS"
+          fi
+
+      - name: Notify deployment success
+        if: success()
+        run: |
+          echo "⚡ Denoflare Workers deployment successful!"
+          echo "🔗 API: https://api.yanosea.org"
+          echo "📊 Environment: production"
+          echo "🦕 Deployed with Deno + Denoflare"
+
+      - name: Notify deployment failure
+        if: failure()
+        run: |
+          echo "❌ Denoflare Workers deployment failed!"
+          echo "Please check the logs above for details"
+          echo "💡 Tip: Verify .denoflare config and Cloudflare credentials"
+          exit 1

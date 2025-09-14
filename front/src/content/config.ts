@@ -27,10 +27,12 @@ const blog = defineCollection({
     title_icon: z.string(),
     description: z.string(),
     images: z.array(
-      z.object({
-        url: z.string(),
-        alt: z.string(),
-      }).optional(),
+      z
+        .object({
+          url: z.string(),
+          alt: z.string(),
+        })
+        .optional(),
     ),
     tags: z.array(z.string()).optional(),
   }),

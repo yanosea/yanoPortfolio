@@ -47,11 +47,15 @@ tags: ["tech", "astro", "golang", "docker", "xserver"]
 
 構成は下図のとおりです。
 
-<a href={frontmatter.images[1].url} data-lightbox={frontmatter.images[1].alt} data-title={frontmatter.images[1].alt}>
+<a
+  href={frontmatter.images[1].url}
+  data-lightbox={frontmatter.images[1].alt}
+  data-title={frontmatter.images[1].alt}
+>
   <img src={frontmatter.images[1].url} alt={frontmatter.images[1].alt} />
 </a>
 
-## 🏗️  インフラ
+## 🏗️ インフラ
 
 このサイトは<a href="https://vps.xserver.ne.jp" target="_blank" rel="noopener noreferrer">Xserver VPS</a>のLinuxマシンにデプロイされています。  
 昨今だと<a href="https://www.netlify.com" target="_blank" rel="noopener noreferrer">Netlify</a>や<a href="https://vercel.com" target="_blank" rel="noopener noreferrer">Vercel</a>にデプロイするのがパフォーマンス面やコスト面で優れていると思っています。  
@@ -68,19 +72,31 @@ tags: ["tech", "astro", "golang", "docker", "xserver"]
 
 VPS料金 : ￥8,311
 
-<a href={frontmatter.images[2].url} data-lightbox={frontmatter.images[2].alt} data-title={frontmatter.images[2].alt}>
+<a
+  href={frontmatter.images[2].url}
+  data-lightbox={frontmatter.images[2].alt}
+  data-title={frontmatter.images[2].alt}
+>
   <img src={frontmatter.images[2].url} alt={frontmatter.images[2].alt} />
 </a>
 
 ドメイン料金 : ￥946
 
-<a href={frontmatter.images[3].url} data-lightbox={frontmatter.images[3].alt} data-title={frontmatter.images[3].alt}>
+<a
+  href={frontmatter.images[3].url}
+  data-lightbox={frontmatter.images[3].alt}
+  data-title={frontmatter.images[3].alt}
+>
   <img src={frontmatter.images[3].url} alt={frontmatter.images[3].alt} />
 </a>
 
 SSL証明書発行料金 : ￥1,045
 
-<a href={frontmatter.images[4].url} data-lightbox={frontmatter.images[4].alt} data-title={frontmatter.images[4].alt}>
+<a
+  href={frontmatter.images[4].url}
+  data-lightbox={frontmatter.images[4].alt}
+  data-title={frontmatter.images[4].alt}
+>
   <img src={frontmatter.images[4].url} alt={frontmatter.images[4].alt} />
 </a>
 
@@ -89,7 +105,7 @@ SSL証明書発行料金 : ￥1,045
 Xserverを選択した技術的な理由は特にありません。  
 契約した当時のTwitterのTLが「Xserverはいいぞ」と盛り上がっていたので飛びついただけです。
 
-## 🖥️  サーバー構成
+## 🖥️ サーバー構成
 
 OSはArch Linuxを採用しています。Archを選択した理由はメインの私用PCのWindowsのWSLで使っているためです。  
 そして、このサイトはそのVPSのLinux上で稼働する2台のDockerコンテナで運用しています。  
@@ -149,7 +165,7 @@ services:
 ```
 
 2つのコンテナ設定が`services`配下に書かれているのがお分かりいただけるかと思います。  
-`back`と命名されているものがAPIサーバーのコンテナで、`front`と命名されているものがWebサーバーのコンテナです。  
+`back`と命名されているものがAPIサーバーのコンテナで、`front`と命名されているものがWebサーバーのコンテナです。
 
 `$BACK_PORT`などの環境変数を使用していますが、これは`.env`ファイルで設定しているものです。  
 `.env`という名前のファイルが`docker-compose.yml`と同階層に配置してあれば、  
@@ -188,15 +204,15 @@ EXPOSE $FRONT_PORT
 ポイントは2点あります。
 
 1. マルチステージビルドの採用  
-  Nginxのコンテナ起動時に`Astroで静的サイトのビルド`と`Nginxの立ち上げとビルドした静的サイトのデプロイ`の  
-  2ステップを踏むようにしています。  
-  これにより立ち上がったコンテナ内にソースコードやnode_modulesなどの不要なファイル群が残ってしまうことを防ぐことができ、  
-  コンテナの軽量化とクリーンな環境でのNginx稼動が実現しています。
+   Nginxのコンテナ起動時に`Astroで静的サイトのビルド`と`Nginxの立ち上げとビルドした静的サイトのデプロイ`の  
+   2ステップを踏むようにしています。  
+   これにより立ち上がったコンテナ内にソースコードやnode_modulesなどの不要なファイル群が残ってしまうことを防ぐことができ、  
+   コンテナの軽量化とクリーンな環境でのNginx稼動が実現しています。
 
 2. Nginx設定ファイルの適用  
-  `COPY nginx.conf.template /etc/nginx/templates/nginx.conf.template`で  
-  nginxの設定のテンプレートファイルをコンテナ内へコピーしています。  
-  これにより立ち上がったコンテナで稼働するNginxのリバースプロキシやSSLなどの設定を事前にファイルで保持しておくことができます。
+   `COPY nginx.conf.template /etc/nginx/templates/nginx.conf.template`で  
+   nginxの設定のテンプレートファイルをコンテナ内へコピーしています。  
+   これにより立ち上がったコンテナで稼働するNginxのリバースプロキシやSSLなどの設定を事前にファイルで保持しておくことができます。
 
 #### 📡 APIサーバー(back)
 

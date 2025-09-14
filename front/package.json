@@ -1,10 +1,14 @@
 {
-  "name": "yanoPortFolio",
+  "name": "yanoPortFolio-front",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "start": "astro dev",
-    "build": "astro check && astro build"
+    "build": "astro build",
+    "check": "astro check && prettier --check .",
+    "deploy": "wrangler pages deploy dist --project-name=yanoportfolio-front",
+    "dev": "astro dev",
+    "fmt": "prettier --write .",
+    "test": "echo 'No tests yet' && exit 0"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
@@ -32,9 +36,17 @@
   "devDependencies": {
     "prettier": "^3.4.2",
     "prettier-plugin-astro": "^0.14.1",
-    "prettier-plugin-tailwindcss": "^0.6.9"
+    "prettier-plugin-tailwindcss": "^0.6.9",
+    "wrangler": "^3.0.0"
   },
-  "volta": {
-    "node": "21.6.2"
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ],
+    "allowedDepPatterns": [
+      "esbuild",
+      "sharp"
+    ]
   }
 }

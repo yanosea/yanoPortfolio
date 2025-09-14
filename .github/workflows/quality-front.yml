@@ -1,0 +1,45 @@
+name: Frontend Quality Check
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "front/**"
+      - ".github/workflows/frontend-quality.yml"
+env:
+  NODE_VERSION: "latest"
+  PNPM_VERSION: "latest"
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
+          cache-dependency-path: front/pnpm-lock.yaml
+
+      - name: Quality checks
+        run: make front.check
+
+      - name: Test
+        run: make front.test
+
+      - name: Quality check summary
+        if: success()
+        run: |
+          echo "✅ All frontend quality checks passed!"
+          echo "🎯 Type check: PASSED"
+          echo "🔍 Lint check: PASSED"
+          echo "🎨 Format check: PASSED"
+          echo "🧪 Tests: PASSED"
+

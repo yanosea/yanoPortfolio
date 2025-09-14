@@ -1,14 +1,10 @@
 # IGNORE FOLDER
-back/dist/
 front/.astro/
-front/.ssl/
 front/dist/
 front/node_modules/
-
 # IGNORE FILE
-.env.dev
-.Identifier
 .DS_Store
-.yanoPortfolio.run
+.Identifier
 *.log
 *.pid
+back/.denoflare

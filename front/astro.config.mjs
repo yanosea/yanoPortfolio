@@ -5,9 +5,8 @@ import partytown from "@astrojs/partytown";
 import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
 
-const FRONT_PORT = parseInt(process.env.FRONT_PORT , 10) || 4321;
-
 export default defineConfig({
+  output: "static",
   integrations: [
     icon(),
     mdx(),
@@ -17,18 +16,17 @@ export default defineConfig({
       },
     }),
     (await import("@playform/compress")).default({
-      Exclude: [
-        ".*hoisted.*"
-      ],
+      Exclude: [".*hoisted.*"],
     }),
     sitemap(),
     tailwind(),
   ],
   site: "https://yanosea.org",
-  server: { port:FRONT_PORT , host: true },
   image: {
-    remotePatterns: [{
-      protocol: "https"
-    }]
-  }
+    remotePatterns: [
+      {
+        protocol: "https",
+      },
+    ],
+  },
 });

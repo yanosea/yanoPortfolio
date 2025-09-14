@@ -1,0 +1,74 @@
+{
+  "$schema": "https://raw.githubusercontent.com/skymethod/denoflare/v0.7.0/common/config.schema.json",
+  "profiles": {
+    "default": {
+      "accountId": "${CLOUDFLARE_ACCOUNT_ID}",
+      "apiToken": "${CLOUDFLARE_API_TOKEN}"
+    }
+  },
+  "scripts": {
+    "local": {
+      "path": "./src/main.ts",
+      "bindings": {
+        "CACHE_TTL_SECONDS": {
+          "value": "10"
+        },
+        "CORS_ENABLED": {
+          "value": "true"
+        },
+        "CORS_ORIGINS": {
+          "value": "https://yanosea.org"
+        },
+        "YANOPORTFOLIO_BACK_CACHE": {
+          "kvNamespace": ""
+        },
+        "SPOTIFY_CLIENT_ID": {
+          "secret": "${SPOTIFY_CLIENT_ID}"
+        },
+        "SPOTIFY_CLIENT_SECRET": {
+          "secret": "${SPOTIFY_CLIENT_SECRET}"
+        },
+        "SPOTIFY_REFRESH_TOKEN": {
+          "secret": "${SPOTIFY_REFRESH_TOKEN}"
+        },
+        "TOKEN_BUFFER_TIME_MS": {
+          "value": "300000"
+        }
+      },
+    },
+    "yanoportfolio-back": {
+      "path": "./src/main.ts",
+      "bindings": {
+        "CACHE_TTL_SECONDS": {
+          "value": "10"
+        },
+        "CORS_ENABLED": {
+          "value": "true"
+        },
+        "CORS_ORIGINS": {
+          "value": "https://yanosea.org"
+        },
+        "YANOPORTFOLIO_BACK_CACHE": {
+          "kvNamespace": "${YANOPORTFOLIO_BACK_CACHE}"
+        },
+        "SPOTIFY_CLIENT_ID": {
+          "secret": "${SPOTIFY_CLIENT_ID}"
+        },
+        "SPOTIFY_CLIENT_SECRET": {
+          "secret": "${SPOTIFY_CLIENT_SECRET}"
+        },
+        "SPOTIFY_REFRESH_TOKEN": {
+          "secret": "${SPOTIFY_REFRESH_TOKEN}"
+        },
+        "TOKEN_BUFFER_TIME_MS": {
+          "value": "300000"
+        }
+      },
+      "customDomains": [
+        "api.yanosea.org",
+      ],
+      "observability": true,
+      "observabilitySampleRate": 1.0,
+    }
+  }
+}
