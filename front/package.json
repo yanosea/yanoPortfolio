@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "build": "astro build",
+    "build": "pnpm install && astro build",
     "check": "astro check && prettier --check .",
     "deploy": "wrangler pages deploy dist --project-name=yanoportfolio-front",
     "dev": "astro dev",
