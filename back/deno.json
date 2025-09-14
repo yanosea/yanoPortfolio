@@ -1,0 +1,32 @@
+{
+  "name": "yanoPortfolio-back",
+  "version": "0.0.1",
+  "exports": "./src/main.ts",
+  "tasks": {
+    "check": "deno check **/*.ts && deno fmt --check && deno lint",
+    "deploy": "denoflare push yanoportfolio-back",
+    "dev": "denoflare serve local",
+    "fmt": "deno fmt",
+    "tail": "denoflare tail yanoportfolio-back",
+    "test": "echo 'TODO : No tests yet'"
+  },
+  "imports": {
+    "@/": "./src/",
+    "@cloudflare/workers-types": "npm:@cloudflare/workers-types@^4.20250913.0"
+  },
+  "compilerOptions": {
+    "checkJs": true,
+    "lib": ["deno.ns", "webworker"]
+  },
+  "fmt": {
+    "include": ["./src/"],
+    "proseWrap": "preserve",
+    "semiColons": true
+  },
+  "lint": {
+    "include": ["./src/"],
+    "rules": {
+      "tags": ["recommended"]
+    }
+  }
+}

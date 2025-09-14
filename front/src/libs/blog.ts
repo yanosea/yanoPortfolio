@@ -8,11 +8,7 @@ export async function getAllEntries(): Promise<Entries> {
 }
 
 export function getAllEntryTags(entries: Entries): string[] {
-  return [
-    ...new Set(
-      entries.flatMap((entry) => entry.data.tags || []),
-    ),
-  ].sort();
+  return [...new Set(entries.flatMap((entry) => entry.data.tags || []))].sort();
 }
 
 export function sortEntriesByDateDesc(entries: Entries) {

@@ -1,11 +1,15 @@
 export async function setCopyRightYear() {
-  const yanoPortfolioCopyRightYearElement = document.getElementById("yanopPortfolioCopyRightYear");
+  const yanoPortfolioCopyRightYearElement = document.getElementById(
+    "yanopPortfolioCopyRightYear",
+  );
   const thisYear: number = new Date().getFullYear();
   yanoPortfolioCopyRightYearElement.textContent = `© ${thisYear}`;
 }
 
 export async function setLatestVersion() {
-  const yanoPortfolioVersionElement = document.getElementById("yanopPortfolioVersion");
+  const yanoPortfolioVersionElement = document.getElementById(
+    "yanopPortfolioVersion",
+  );
   const yanoPortfolioVersionLinkElement = document.getElementById(
     "yanopPortfolioVersionLink",
   ) as HTMLAnchorElement;
@@ -23,7 +27,8 @@ export async function setLatestVersion() {
 }
 
 async function getLatestVersion(): Promise<string | null> {
-  const url: string = "https://api.github.com/repos/yanosea/yanoPortfolio/releases/latest";
+  const url: string =
+    "https://api.github.com/repos/yanosea/yanoPortfolio/releases/latest";
   try {
     const response = await fetch(url);
     if (response.ok) {

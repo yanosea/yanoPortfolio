@@ -1,15 +1,13 @@
 # CodeQL Configuration for yanoPortfolio
-# This workflow file is configured to analyze both Go (backend) and JavaScript/TypeScript (frontend)
+# This workflow file is configured to analyze JavaScript/TypeScript (frontend and Deno backend)
 name: "CodeQL"
-
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   schedule:
-    - cron: '35 3 * * 3'
-
+    - cron: "35 3 * * 3"
 jobs:
   analyze:
     name: Analyze
@@ -23,59 +21,46 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'go', 'javascript' ]
-        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby', 'swift' ]
-        # 'javascript' analysis covers both JavaScript and TypeScript
+        language: ["javascript"]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: ${{ matrix.language }}
-        queries: +security-extended
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: +security-extended
 
-    # Set up Go environment for Go code analysis
-    - name: Set up Go
-      if: ${{ matrix.language == 'go' }}
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.24'
-        check-latest: true
+      - name: Set up Node.js
+        if: ${{ matrix.language == 'javascript' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: "latest"
 
-    # Set up Node.js environment for JavaScript/TypeScript code analysis
-    - name: Set up Node.js
-      if: ${{ matrix.language == 'javascript' }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: '21.6.2'
+      - name: Set up Deno
+        if: ${{ matrix.language == 'javascript' }}
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v2.x
 
-    # Go specific build steps
-    - name: Build Go code
-      if: ${{ matrix.language == 'go' }}
-      run: |
-        cd back
-        go mod download
-        go build -v ./...
+      - name: Install pnpm
+        if: ${{ matrix.language == 'javascript' }}
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
 
-    # JavaScript/TypeScript specific build steps
-    - name: Install JavaScript dependencies
-      if: ${{ matrix.language == 'javascript' }}
-      run: |
-        cd front
-        npm install --no-audit --prefer-offline
+      - name: Build frontend code
+        if: ${{ matrix.language == 'javascript' }}
+        run: make front.build
 
-    - name: Build JavaScript code
-      if: ${{ matrix.language == 'javascript' }}
-      run: |
-        cd front
-        npm run build
+      - name: Check backend code
+        if: ${{ matrix.language == 'javascript' }}
+        run: make back.check
 
-    # Perform CodeQL Analysis
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
-      with:
-        category: "/language:${{matrix.language}}"
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
+
