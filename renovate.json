@@ -33,24 +33,24 @@
     },
     {
       "description": "Group Astro-related packages",
-      "matchPackagePatterns": ["^@astrojs/", "^astro$"],
       "groupName": "Astro",
       "semanticCommitType": "⚡deps",
-      "semanticCommitScope": "front"
+      "semanticCommitScope": "front",
+      "matchPackageNames": ["/^@astrojs//", "/^astro$/"]
     },
     {
       "description": "Group Tailwind-related packages",
-      "matchPackagePatterns": ["^tailwindcss", "^@tailwindcss/"],
       "groupName": "Tailwind CSS",
       "semanticCommitType": "⚡deps",
-      "semanticCommitScope": "front"
+      "semanticCommitScope": "front",
+      "matchPackageNames": ["/^tailwindcss/", "/^@tailwindcss//"]
     },
     {
       "description": "Group Iconify packages",
-      "matchPackagePatterns": ["^@iconify-json/"],
       "groupName": "Iconify",
       "semanticCommitType": "⚡deps",
-      "semanticCommitScope": "front"
+      "semanticCommitScope": "front",
+      "matchPackageNames": ["/^@iconify-json//"]
     },
     {
       "description": "Group development dependencies",
@@ -76,7 +76,7 @@
     {
       "customType": "regex",
       "description": "Update npm dependencies in Deno imports",
-      "fileMatch": ["^back/deno\\.json$"],
+      "managerFilePatterns": ["/^back/deno\\.json$/"],
       "matchStrings": [
         "\"[^\"]+\": \"npm:(?<packageName>[^@]+)@\\^?(?<currentValue>[^\"]+)\""
       ],
