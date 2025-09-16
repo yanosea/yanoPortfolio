@@ -33,6 +33,7 @@ import { Icon } from "astro-icon/components";
   function setTheme(theme, isToggle) {
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
       localStorage.setItem("currentTheme", "dark");
       addEventListener("message", (event) => {
         if (event.origin !== "https://utteranc.es") {
@@ -58,6 +59,7 @@ import { Icon } from "astro-icon/components";
       }
     } else if (theme === "light") {
       document.documentElement.classList.remove("dark");
+      document.documentElement.classList.add("light");
       localStorage.setItem("currentTheme", "light");
       addEventListener("message", (event) => {
         if (event.origin !== "https://utteranc.es") {
