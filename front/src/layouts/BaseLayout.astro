@@ -96,7 +96,7 @@ const url = new URL(Astro.props.url || "", "https://yanosea.org/").toString();
           if (localStorageTheme === classNameDark) {
             setClassOnDocumentBody();
           }
-        } else if (supportsColorSchemeQuery) {
+        } else if (supportsColorSchemeQuery && mql.matches) {
           setClassOnDocumentBody();
           localStorage.setItem(storageKey, classNameDark);
         }
