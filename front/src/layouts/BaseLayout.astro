@@ -61,6 +61,41 @@ const url = new URL(Astro.props.url || "", "https://yanosea.org/").toString();
       src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"
       type="text/javascript"></script>
     <ClientRouter fallback="swap" />
+    <script is:inline>
+      (function () {
+        var storageKey = "currentTheme";
+        var classNameDark = "dark";
+        var preferDarkQuery = "(prefers-color-scheme: dark)";
+        var mql = window.matchMedia(preferDarkQuery);
+        var supportsColorSchemeQuery = mql.media === preferDarkQuery;
+        var localStorageTheme = null;
+        try {
+          localStorageTheme = localStorage.getItem(storageKey);
+        } catch (err) {}
+        var localStorageExists = localStorageTheme !== null;
+
+        if (localStorageExists) {
+          if (localStorageTheme === classNameDark) {
+            document.documentElement.classList.add(classNameDark);
+          }
+        } else if (supportsColorSchemeQuery && mql.matches) {
+          document.documentElement.classList.add(classNameDark);
+          try {
+            localStorage.setItem(storageKey, classNameDark);
+          } catch (err) {}
+        }
+      })();
+    </script>
+    <style>
+      html:not(.dark):not(.light) {
+        visibility: hidden;
+      }
+      @media (prefers-color-scheme: dark) {
+        html:not(.dark):not(.light) {
+          color-scheme: dark;
+        }
+      }
+    </style>
     <script
       data-astro-rerun
       is:inline
@@ -80,30 +115,9 @@ const url = new URL(Astro.props.url || "", "https://yanosea.org/").toString();
   >
     <script is:inline>
       (function () {
-        var storageKey = "currentTheme";
-        var classNameDark = "dark";
-
-        var preferDarkQuery = "(prefers-color-scheme: dark)";
-        var mql = window.matchMedia(preferDarkQuery);
-        var supportsColorSchemeQuery = mql.media === preferDarkQuery;
-        var localStorageTheme = null;
-        try {
-          localStorageTheme = localStorage.getItem(storageKey);
-        } catch (err) {}
-        var localStorageExists = localStorageTheme !== null;
-
-        if (localStorageExists) {
-          if (localStorageTheme === classNameDark) {
-            setClassOnDocumentBody();
-          }
-        } else if (supportsColorSchemeQuery && mql.matches) {
-          setClassOnDocumentBody();
-          localStorage.setItem(storageKey, classNameDark);
-        }
-
-        function setClassOnDocumentBody() {
-          var html = document.getElementsByTagName("html")[0];
-          html.classList.add(classNameDark);
+        document.documentElement.style.visibility = "visible";
+        if (!document.documentElement.classList.contains("dark")) {
+          document.documentElement.classList.add("light");
         }
       })();
     </script>
