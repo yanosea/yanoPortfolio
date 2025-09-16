@@ -1,3 +1,5 @@
-# Astro generated files
+# IGNORE FOLDER
+pnpm-lock.yaml
+# IGNORE FILE
 .astro/
 dist/
