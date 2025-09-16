@@ -22,72 +22,35 @@ import { Icon } from "astro-icon/components";
       setTheme(currentTheme, false);
     }
   }
-
   function initializeTheme() {
     let theme = window.matchMedia("(prefers-color-scheme: dark)").matches
       ? "dark"
       : "light";
     setTheme(theme, false);
   }
-
   function setTheme(theme, isToggle) {
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
       document.documentElement.classList.remove("light");
       localStorage.setItem("currentTheme", "dark");
-      addEventListener("message", (event) => {
-        if (event.origin !== "https://utteranc.es") {
-          return;
-        }
-        const message = {
-          type: "set-theme",
-          theme: "github-dark",
-        };
-        const utterances = document.querySelector("iframe").contentWindow;
-        utterances.postMessage(message, "https://utteranc.es");
-      });
       if (isToggle) {
         document.body.classList.add("fadeindarkclass");
         document.body.classList.remove("fadeinlightclass");
-        const blogComments = document.querySelector("iframe.utterances-frame");
-        if (blogComments) {
-          blogComments.contentWindow.postMessage(
-            { type: "set-theme", theme: "github-dark" },
-            "https://utteranc.es/",
-          );
-        }
+        updateUtterancesTheme("github-dark");
       }
     } else if (theme === "light") {
       document.documentElement.classList.remove("dark");
       document.documentElement.classList.add("light");
       localStorage.setItem("currentTheme", "light");
-      addEventListener("message", (event) => {
-        if (event.origin !== "https://utteranc.es") {
-          return;
-        }
-        const message = {
-          type: "set-theme",
-          theme: "github-light",
-        };
-        const utterances = document.querySelector("iframe").contentWindow;
-        utterances.postMessage(message, "https://utteranc.es");
-      });
       if (isToggle) {
         document.body.classList.add("fadeinlightclass");
         document.body.classList.remove("fadeindarkclass");
-        const blogComments = document.querySelector("iframe.utterances-frame");
-        if (blogComments) {
-          blogComments.contentWindow.postMessage(
-            { type: "set-theme", theme: "github-light" },
-            "https://utteranc.es/",
-          );
-        }
+        updateUtterancesTheme("github-light");
       }
     } else {
       initializeTheme();
     }
   }
-
   function toggleTheme() {
     let currentTheme = localStorage.getItem("currentTheme");
     if (currentTheme === "dark") {
@@ -98,7 +61,15 @@ import { Icon } from "astro-icon/components";
       initializeTheme();
     }
   }
-
+  function updateUtterancesTheme(theme) {
+    const blogComments = document.querySelector("iframe.utterances-frame");
+    if (blogComments) {
+      blogComments.contentWindow.postMessage(
+        { type: "set-theme", theme: theme },
+        "https://utteranc.es/"
+      );
+    }
+  }
   document.addEventListener("DOMContentLoaded", pageTransition);
   document.addEventListener("astro:after-swap", pageTransition);
 </script>

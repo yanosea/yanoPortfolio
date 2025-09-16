@@ -1,9 +1,41 @@
-<script
-  is:inline
-  src="https://utteranc.es/client.js"
-  data-repo="yanosea/yanoPortfolioBlogComments"
-  data-issue-term="pathname"
-  data-theme="github-light"
-  crossorigin="anonymous"
-  async
-></script>
+<div id="utterances-container"></div>
+
+<script is:inline>
+  window.utterancesInitialized = window.utterancesInitialized || false;
+  function initUtterances() {
+    if (window.utterancesInitialized) {
+      return;
+    }
+    window.utterancesInitialized = true;
+    const container = document.getElementById("utterances-container");
+    if (!container) {
+      return;
+    }
+    const currentTheme = localStorage.getItem("currentTheme");
+    const isDark = currentTheme === "dark" ||
+      (currentTheme === null && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    const theme = isDark ? "github-dark" : "github-light";
+    const script = document.createElement("script");
+    script.src = "https://utteranc.es/client.js";
+    script.setAttribute("data-repo", "yanosea/yanoPortfolioBlogComments");
+    script.setAttribute("data-issue-term", "pathname");
+    script.setAttribute("data-theme", theme);
+    script.setAttribute("crossorigin", "anonymous");
+    script.async = true;
+    container.appendChild(script);
+  }
+  function handlePageLoad() {
+    window.utterancesInitialized = false;
+    const container = document.getElementById("utterances-container");
+    if (container) {
+      container.innerHTML = "";
+      setTimeout(initUtterances, 100);
+    }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initUtterances);
+  } else {
+    initUtterances();
+  }
+  document.addEventListener("astro:page-load", handlePageLoad);
+</script>
