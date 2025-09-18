@@ -76,6 +76,24 @@ jobs:
             echo "⚠️ Last played endpoint status: $LAST_PLAYED_STATUS"
           fi
 
+      - name: Enable Smart Placement
+        if: success()
+        run: |
+          echo "🚀 Enabling Smart Placement for Workers..."
+          
+          curl -X PATCH \
+            "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/workers/scripts/yanoportfolio-back/settings" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -F 'settings={"placement": {"mode": "smart"}}' \
+            --fail-with-body --silent --show-error
+          
+          if [ $? -eq 0 ]; then
+            echo "✅ Smart Placement enabled successfully"
+          else
+            echo "⚠️ Failed to enable Smart Placement"
+            exit 1
+          fi
+
       - name: Notify deployment success
         if: success()
         run: |
@@ -83,6 +101,7 @@ jobs:
           echo "🔗 API: https://api.yanosea.org"
           echo "📊 Environment: production"
           echo "🦕 Deployed with Deno + Denoflare"
+          echo "🧠 Smart Placement enabled"
 
       - name: Notify deployment failure
         if: failure()
