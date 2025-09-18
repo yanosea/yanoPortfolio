@@ -5,6 +5,7 @@
 // domain
 import { Result } from "@/domain/common/result.ts";
 import { DomainError } from "@/domain/error/error.ts";
+import { SPOTIFY_CACHE_KEYS } from "@/domain/spotify/cache_constants.ts";
 import { ExternalServiceError } from "@/domain/error/error.ts";
 import { TokenRepository } from "@/domain/spotify/token_repository.ts";
 import { CacheRepository } from "@/domain/spotify/cache_repository.ts";
@@ -41,9 +42,9 @@ interface TokenData {
  * @class OAuthService
  */
 export class OAuthService implements TokenRepository {
-  private readonly tokenUrl = "https://accounts.spotify.com/api/token";
+  // Spotify token API endpoint URL
+  private static readonly TOKEN_URL = "https://accounts.spotify.com/api/token";
   private readonly envUtils: EnvironmentUtils;
-  private static readonly TOKEN_CACHE_KEY = "spotify-token";
 
   /**
    * Construct a new OAuthService
@@ -60,8 +61,8 @@ export class OAuthService implements TokenRepository {
   async getValidAccessToken(): Promise<Result<string, DomainError>> {
     try {
       // check cache first
-      const cacheResult = await this.cacheRepository.getToken(
-        OAuthService.TOKEN_CACHE_KEY,
+      const cacheResult = await this.cacheRepository.get(
+        SPOTIFY_CACHE_KEYS.ACCESS_TOKEN,
       );
       const cacheData = cacheResult.match({
         ok: (cache) => cache,
@@ -69,7 +70,7 @@ export class OAuthService implements TokenRepository {
       });
 
       if (cacheData.found && cacheData.data) {
-        return Result.ok(cacheData.data);
+        return Result.ok(cacheData.data as string);
       }
       // if not in cache or expired, refresh token
       const refreshResult = await this.refreshTokenInternal();
@@ -99,15 +100,13 @@ export class OAuthService implements TokenRepository {
   > {
     try {
       // create POST request to Spotify token endpoint
-      const response = await fetch(this.tokenUrl, {
+      const response = await fetch(OAuthService.TOKEN_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-          "Authorization": `Basic ${
-            btoa(
-              `${this.envUtils.getSpotifyClientId()}:${this.envUtils.getSpotifyClientSecret()}`,
-            )
-          }`,
+          Authorization: `Basic ${btoa(
+            `${this.envUtils.getSpotifyClientId()}:${this.envUtils.getSpotifyClientSecret()}`,
+          )}`,
         },
         body: new URLSearchParams({
           grant_type: "refresh_token",
@@ -131,8 +130,9 @@ export class OAuthService implements TokenRepository {
         accessToken: tokenResponse.access_token,
         tokenType: tokenResponse.token_type,
         expiresIn: tokenResponse.expires_in,
-        expiresAt: now + (tokenResponse.expires_in * 1000),
-        refreshToken: tokenResponse.refresh_token ||
+        expiresAt: now + tokenResponse.expires_in * 1000,
+        refreshToken:
+          tokenResponse.refresh_token ||
           getEnvironmentUtils().getSpotifyRefreshToken(),
         scope: tokenResponse.scope,
       };
@@ -140,11 +140,15 @@ export class OAuthService implements TokenRepository {
       console.log("Token refresh success:", {
         expiresIn: tokenResponse.expires_in,
       });
-      // cache the new token
-      await this.cacheRepository.setToken(
-        OAuthService.TOKEN_CACHE_KEY,
+      // cache the new token with buffer time to prevent expiration issues
+      const bufferTimeMs = this.envUtils.getTokenBufferTimeMs();
+      const tokenTtl = tokenData.expiresIn 
+        ? (tokenData.expiresIn * 1000) - bufferTimeMs 
+        : undefined;
+      await this.cacheRepository.set(
+        SPOTIFY_CACHE_KEYS.ACCESS_TOKEN,
         tokenData.accessToken,
-        tokenData.expiresIn ? tokenData.expiresIn * 1000 : undefined,
+        tokenTtl,
       );
       // return new token data
       return Result.ok(tokenData);

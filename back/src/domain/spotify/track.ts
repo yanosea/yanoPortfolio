@@ -213,4 +213,54 @@ export class Track {
     const date = new Date(timestamp);
     return !isNaN(date.getTime());
   }
+
+  /**
+   * Convert Track to serializable format for caching
+   * @returns {SerializableTrack} - Serializable track data
+   */
+  toSerializable(): SerializableTrack {
+    return {
+      imageUrl: this._imageUrl,
+      trackName: this._trackName,
+      trackUrl: this._trackUrl,
+      albumName: this._albumName,
+      albumUrl: this._albumUrl,
+      artistName: this._artistName,
+      artistUrl: this._artistUrl,
+      playedAt: this._playedAt,
+    };
+  }
+
+  /**
+   * Create Track from serializable format
+   * @param {SerializableTrack} data - Serializable track data
+   * @returns {Track | DomainError} - Track instance or error
+   */
+  static fromSerializable(data: SerializableTrack): Track | DomainError {
+    return this.reconstruct(
+      data.imageUrl,
+      data.trackName,
+      data.trackUrl,
+      data.albumName,
+      data.albumUrl,
+      data.artistName,
+      data.artistUrl,
+      data.playedAt,
+    );
+  }
+}
+
+/**
+ * Serializable track data for cache storage
+ * @interface SerializableTrack
+ */
+export interface SerializableTrack {
+  imageUrl: string;
+  trackName: string;
+  trackUrl: string;
+  albumName: string;
+  albumUrl: string;
+  artistName: string;
+  artistUrl: string;
+  playedAt?: string;
 }

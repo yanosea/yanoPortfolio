@@ -5,10 +5,11 @@
 // domain
 import { Result } from "@/domain/common/result.ts";
 import { DomainError, ExternalServiceError } from "@/domain/error/error.ts";
+import { SPOTIFY_CACHE_KEYS } from "@/domain/spotify/cache_constants.ts";
 import { CacheRepository } from "@/domain/spotify/cache_repository.ts";
 import { TokenRepository } from "@/domain/spotify/token_repository.ts";
 import { TrackRepository } from "@/domain/spotify/track_repository.ts";
-import { Track } from "@/domain/spotify/track.ts";
+import { SerializableTrack, Track } from "@/domain/spotify/track.ts";
 
 /**
  * Spotify image
@@ -158,10 +159,10 @@ interface SpotifyRecentlyPlayed {
  * @class SpotifyApiClient
  */
 export class SpotifyApiClient implements TrackRepository {
-  private static readonly NOW_PLAYING_CACHE_KEY = "now-playing";
-  private static readonly LAST_PLAYED_CACHE_KEY = "last-played";
+  // Spotify currently playing API endpoint URL
   private static readonly CURRENTLY_PLAYING_URL =
     "https://api.spotify.com/v1/me/player/currently-playing";
+  // Spotify recently played API endpoint URL
   private static readonly RECENTLY_PLAYED_URL =
     "https://api.spotify.com/v1/me/player/recently-played";
 
@@ -182,15 +183,27 @@ export class SpotifyApiClient implements TrackRepository {
   async getNowPlayingTrack(): Promise<Result<Track | null, DomainError>> {
     try {
       // check cache first
-      const cacheResult = await this.cacheRepository.getTrack(
-        SpotifyApiClient.NOW_PLAYING_CACHE_KEY,
+      const cacheResult = await this.cacheRepository.get(
+        SPOTIFY_CACHE_KEYS.NOW_PLAYING,
       );
       const cacheData = cacheResult.match({
         ok: (cache) => cache,
         fail: () => ({ found: false, data: null }),
       });
       if (cacheData.found) {
-        return Result.ok(cacheData.data);
+        // deserialize cached track data
+        if (cacheData.data === null) {
+          return Result.ok(null);
+        }
+        const trackResult = Track.fromSerializable(
+          cacheData.data as SerializableTrack,
+        );
+        if (trackResult instanceof DomainError) {
+          console.warn("Cache data corruption detected:", trackResult.message);
+          // continue to fetch from API
+        } else {
+          return Result.ok(trackResult);
+        }
       }
       // if not in cache, fetch from API
       const tokenResult = await this.tokenRepository.getValidAccessToken();
@@ -198,15 +211,12 @@ export class SpotifyApiClient implements TrackRepository {
         const token = tokenResult.unwrap();
         const response = await fetch(SpotifyApiClient.CURRENTLY_PLAYING_URL, {
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         // 204 means no content, i.e. nothing is currently playing
         if (response.status === 204) {
-          await this.cacheRepository.setTrack(
-            SpotifyApiClient.NOW_PLAYING_CACHE_KEY,
-            null,
-          );
+          await this.cacheRepository.set(SPOTIFY_CACHE_KEYS.NOW_PLAYING, null);
           return Result.ok(null);
         }
         // handle other non-200 responses
@@ -225,9 +235,9 @@ export class SpotifyApiClient implements TrackRepository {
           // if mapping succeeded, cache and return the track
           const track = trackResult.unwrap();
           console.log("Spotify now-playing success:", { track });
-          await this.cacheRepository.setTrack(
-            SpotifyApiClient.NOW_PLAYING_CACHE_KEY,
-            track,
+          await this.cacheRepository.set(
+            SPOTIFY_CACHE_KEYS.NOW_PLAYING,
+            track.toSerializable(),
           );
           return Result.ok(track);
         } else {
@@ -258,15 +268,27 @@ export class SpotifyApiClient implements TrackRepository {
   async getLastPlayedTrack(): Promise<Result<Track | null, DomainError>> {
     try {
       // check cache first
-      const cacheResult = await this.cacheRepository.getTrack(
-        SpotifyApiClient.LAST_PLAYED_CACHE_KEY,
+      const cacheResult = await this.cacheRepository.get(
+        SPOTIFY_CACHE_KEYS.LAST_PLAYED,
       );
       const cacheData = cacheResult.match({
         ok: (cache) => cache,
         fail: () => ({ found: false, data: null }),
       });
       if (cacheData.found) {
-        return Result.ok(cacheData.data);
+        // deserialize cached track data
+        if (cacheData.data === null) {
+          return Result.ok(null);
+        }
+        const trackResult = Track.fromSerializable(
+          cacheData.data as SerializableTrack,
+        );
+        if (trackResult instanceof DomainError) {
+          console.warn("Cache data corruption detected:", trackResult.message);
+          // continue to fetch from API
+        } else {
+          return Result.ok(trackResult);
+        }
       }
       // if not in cache, fetch from API
       const tokenResult = await this.tokenRepository.getValidAccessToken();
@@ -276,16 +298,13 @@ export class SpotifyApiClient implements TrackRepository {
           `${SpotifyApiClient.RECENTLY_PLAYED_URL}?limit=1`,
           {
             headers: {
-              "Authorization": `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
             },
           },
         );
         // 204 means no content, i.e. nothing is last played
         if (response.status === 204) {
-          await this.cacheRepository.setTrack(
-            SpotifyApiClient.LAST_PLAYED_CACHE_KEY,
-            null,
-          );
+          await this.cacheRepository.set(SPOTIFY_CACHE_KEYS.LAST_PLAYED, null);
           return Result.ok(null);
         }
         // handle other non-200 responses
@@ -300,10 +319,7 @@ export class SpotifyApiClient implements TrackRepository {
         // parse response
         const data = (await response.json()) as SpotifyRecentlyPlayed;
         if (!data.items || data.items.length === 0) {
-          await this.cacheRepository.setTrack(
-            SpotifyApiClient.LAST_PLAYED_CACHE_KEY,
-            null,
-          );
+          await this.cacheRepository.set(SPOTIFY_CACHE_KEYS.LAST_PLAYED, null);
           return Result.ok(null);
         }
         const lastPlayedItem = data.items[0];
@@ -316,9 +332,9 @@ export class SpotifyApiClient implements TrackRepository {
           // if mapping succeeded, cache and return the track
           const track = trackResult.unwrap();
           console.log("Spotify last-played success:", { track });
-          await this.cacheRepository.setTrack(
-            SpotifyApiClient.LAST_PLAYED_CACHE_KEY,
-            track,
+          await this.cacheRepository.set(
+            SPOTIFY_CACHE_KEYS.LAST_PLAYED,
+            track.toSerializable(),
           );
           return Result.ok(track);
         } else {
@@ -354,9 +370,10 @@ export class SpotifyApiClient implements TrackRepository {
   ): Result<Track, DomainError> {
     try {
       // get the largest available image
-      const imageUrl = spotifyTrack.album.images.length > 0
-        ? spotifyTrack.album.images[0].url
-        : "";
+      const imageUrl =
+        spotifyTrack.album.images.length > 0
+          ? spotifyTrack.album.images[0].url
+          : "";
       // get primary artist
       const primaryArtist = spotifyTrack.artists[0];
       // format playedAt to yyyy/MM/dd HH:mm:ss format in JST if available
@@ -365,7 +382,7 @@ export class SpotifyApiClient implements TrackRepository {
         const datePlayedAt = new Date(playedAt);
         // convert to JST (UTC+9)
         const jstDatePlayedAt = new Date(
-          datePlayedAt.getTime() + (9 * 60 * 60 * 1000),
+          datePlayedAt.getTime() + 9 * 60 * 60 * 1000,
         );
         // format to yyyy/MM/dd HH:mm:ss
         const year = jstDatePlayedAt.getUTCFullYear();
@@ -383,8 +400,7 @@ export class SpotifyApiClient implements TrackRepository {
           2,
           "0",
         );
-        formattedPlayedAt =
-          `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+        formattedPlayedAt = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
       }
       // reconstruct domain track entity
       const trackResult = Track.reconstruct(
