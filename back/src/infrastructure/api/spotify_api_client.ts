@@ -216,7 +216,10 @@ export class SpotifyApiClient implements TrackRepository {
         });
         // 204 means no content, i.e. nothing is currently playing
         if (response.status === 204) {
-          await this.cacheRepository.set(SPOTIFY_CACHE_KEYS.NOW_PLAYING, null);
+          await this.cacheRepository.set(
+            SPOTIFY_CACHE_KEYS.NOW_PLAYING,
+            null,
+          );
           return Result.ok(null);
         }
         // handle other non-200 responses
@@ -304,7 +307,10 @@ export class SpotifyApiClient implements TrackRepository {
         );
         // 204 means no content, i.e. nothing is last played
         if (response.status === 204) {
-          await this.cacheRepository.set(SPOTIFY_CACHE_KEYS.LAST_PLAYED, null);
+          await this.cacheRepository.set(
+            SPOTIFY_CACHE_KEYS.LAST_PLAYED,
+            null,
+          );
           return Result.ok(null);
         }
         // handle other non-200 responses
@@ -319,7 +325,10 @@ export class SpotifyApiClient implements TrackRepository {
         // parse response
         const data = (await response.json()) as SpotifyRecentlyPlayed;
         if (!data.items || data.items.length === 0) {
-          await this.cacheRepository.set(SPOTIFY_CACHE_KEYS.LAST_PLAYED, null);
+          await this.cacheRepository.set(
+            SPOTIFY_CACHE_KEYS.LAST_PLAYED,
+            null,
+          );
           return Result.ok(null);
         }
         const lastPlayedItem = data.items[0];
@@ -327,7 +336,7 @@ export class SpotifyApiClient implements TrackRepository {
           lastPlayedItem.track,
           lastPlayedItem.played_at,
         );
-
+        // handle potential mapping errors
         if (trackResult.isOk()) {
           // if mapping succeeded, cache and return the track
           const track = trackResult.unwrap();
@@ -370,10 +379,9 @@ export class SpotifyApiClient implements TrackRepository {
   ): Result<Track, DomainError> {
     try {
       // get the largest available image
-      const imageUrl =
-        spotifyTrack.album.images.length > 0
-          ? spotifyTrack.album.images[0].url
-          : "";
+      const imageUrl = spotifyTrack.album.images.length > 0
+        ? spotifyTrack.album.images[0].url
+        : "";
       // get primary artist
       const primaryArtist = spotifyTrack.artists[0];
       // format playedAt to yyyy/MM/dd HH:mm:ss format in JST if available
@@ -400,7 +408,8 @@ export class SpotifyApiClient implements TrackRepository {
           2,
           "0",
         );
-        formattedPlayedAt = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+        formattedPlayedAt =
+          `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
       }
       // reconstruct domain track entity
       const trackResult = Track.reconstruct(

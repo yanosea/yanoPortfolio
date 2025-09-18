@@ -44,18 +44,20 @@ export class CacheService implements CacheRepository {
    * Get cached data
    * @param {string} key - Cache key
    * @param {number} maxAge - Maximum age in milliseconds (optional)
+   * @param {boolean} useKV - Use KV storage in addition to memory cache (optional, defaults to false)
    * @returns {Promise<Result<{ found: boolean; data: unknown }, DomainError>>} - Result with cache hit status and data
    */
   async get(
     key: string,
     maxAge?: number,
+    useKV = false,
   ): Promise<Result<{ found: boolean; data: unknown }, DomainError>> {
     try {
-      console.log("Getting cache:", { key, maxAge });
-
+      console.log("Getting cache:", { key, maxAge, useKV });
       // always check memory first (all environments)
       const memoryResult = this.getFromMemory(key, maxAge);
       if (memoryResult.found) {
+        // memory hit
         console.log("Cache: Memory hit");
         console.log("Cache:", {
           key,
@@ -64,12 +66,12 @@ export class CacheService implements CacheRepository {
         });
         return Result.ok(memoryResult);
       }
-
-      // if not in memory and not local development, check KV
-      if (!this.envUtils.isLocalDevelopment()) {
+      // if not in memory and not local development, check KV (only if useKV is true)
+      if (!this.envUtils.isLocalDevelopment() && useKV) {
+        // attempt to get from KV
         const kvResult = await this.getFromKV(key, maxAge);
         if (kvResult.found) {
-          // save to memory for faster subsequent access
+          // if KV hit, save to memory for faster subsequent access
           this.setToMemory(key, kvResult.data, this.defaultTtl);
           console.log("Cache: KV hit, saved to memory");
           console.log("Cache:", {
@@ -80,7 +82,6 @@ export class CacheService implements CacheRepository {
           return Result.ok(kvResult);
         }
       }
-
       // cache miss
       console.log("Cache: Complete miss");
       console.log("Cache:", {
@@ -90,6 +91,7 @@ export class CacheService implements CacheRepository {
       });
       return Result.ok({ found: false, data: null });
     } catch (error: unknown) {
+      // if any unexpected error occurs, pass through the error
       const errorMessage = `Cache get failed: ${
         error instanceof Error ? error.message : String(error)
       }`;
@@ -106,36 +108,42 @@ export class CacheService implements CacheRepository {
    * @param {string} key - Cache key
    * @param {unknown} data - Data to cache
    * @param {number} ttl - Time to live in milliseconds (optional)
+   * @param {boolean} useKV - Use KV storage in addition to memory cache (optional, defaults to false)
    * @returns {Promise<Result<void, DomainError>>} - Result indicating success or failure
    */
   async set(
     key: string,
     data: unknown,
     ttl?: number,
+    useKV = false,
   ): Promise<Result<void, DomainError>> {
-    console.log("Setting cache:", { key, hasData: data !== null });
+    console.log("Setting cache:", { key, hasData: data !== null, useKV });
     try {
       const effectiveTtl = ttl || this.defaultTtl;
-
       // always set to memory cache first (all environments)
       this.setToMemory(key, data, effectiveTtl);
       console.log("Cache set to memory");
-
-      // additionally set to KV in production
-      if (!this.envUtils.isLocalDevelopment()) {
+      // additionally set to KV in production (only if useKV is true)
+      if (!this.envUtils.isLocalDevelopment() && useKV) {
+        // attempt to set to KV
         const kvResult = await this.setToKV(key, data, effectiveTtl);
         if (kvResult) {
+          // succeeded to set to KV
           console.log("Cache also set to KV");
         } else {
+          // failed to set to KV, but memory succeeded
           console.warn(
             "Failed to set cache to KV, but memory succeeded:",
             key,
           );
         }
+      } else if (!useKV) {
+        // skipping KV as per request
+        console.log("Cache: Skipping KV (memory-only mode)");
       }
-
       return Result.ok(undefined);
     } catch (error: unknown) {
+      // if any unexpected error occurs, pass through the error
       console.error("Cache set failed:", error);
       const errorMessage = `Cache set failed: ${
         error instanceof Error ? error.message : String(error)
@@ -158,18 +166,21 @@ export class CacheService implements CacheRepository {
     key: string,
     maxAge?: number,
   ): { found: boolean; data: unknown } {
+    // attempt to get from memory
     const entry = CacheService.memoryCache.get(key);
     if (!entry) {
+      // cache miss
       return { found: false, data: null };
     }
-
+    // validate TTL
     const now = Date.now();
     const effectiveTtl = maxAge || entry.ttl;
     if (now - entry.timestamp > effectiveTtl) {
+      // expired
       CacheService.memoryCache.delete(key);
       return { found: false, data: null };
     }
-
+    // cache hit
     return { found: true, data: entry.data };
   }
 
@@ -183,24 +194,28 @@ export class CacheService implements CacheRepository {
     key: string,
     maxAge?: number,
   ): Promise<{ found: boolean; data: unknown }> {
+    // check if KV is available
     const kvNamespace = this.env.YANOPORTFOLIO_BACK_CACHE;
     if (!kvNamespace) {
+      // KV unavailable
       return { found: false, data: null };
     }
-
+    // attempt to get from KV
     const cached = await kvNamespace.get(key, { type: "json" });
     if (!cached) {
+      // cache miss
       return { found: false, data: null };
     }
-
+    // validate TTL
     const entry = cached as CacheEntry;
     const now = Date.now();
     const effectiveTtl = maxAge || entry.ttl;
     if (now - entry.timestamp > effectiveTtl) {
+      // expired
       await kvNamespace.delete(key);
       return { found: false, data: null };
     }
-
+    // cache hit
     return { found: true, data: entry.data };
   }
 
@@ -215,6 +230,7 @@ export class CacheService implements CacheRepository {
     data: unknown,
     ttl: number,
   ): void {
+    // set to memory cache
     const entry: CacheEntry = {
       data,
       timestamp: Date.now(),
@@ -236,27 +252,31 @@ export class CacheService implements CacheRepository {
     data: unknown,
     ttl: number,
   ): Promise<boolean> {
+    // check if KV is available
     const kvNamespace = this.env.YANOPORTFOLIO_BACK_CACHE;
     if (!kvNamespace) {
+      // KV unavailable
       console.log("KV unavailable, fallback to memory only");
       return false;
     }
-
+    // attempt to set to KV
     try {
       const entry: CacheEntry = {
         data,
         timestamp: Date.now(),
         ttl,
       };
-
       // KV requires minimum 60 seconds TTL
       const kvTtlSeconds = Math.max(60, Math.floor(ttl / 1000));
+      // set to KV
       await kvNamespace.put(key, JSON.stringify(entry), {
         expirationTtl: kvTtlSeconds,
       });
       console.log("Set to KV cache:", { key, ttl: kvTtlSeconds });
+      // succeeded to set to KV
       return true;
     } catch {
+      // failed to set to KV
       return false;
     }
   }
