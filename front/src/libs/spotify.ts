@@ -19,26 +19,44 @@ export async function updateSpotifyStatus() {
 
 async function getTrackInfo(): Promise<[Boolean, Track | undefined]> {
   const [nowPlayingUrl, lastPlayedUrl] = defineFetchUrl();
-  try {
-    const nowPlayingResponse = await fetchData(nowPlayingUrl || "");
-    console.log("fetched nowplaying!");
-    if (nowPlayingResponse) {
-      return [true, await extractTrackData(nowPlayingResponse, true)];
+  // fetch both APIs in parallel
+  const [nowPlayingResult, lastPlayedResult] = await Promise.allSettled([
+    fetchData(nowPlayingUrl || "")
+      .then((response) => {
+        console.log("fetched nowplaying!");
+        return response;
+      })
+      .catch((_) => {
+        console.error("failed fetching nowplaying...");
+        return null;
+      }),
+    fetchData(lastPlayedUrl || "")
+      .then((response) => {
+        console.log("fetched lastplayed!");
+        return response;
+      })
+      .catch((_) => {
+        console.error("failed fetching lastplayed...");
+        return null;
+      }),
+  ]);
+  // prioritize now-playing if available
+  if (nowPlayingResult.status === "fulfilled" && nowPlayingResult.value) {
+    try {
+      return [true, await extractTrackData(nowPlayingResult.value, true)];
+    } catch (error) {
+      console.error("failed extracting nowplaying data...");
     }
-  } catch {
-    console.error("failed fetching nowplaying...");
   }
-
-  try {
-    const lastPlayedResponse = await fetchData(lastPlayedUrl || "");
-    console.log("fetched lastplayed!");
-    if (lastPlayedResponse) {
-      return [false, await extractTrackData(lastPlayedResponse, false)];
+  // fallback to last-played if now-playing is not available
+  if (lastPlayedResult.status === "fulfilled" && lastPlayedResult.value) {
+    try {
+      return [false, await extractTrackData(lastPlayedResult.value, false)];
+    } catch (error) {
+      console.error("failed extracting lastplayed data...");
     }
-  } catch {
-    console.error("failed fetching lastplayed...");
   }
-
+  // if both fail, return false and undefined
   return [false, undefined];
 }
 
