@@ -1,0 +1,21 @@
+name: Frontend CodeQL Config
+
+paths:
+  - front/src/**
+  - front/astro.config.mjs
+  - front/tailwind.config.cjs
+  - front/tsconfig.json
+  - front/package.json
+  - front/pnpm-lock.yaml
+
+paths-ignore:
+  - front/public/**
+
+queries:
+  - name: security-extended
+    uses: security-extended
+  - name: security-and-quality
+    uses: security-and-quality
+
+packs:
+  - codeql/javascript-queries
