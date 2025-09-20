@@ -1,0 +1,91 @@
+%% yanosea.org architecture
+graph TB
+    subgraph "🌐 Client Layer"
+        Browser[🖥️ Web Browser]
+        Mobile[📱 Mobile Browser]
+    end
+
+    subgraph "☁️ Cloudflare Edge Network"
+        CDN[📦 Cloudflare Pages<br/>Static Assets & HTML]
+        Workers[⚡ Cloudflare Workers<br/>API Runtime]
+    end
+
+    subgraph "🎯 Frontend Application"
+        subgraph "🚀 Astro Framework"
+            SSG[📄 Static Site Generator]
+            Components[🧩 Astro Components]
+            Islands[🏝️ Component Islands]
+        end
+
+        subgraph "🎨 UI Layer"
+            TailwindCSS[🎨 Tailwind CSS]
+            Icons[🔗 Astro Icons]
+            Fonts[📝 Web Fonts]
+        end
+
+        subgraph "📝 Content Layer"
+            MDX[📖 MDX Content]
+            Collections[📚 Content Collections]
+            RSS[📡 RSS Feed]
+        end
+    end
+
+    subgraph "⚙️ Backend API"
+        direction TB
+        Presentation[🌐 Presentation Layer<br/>HTTP Handlers & Routing]
+        Application[📋 Application Layer<br/>Use Cases & Business Logic]
+        Domain[🎯 Domain Layer<br/>Entities & Interfaces]
+        Infrastructure[🔧 Infrastructure Layer<br/>External Services & Data]
+    end
+
+    subgraph "🎵 External Services"
+        Spotify[🎵 Spotify Web API<br/>OAuth 2.0 + Music Data]
+        SpotifyAuth[🔐 Spotify Auth Server]
+    end
+
+    subgraph "⚡ Runtime Environments"
+        Deno[🦕 Deno Runtime<br/>TypeScript Native]
+        Node[📦 Node.js<br/>pnpm Package Manager]
+    end
+
+    %% Client Connections
+    Browser --> CDN
+    Mobile --> CDN
+
+    %% Frontend Flow
+    CDN --> SSG
+    SSG --> Components
+    Components --> Islands
+    Components --> TailwindCSS
+    Components --> Icons
+    Components --> MDX
+    MDX --> Collections
+    Collections --> RSS
+
+    %% API Flow
+    CDN -.->|API Calls| Workers
+    Workers --> Presentation
+    Presentation --> Application
+    Application --> Domain
+    Infrastructure --> Domain
+
+    %% External Integrations
+    Infrastructure -.->|OAuth + API| Spotify
+    Infrastructure -.->|Token Refresh| SpotifyAuth
+
+    %% Runtime Dependencies
+    SSG -.->|Build Time| Node
+    Workers -.->|Runtime| Deno
+
+    %% Styling
+    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef backend fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef external fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef infrastructure fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef runtime fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+
+    class Browser,Mobile,CDN,Workers infrastructure
+    class SSG,Components,Islands,TailwindCSS,Icons,MDX,Collections,RSS frontend
+    class Presentation,Application,Domain,Infrastructure backend
+    class Spotify,SpotifyAuth external
+    class Deno,Node runtime
