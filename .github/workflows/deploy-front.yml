@@ -1,33 +1,30 @@
 name: Deploy to Cloudflare Pages
+
 on:
   push:
     branches: [main]
     paths:
       - "front/**"
       - ".github/workflows/deploy-front.yml"
+
   workflow_dispatch:
-    inputs:
-      environment:
-        description: "Environment to deploy"
-        required: true
-        default: "production"
-        type: choice
-        options: ["production", "preview"]
+
 env:
   NODE_VERSION: "latest"
   PNPM_VERSION: "latest"
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment || 'production' }}
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
         with:
           fetch-depth: 0
 
-      - name: Install pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
           version: ${{ env.PNPM_VERSION }}
@@ -38,11 +35,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: "pnpm"
           cache-dependency-path: front/pnpm-lock.yaml
-
-      - name: Build and deploy
-        run: make deploy.front
-        env:
-          NODE_ENV: production
 
       - name: Setup Wrangler
         run: npm install -g wrangler
@@ -56,26 +48,12 @@ jobs:
             echo "Pages project yanoportfolio-front already exists"
           fi
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
       - name: Deploy to Cloudflare Pages
-        run: |
-          wrangler pages deploy front/dist --project-name=yanoportfolio-front
+        run: make front.deploy
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
-      - name: Notify deployment success
-        if: success()
-        run: |
-          echo "✅ Pages deployment successful!"
-          echo "🌐 URL: https://yanosea.org"
-          echo "📊 Environment: ${{ inputs.environment || 'production' }}"
-
-      - name: Notify deployment failure
-        if: failure()
-        run: |
-          echo "❌ Pages deployment failed!"
-          echo "Please check the logs above for details"
-          exit 1
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          NODE_ENV: production

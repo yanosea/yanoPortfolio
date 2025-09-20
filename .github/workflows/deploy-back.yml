@@ -1,20 +1,24 @@
-name: Deploy to Cloudflare Workers (Denoflare)
+name: Deploy to Cloudflare Workers
+
 on:
   push:
     branches: [main]
     paths:
       - "back/**"
       - ".github/workflows/deploy-back.yml"
+
   workflow_dispatch:
+
 env:
   DENO_VERSION: "v2.x"
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: production
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
         with:
           fetch-depth: 0
@@ -24,89 +28,33 @@ jobs:
         with:
           deno-version: ${{ env.DENO_VERSION }}
 
-      - name: Install Denoflare
+      - name: Setup Denoflare
         run: |
           deno install --global --unstable-worker-options --allow-read --allow-net --allow-env --allow-run --allow-write --allow-import --name denoflare --reload --force https://raw.githubusercontent.com/skymethod/denoflare/master/cli/cli.ts
           echo "$HOME/.deno/bin" >> $GITHUB_PATH
 
-
       - name: Generate .denoflare config
         run: |
-          cd back
-          envsubst < .denoflare.template > .denoflare
+          envsubst < ./back/.denoflare.template > ./back/.denoflare
         env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
           SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
           YANOPORTFOLIO_BACK_CACHE: ${{ secrets.YANOPORTFOLIO_BACK_CACHE }}
 
       - name: Deploy Workers
-        run: make deploy.back
+        run: make back.deploy
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
-      - name: Test deployed endpoints
-        if: success()
-        run: |
-          echo "🧪 Testing deployed endpoints..."
-
-          # Wait a moment for deployment to propagate
-          sleep 10
-
-          # Production API URL
-          API_URL="https://api.yanosea.org"
-
-          # Spotify API endpoints
-          echo "Testing Spotify endpoints..."
-          NOW_PLAYING_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$API_URL/spotify/now-playing" || echo "000")
-          LAST_PLAYED_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$API_URL/spotify/last-played" || echo "000")
-
-          if [[ "$NOW_PLAYING_STATUS" =~ ^(200|204)$ ]]; then
-            echo "✅ Now playing endpoint OK ($NOW_PLAYING_STATUS)"
-          else
-            echo "⚠️ Now playing endpoint status: $NOW_PLAYING_STATUS"
-          fi
-
-          if [[ "$LAST_PLAYED_STATUS" =~ ^(200|204)$ ]]; then
-            echo "✅ Last played endpoint OK ($LAST_PLAYED_STATUS)"
-          else
-            echo "⚠️ Last played endpoint status: $LAST_PLAYED_STATUS"
-          fi
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
       - name: Enable Smart Placement
         if: success()
         run: |
-          echo "🚀 Enabling Smart Placement for Workers..."
-          
           curl -X PATCH \
             "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/workers/scripts/yanoportfolio-back/settings" \
             -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
             -F 'settings={"placement": {"mode": "smart"}}' \
             --fail-with-body --silent --show-error
-          
-          if [ $? -eq 0 ]; then
-            echo "✅ Smart Placement enabled successfully"
-          else
-            echo "⚠️ Failed to enable Smart Placement"
-            exit 1
-          fi
-
-      - name: Notify deployment success
-        if: success()
-        run: |
-          echo "⚡ Denoflare Workers deployment successful!"
-          echo "🔗 API: https://api.yanosea.org"
-          echo "📊 Environment: production"
-          echo "🦕 Deployed with Deno + Denoflare"
-          echo "🧠 Smart Placement enabled"
-
-      - name: Notify deployment failure
-        if: failure()
-        run: |
-          echo "❌ Denoflare Workers deployment failed!"
-          echo "Please check the logs above for details"
-          echo "💡 Tip: Verify .denoflare config and Cloudflare credentials"
-          exit 1

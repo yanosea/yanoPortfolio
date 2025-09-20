@@ -1,18 +1,21 @@
 name: Backend Quality Check
+
 on:
   pull_request:
     branches: [main]
     paths:
       - "back/**"
-      - ".github/workflows/backend-quality.yml"
+      - ".github/workflows/quality-backend.yml"
+
 env:
   DENO_VERSION: "v2.x"
+
 jobs:
   quality-check:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
 
       - name: Setup Deno
@@ -25,13 +28,3 @@ jobs:
 
       - name: Test
         run: make back.test
-
-      - name: Quality check summary
-        if: success()
-        run: |
-          echo "✅ All backend quality checks passed!"
-          echo "🦕 Type check: PASSED"
-          echo "🔍 Lint check: PASSED"
-          echo "🎨 Format check: PASSED"
-          echo "🧪 Tests: PASSED"
-

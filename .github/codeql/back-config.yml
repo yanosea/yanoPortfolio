@@ -1,0 +1,16 @@
+name: Backend CodeQL Config
+
+paths:
+  - back/src/**
+  - back/deno.json
+  - back/deno.lock
+  - back/.denoflare.template
+
+queries:
+  - name: security-extended
+    uses: security-extended
+  - name: security-and-quality
+    uses: security-and-quality
+
+packs:
+  - codeql/javascript-queries

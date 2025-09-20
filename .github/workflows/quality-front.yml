@@ -1,22 +1,25 @@
 name: Frontend Quality Check
+
 on:
   pull_request:
     branches: [main]
     paths:
       - "front/**"
-      - ".github/workflows/frontend-quality.yml"
+      - ".github/workflows/quality-frontend.yml"
+
 env:
   NODE_VERSION: "latest"
   PNPM_VERSION: "latest"
+
 jobs:
   quality-check:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
 
-      - name: Install pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
           version: ${{ env.PNPM_VERSION }}
@@ -33,13 +36,3 @@ jobs:
 
       - name: Test
         run: make front.test
-
-      - name: Quality check summary
-        if: success()
-        run: |
-          echo "✅ All frontend quality checks passed!"
-          echo "🎯 Type check: PASSED"
-          echo "🔍 Lint check: PASSED"
-          echo "🎨 Format check: PASSED"
-          echo "🧪 Tests: PASSED"
-

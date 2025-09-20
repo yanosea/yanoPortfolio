@@ -1,65 +1,49 @@
-# CodeQL Configuration for yanoPortfolio
-# This workflow file is configured to analyze JavaScript/TypeScript (frontend and Deno backend)
-name: "CodeQL"
+name: CodeQL Analysis
+
 on:
   push:
     branches: ["main"]
   pull_request:
     branches: ["main"]
   schedule:
-    - cron: "0 15 * * *" # 15:00 UTC (0:00 JST)
+    - cron: "0 15 * * *"
+
 jobs:
   analyze:
-    name: Analyze
+    name: CodeQL Analysis
     runs-on: ubuntu-latest
     timeout-minutes: 360
     permissions:
-      actions: read
-      contents: read
       security-events: write
+      actions: read
 
     strategy:
       fail-fast: false
       matrix:
-        language: ["javascript"]
+        include:
+          - language: javascript-typescript
+            build-mode: none
+            working-directory: ./front
+            config-file: ./.github/codeql/front-config.yml
+          - language: javascript-typescript
+            build-mode: none
+            working-directory: ./back
+            config-file: ./.github/codeql/back-config.yml
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        uses: actions/checkout@v4
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@192325c86100d080feab897ff886c34abd4c83a3 # v3
+        uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
-          queries: +security-extended
-
-      - name: Set up Node.js
-        if: ${{ matrix.language == 'javascript' }}
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: "latest"
-
-      - name: Set up Deno
-        if: ${{ matrix.language == 'javascript' }}
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v2.x
-
-      - name: Install pnpm
-        if: ${{ matrix.language == 'javascript' }}
-        uses: pnpm/action-setup@v2
-        with:
-          version: latest
-
-      - name: Build frontend code
-        if: ${{ matrix.language == 'javascript' }}
-        run: make front.build
-
-      - name: Check backend code
-        if: ${{ matrix.language == 'javascript' }}
-        run: make back.check
+          build-mode: ${{ matrix.build-mode }}
+          config-file: ${{ matrix.config-file }}
+          queries: security-extended,security-and-quality
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@192325c86100d080feab897ff886c34abd4c83a3 # v3
+        uses: github/codeql-action/analyze@v3
         with:
-          category: "/language:${{matrix.language}}"
+          category: "/language:${{ matrix.language }}/path:${{ matrix.working-directory }}"
+          upload: true
