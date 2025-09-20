@@ -102,14 +102,30 @@ export class CorsMiddleware {
    * @returns {boolean} - True if origin is allowed
    */
   private isOriginAllowed(origin: string | null): boolean {
-    // if no origin is provided, allow the request (e.g., same-origin requests)
+    // if no origin is provided, allow the request
     if (!origin) return true;
     // allow all origins if "*" is specified
     if (this.config.allowedOrigins.includes("*")) {
       return true;
     }
-    // check if the origin is in the allowed list and return the result
-    return this.config.allowedOrigins.includes(origin);
+    // check exact match first
+    if (this.config.allowedOrigins.includes(origin)) {
+      return true;
+    }
+    // check for wildcard subdomain patterns
+    return this.config.allowedOrigins.some((allowed) => {
+      if (allowed.includes("*.")) {
+        // convert wildcard pattern to regex
+        const escapedPattern = allowed
+          // escape special regex chars
+          .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+          // replace * with subdomain pattern
+          .replace("\\*", "[^.]+");
+        const pattern = new RegExp(`^${escapedPattern}$`);
+        return pattern.test(origin);
+      }
+      return false;
+    });
   }
 
   /**

@@ -17,7 +17,7 @@
           "value": "true"
         },
         "CORS_ORIGINS": {
-          "value": "https://yanosea.org"
+          "value": "https://yanosea.org,https://www.yanosea.org,https://yanoportfolio-front.pages.dev,https://*.yanoportfolio-front.pages.dev"
         },
         "YANOPORTFOLIO_BACK_CACHE": {
           "kvNamespace": ""
@@ -46,7 +46,7 @@
           "value": "true"
         },
         "CORS_ORIGINS": {
-          "value": "https://yanosea.org"
+          "value": "https://yanosea.org,https://www.yanosea.org,https://yanoportfolio-front.pages.dev,https://*.yanoportfolio-front.pages.dev"
         },
         "YANOPORTFOLIO_BACK_CACHE": {
           "kvNamespace": "${YANOPORTFOLIO_BACK_CACHE}"
