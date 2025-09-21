@@ -16,12 +16,14 @@ export interface CacheRepository {
    * @param {string} key - Cache key
    * @param {number} maxAge - Maximum age in milliseconds (optional)
    * @param {boolean} useKV - Use KV storage in addition to memory cache (optional, defaults to false)
+   * @param {boolean} needDecryption - Whether the cached data needs to be decrypted (optional, defaults to false)
    * @returns {Promise<Result<{ found: boolean; data: unknown }, DomainError>>} - Result containing found status and data
    */
   get(
     key: string,
     maxAge?: number,
     useKV?: boolean,
+    needDecryption?: boolean,
   ): Promise<Result<{ found: boolean; data: unknown }, DomainError>>;
 
   /**
@@ -30,6 +32,7 @@ export interface CacheRepository {
    * @param {unknown} data - Data to cache
    * @param {number} ttl - Time to live in milliseconds (optional)
    * @param {boolean} useKV - Use KV storage in addition to memory cache (optional, defaults to false)
+   * @param {boolean} useEncryption - Whether the data should be encrypted before storage (optional, defaults to false)
    * @returns {Promise<Result<void, DomainError>>} - Result indicating success or failure
    */
   set(
@@ -37,5 +40,6 @@ export interface CacheRepository {
     data: unknown,
     ttl?: number,
     useKV?: boolean,
+    useEncryption?: boolean,
   ): Promise<Result<void, DomainError>>;
 }

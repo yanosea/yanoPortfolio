@@ -65,6 +65,7 @@ export class OAuthService implements TokenRepository {
         SPOTIFY_CACHE_KEYS.ACCESS_TOKEN,
         undefined,
         true, // use KV
+        true, // need decryption
       );
       const cacheData = cacheResult.match({
         ok: (cache) => cache,
@@ -153,6 +154,7 @@ export class OAuthService implements TokenRepository {
         tokenData.accessToken,
         tokenTtl,
         true, // use KV
+        true, // use encryption
       );
       // return new token data
       return Result.ok(tokenData);

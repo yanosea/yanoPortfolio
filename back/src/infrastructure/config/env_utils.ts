@@ -118,6 +118,14 @@ export class EnvironmentUtils {
   }
 
   /**
+   * Get Encryption Key
+   * @returns {string} - Encryption Key for secure token storage
+   */
+  getEncryptionKey(): string {
+    return this.getRequired(this.env.ENCRYPTION_KEY, "ENCRYPTION_KEY");
+  }
+
+  /**
    * Check if local development
    * @returns {boolean} - True if local development
    */
@@ -140,15 +148,17 @@ export class EnvironmentUtils {
    * Validate all environment variables
    */
   validateAllEnvironment(): void {
-    // Spotify configuration
-    this.getSpotifyClientId();
-    this.getSpotifyClientSecret();
-    this.getSpotifyRefreshToken();
     // cache configuration
     this.getCacheTtlSeconds();
     // CORS configuration
     this.isCorsEnabled();
     this.getCorsOrigins();
+    // security configuration
+    this.getEncryptionKey();
+    // Spotify configuration
+    this.getSpotifyClientId();
+    this.getSpotifyClientSecret();
+    this.getSpotifyRefreshToken();
     // token configuration
     this.getTokenBufferTimeMs();
   }
