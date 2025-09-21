@@ -12,6 +12,7 @@ import { SpotifyApiClient } from "@/infrastructure/api/spotify_api_client.ts";
 import { CacheService } from "@/infrastructure/cache/cache_service.ts";
 import { getEnvironmentUtils } from "@/infrastructure/config/env_utils.ts";
 import { OAuthService } from "@/infrastructure/oauth/oauth_service.ts";
+import { EncryptionService } from "@/infrastructure/security/encryption_service.ts";
 
 import { createNotFoundResponse } from "../settings/common.ts";
 import { CorsMiddleware } from "../settings/middleware.ts";
@@ -105,7 +106,8 @@ export class Routes {
     path: string,
   ): Promise<Response> {
     // manual dependency injection per route
-    const cacheRepository = new CacheService(this.env);
+    const encryptionService = new EncryptionService();
+    const cacheRepository = new CacheService(this.env, encryptionService);
     const tokenRepository = new OAuthService(cacheRepository);
     const trackRepository = new SpotifyApiClient(
       tokenRepository,

@@ -6,9 +6,10 @@
 import { EnvironmentConfig } from "@/domain/common/environments.ts";
 import { Result } from "@/domain/common/result.ts";
 import { DomainError, ExternalServiceError } from "@/domain/error/error.ts";
+import { EncryptionRepository } from "@/domain/security/encryption_repository.ts";
+import { CacheRepository } from "@/domain/spotify/cache_repository.ts";
 
 import { EnvironmentUtils, getEnvironmentUtils } from "../config/env_utils.ts";
-import { CacheRepository } from "@/domain/spotify/cache_repository.ts";
 
 /**
  * Generic cache entry
@@ -29,15 +30,21 @@ export class CacheService implements CacheRepository {
   private readonly defaultTtl: number;
   private readonly env: EnvironmentConfig;
   private readonly envUtils: EnvironmentUtils;
+  private readonly encryptionService: EncryptionRepository;
 
   /**
    * Construct a new CacheService
    * @param {EnvironmentConfig} env - Environment configuration
+   * @param {EncryptionRepository} encryptionService - Encryption service for secure data handling
    */
-  constructor(env: EnvironmentConfig) {
+  constructor(
+    env: EnvironmentConfig,
+    encryptionService: EncryptionRepository,
+  ) {
     this.env = env;
     this.envUtils = getEnvironmentUtils();
     this.defaultTtl = this.envUtils.getCacheTtlSeconds() * 1000;
+    this.encryptionService = encryptionService;
   }
 
   /**
@@ -45,20 +52,51 @@ export class CacheService implements CacheRepository {
    * @param {string} key - Cache key
    * @param {number} maxAge - Maximum age in milliseconds (optional)
    * @param {boolean} useKV - Use KV storage in addition to memory cache (optional, defaults to false)
+   * @param {boolean} needDecryption - Whether the cached data needs to be decrypted (optional, defaults to false)
    * @returns {Promise<Result<{ found: boolean; data: unknown }, DomainError>>} - Result with cache hit status and data
    */
   async get(
     key: string,
     maxAge?: number,
     useKV = false,
+    needDecryption = false,
   ): Promise<Result<{ found: boolean; data: unknown }, DomainError>> {
     try {
-      console.log("Getting cache:", { key, maxAge, useKV });
+      console.log("Getting cache:", { key, maxAge, useKV, needDecryption });
       // always check memory first (all environments)
       const memoryResult = this.getFromMemory(key, maxAge);
       if (memoryResult.found) {
         // memory hit
         console.log("Cache: Memory hit");
+        if (needDecryption) {
+          // if decryption is needed, ensure encryption service is available
+          if (!this.encryptionService.isAvailable()) {
+            return Result.fail(
+              new DomainError(
+                "Decryption requested but encryption service is not available",
+                "ENCRYPTION_UNAVAILABLE",
+              ),
+            );
+          }
+          // decrypt sensitive data directly
+          const decryptResult = await this.encryptionService.decrypt(
+            memoryResult.data as string,
+          );
+          if (decryptResult.isFail()) {
+            // if decryption fails, pass through the error
+            const error = decryptResult.match({
+              ok: () => null,
+              fail: (err) => err,
+            });
+            console.error("Cache: Failed to decrypt memory data:", error);
+            return Result.fail(error!);
+          }
+          // successfully decrypted
+          const decryptedString = decryptResult.unwrap();
+          memoryResult.data = JSON.parse(decryptedString);
+          console.log("Cache: Memory hit, data decrypted");
+        }
+        // return decrypted data from memory
         console.log("Cache:", {
           key,
           hit: true,
@@ -71,9 +109,41 @@ export class CacheService implements CacheRepository {
         // attempt to get from KV
         const kvResult = await this.getFromKV(key, maxAge);
         if (kvResult.found) {
-          // if KV hit, save to memory for faster subsequent access
+          // KV hit
+          console.log("Cache: KV hit");
+          if (needDecryption) {
+            // if decryption is needed, ensure encryption service is available
+            if (!this.encryptionService.isAvailable()) {
+              return Result.fail(
+                new DomainError(
+                  "Decryption requested but encryption service is not available",
+                  "ENCRYPTION_UNAVAILABLE",
+                ),
+              );
+            }
+            // decrypt sensitive data directly
+            const decryptResult = await this.encryptionService.decrypt(
+              kvResult.data as string,
+            );
+            if (decryptResult.isFail()) {
+              // if decryption fails, pass through the error
+              const error = decryptResult.match({
+                ok: () => null,
+                fail: (err) => err,
+              });
+              console.error("Cache: Failed to decrypt KV data:", error);
+              return Result.fail(error!);
+            }
+            // successfully decrypted
+            const decryptedString = decryptResult.unwrap();
+            kvResult.data = JSON.parse(decryptedString);
+            console.log("Cache: KV hit, data decrypted");
+          }
+          // save decrypted data to memory for faster subsequent access
+          console.log("Cache: Saving KV data to memory");
           this.setToMemory(key, kvResult.data, this.defaultTtl);
-          console.log("Cache: KV hit, saved to memory");
+          console.log("Cache: Saved KV data to memory");
+          // return decrypted data from KV
           console.log("Cache:", {
             key,
             hit: true,
@@ -109,6 +179,7 @@ export class CacheService implements CacheRepository {
    * @param {unknown} data - Data to cache
    * @param {number} ttl - Time to live in milliseconds (optional)
    * @param {boolean} useKV - Use KV storage in addition to memory cache (optional, defaults to false)
+   * @param {boolean} useEncryption - Whether the data should be encrypted before storage (optional, defaults to false)
    * @returns {Promise<Result<void, DomainError>>} - Result indicating success or failure
    */
   async set(
@@ -116,17 +187,54 @@ export class CacheService implements CacheRepository {
     data: unknown,
     ttl?: number,
     useKV = false,
+    useEncryption = false,
   ): Promise<Result<void, DomainError>> {
-    console.log("Setting cache:", { key, hasData: data !== null, useKV });
+    console.log("Setting cache:", {
+      key,
+      hasData: data !== null,
+      useKV,
+      useEncryption,
+    });
     try {
       const effectiveTtl = ttl || this.defaultTtl;
+      if (useEncryption) {
+        // if encryption is needed, ensure encryption service is available
+        if (!this.encryptionService.isAvailable()) {
+          return Result.fail(
+            new DomainError(
+              "Encryption requested but encryption service is not available",
+              "ENCRYPTION_UNAVAILABLE",
+            ),
+          );
+        }
+        // encrypt sensitive data before storing
+        const encryptResult = await this.encryptionService.encrypt(
+          JSON.stringify(data),
+        );
+        if (encryptResult.isFail()) {
+          // if encryption fails, pass through the error
+          const error = encryptResult.match({
+            ok: () => null,
+            fail: (err) => err,
+          });
+          console.error("Failed to encrypt sensitive data:", error);
+          return Result.fail(error!);
+        }
+        // use encrypted string for storage
+        data = encryptResult.unwrap();
+        console.log("Cache: Sensitive data encrypted");
+      }
       // always set to memory cache first (all environments)
       this.setToMemory(key, data, effectiveTtl);
       console.log("Cache set to memory");
       // additionally set to KV in production (only if useKV is true)
       if (!this.envUtils.isLocalDevelopment() && useKV) {
         // attempt to set to KV
-        const kvResult = await this.setToKV(key, data, effectiveTtl);
+        const kvResult = await this.setToKV(
+          key,
+          data,
+          effectiveTtl,
+        );
         if (kvResult) {
           // succeeded to set to KV
           console.log("Cache also set to KV");
@@ -159,7 +267,7 @@ export class CacheService implements CacheRepository {
   /**
    * Get data from memory cache
    * @param {string} key - Cache key
-   * @param {number} [maxAge] - Maximum age in milliseconds
+   * @param {number} maxAge - Maximum age in milliseconds
    * @returns {{ found: boolean; data: unknown }} - Cache hit status and data
    */
   private getFromMemory(
@@ -187,7 +295,7 @@ export class CacheService implements CacheRepository {
   /**
    * Get data from KV cache
    * @param {string} key - Cache key
-   * @param {number} [maxAge] - Maximum age in milliseconds
+   * @param {number} maxAge - Maximum age in milliseconds
    * @returns {Promise<{ found: boolean; data: unknown }>} - Cache hit status and data
    */
   private async getFromKV(
@@ -237,7 +345,7 @@ export class CacheService implements CacheRepository {
       ttl,
     };
     CacheService.memoryCache.set(key, entry);
-    console.log("Set to memory cache:", { key });
+    console.log("Set to memory cache:", { key, ttl });
   }
 
   /**

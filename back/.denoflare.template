@@ -19,8 +19,8 @@
         "CORS_ORIGINS": {
           "value": "https://yanosea.org,https://www.yanosea.org,https://yanoportfolio-front.pages.dev,https://*.yanoportfolio-front.pages.dev"
         },
-        "YANOPORTFOLIO_BACK_CACHE": {
-          "kvNamespace": ""
+        "ENCRYPTION_KEY": {
+          "secret": "${ENCRYPTION_KEY}"
         },
         "SPOTIFY_CLIENT_ID": {
           "secret": "${SPOTIFY_CLIENT_ID}"
@@ -33,6 +33,9 @@
         },
         "TOKEN_BUFFER_TIME_MS": {
           "value": "300000"
+        },
+        "YANOPORTFOLIO_BACK_CACHE": {
+          "kvNamespace": ""
         }
       },
     },
@@ -48,8 +51,8 @@
         "CORS_ORIGINS": {
           "value": "https://yanosea.org,https://www.yanosea.org,https://yanoportfolio-front.pages.dev,https://*.yanoportfolio-front.pages.dev"
         },
-        "YANOPORTFOLIO_BACK_CACHE": {
-          "kvNamespace": "${YANOPORTFOLIO_BACK_CACHE}"
+        "ENCRYPTION_KEY": {
+          "secret": "${ENCRYPTION_KEY}"
         },
         "SPOTIFY_CLIENT_ID": {
           "secret": "${SPOTIFY_CLIENT_ID}"
@@ -62,6 +65,9 @@
         },
         "TOKEN_BUFFER_TIME_MS": {
           "value": "300000"
+        },
+        "YANOPORTFOLIO_BACK_CACHE": {
+          "kvNamespace": "${YANOPORTFOLIO_BACK_CACHE}"
         }
       },
       "customDomains": [
