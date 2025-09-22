@@ -18,7 +18,7 @@ export class EncryptionService implements EncryptionRepository {
   private static readonly KEY_LENGTH = 256;
   private static readonly IV_LENGTH = 12;
   private static readonly SALT_LENGTH = 16;
-  private static readonly PBKDF2_ITERATIONS = 100000;
+  private static readonly PBKDF2_ITERATIONS = 10000;
   private readonly envUtils = getEnvironmentUtils();
 
   /**
