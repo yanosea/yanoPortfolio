@@ -48,7 +48,7 @@ export class Routes {
     const url = new URL(request.url);
     const path = url.pathname;
     const method = request.method;
-    console.log("Request:", { method, path });
+    console.log("Request:", JSON.stringify({ method, path }));
     // handle CORS preflight
     if (method === "OPTIONS") {
       return this.corsMiddleware.handlePreflight(request);
@@ -68,12 +68,15 @@ export class Routes {
     );
     // performance log
     const duration = Math.round(performance.now() - startTime);
-    console.log("Response:", {
-      method,
-      path,
-      status: finalResponse.status,
-      duration,
-    });
+    console.log(
+      "Response:",
+      JSON.stringify({
+        method,
+        path,
+        status: finalResponse.status,
+        duration,
+      }),
+    );
     // return final response
     return finalResponse;
   }

@@ -141,9 +141,12 @@ export class OAuthService implements TokenRepository {
         scope: tokenResponse.scope,
       };
       // log success
-      console.log("Token refresh success:", {
-        expiresIn: tokenResponse.expires_in,
-      });
+      console.log(
+        "Token refresh success:",
+        JSON.stringify({
+          expiresIn: tokenResponse.expires_in,
+        }),
+      );
       // cache the new token with buffer time to prevent expiration issues
       const bufferTimeMs = this.envUtils.getTokenBufferTimeMs();
       const tokenTtl = tokenData.expiresIn

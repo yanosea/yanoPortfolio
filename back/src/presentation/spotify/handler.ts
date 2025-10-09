@@ -61,7 +61,10 @@ export class SpotifyHandler {
       });
     } catch (error) {
       // if any unexpected error occurs, log it and return 500
-      console.error("SpotifyHandler.handleGetNowPlaying error:", error);
+      console.error(
+        "SpotifyHandler.handleGetNowPlaying error:",
+        error instanceof Error ? error.message : String(error),
+      );
       return createErrorResponse("Internal server error");
     }
   }
@@ -102,7 +105,10 @@ export class SpotifyHandler {
       });
     } catch (error) {
       // if any unexpected error occurs, log it and return 500
-      console.error("SpotifyHandler.handleGetLastPlayed error:", error);
+      console.error(
+        "SpotifyHandler.handleGetLastPlayed error:",
+        error instanceof Error ? error.message : String(error),
+      );
       return createErrorResponse("Internal server error");
     }
   }
