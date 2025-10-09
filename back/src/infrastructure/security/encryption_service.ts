@@ -110,7 +110,10 @@ export class EncryptionService implements EncryptionRepository {
       return Result.ok(base64);
     } catch (error) {
       // if any error occurs, return failure
-      console.error("Encryption failed:", error);
+      console.error(
+        "Encryption failed:",
+        error instanceof Error ? error.message : String(error),
+      );
       return Result.fail(
         new DomainError(
           `Encryption failed: ${
@@ -169,7 +172,10 @@ export class EncryptionService implements EncryptionRepository {
       return Result.ok(plaintext);
     } catch (error) {
       // if any error occurs, return failure
-      console.error("Decryption failed:", error);
+      console.error(
+        "Decryption failed:",
+        error instanceof Error ? error.message : String(error),
+      );
       return Result.fail(
         new DomainError(
           `Decryption failed: ${

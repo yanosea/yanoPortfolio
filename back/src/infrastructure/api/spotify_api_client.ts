@@ -199,7 +199,10 @@ export class SpotifyApiClient implements TrackRepository {
           cacheData.data as SerializableTrack,
         );
         if (trackResult instanceof DomainError) {
-          console.warn("Cache data corruption detected:", trackResult.message);
+          console.warn(
+            "Cache data corruption detected:",
+            JSON.stringify({ message: trackResult.message }),
+          );
           // continue to fetch from API
         } else {
           return Result.ok(trackResult);
@@ -237,7 +240,10 @@ export class SpotifyApiClient implements TrackRepository {
         if (trackResult.isOk()) {
           // if mapping succeeded, cache and return the track
           const track = trackResult.unwrap();
-          console.log("Spotify now-playing success:", { track });
+          console.log(
+            "Spotify now-playing success:",
+            JSON.stringify({ track: track.toSerializable() }),
+          );
           await this.cacheRepository.set(
             SPOTIFY_CACHE_KEYS.NOW_PLAYING,
             track.toSerializable(),
@@ -287,7 +293,10 @@ export class SpotifyApiClient implements TrackRepository {
           cacheData.data as SerializableTrack,
         );
         if (trackResult instanceof DomainError) {
-          console.warn("Cache data corruption detected:", trackResult.message);
+          console.warn(
+            "Cache data corruption detected:",
+            JSON.stringify({ message: trackResult.message }),
+          );
           // continue to fetch from API
         } else {
           return Result.ok(trackResult);
@@ -340,7 +349,10 @@ export class SpotifyApiClient implements TrackRepository {
         if (trackResult.isOk()) {
           // if mapping succeeded, cache and return the track
           const track = trackResult.unwrap();
-          console.log("Spotify last-played success:", { track });
+          console.log(
+            "Spotify last-played success:",
+            JSON.stringify({ track: track.toSerializable() }),
+          );
           await this.cacheRepository.set(
             SPOTIFY_CACHE_KEYS.LAST_PLAYED,
             track.toSerializable(),

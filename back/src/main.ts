@@ -31,7 +31,10 @@ export default {
       getEnvironmentUtils().validateAllEnvironment();
     } catch (error) {
       // return error if any required environment variable is missing
-      console.error("Missing required environment variables:", error);
+      console.error(
+        "Missing required environment variables:",
+        error instanceof Error ? error.message : String(error),
+      );
       return new Response(
         JSON.stringify({
           error: "Missing Required Environment Variables",
@@ -51,7 +54,10 @@ export default {
       return await routes.handle(request);
     } catch (error) {
       // log and return error if any unhandled exception occurs
-      console.error("Unhandled error:", error);
+      console.error(
+        "Unhandled error:",
+        error instanceof Error ? error.message : String(error),
+      );
       return new Response(
         JSON.stringify({
           error: "Internal Server Error",

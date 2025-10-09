@@ -62,7 +62,10 @@ export class CacheService implements CacheRepository {
     needDecryption = false,
   ): Promise<Result<{ found: boolean; data: unknown }, DomainError>> {
     try {
-      console.log("Getting cache:", { key, maxAge, useKV, needDecryption });
+      console.log(
+        "Getting cache:",
+        JSON.stringify({ key, maxAge, useKV, needDecryption }),
+      );
       // always check memory first (all environments)
       const memoryResult = this.getFromMemory(key, maxAge);
       if (memoryResult.found) {
@@ -88,7 +91,10 @@ export class CacheService implements CacheRepository {
               ok: () => null,
               fail: (err) => err,
             });
-            console.error("Cache: Failed to decrypt memory data:", error);
+            console.error(
+              "Cache: Failed to decrypt memory data:",
+              error instanceof DomainError ? error.message : String(error),
+            );
             return Result.fail(error!);
           }
           // successfully decrypted
@@ -97,11 +103,14 @@ export class CacheService implements CacheRepository {
           console.log("Cache: Memory hit, data decrypted");
         }
         // return decrypted data from memory
-        console.log("Cache:", {
-          key,
-          hit: true,
-          hasData: memoryResult.data !== null,
-        });
+        console.log(
+          "Cache:",
+          JSON.stringify({
+            key,
+            hit: true,
+            hasData: memoryResult.data !== null,
+          }),
+        );
         return Result.ok(memoryResult);
       }
       // if not in memory and not local development, check KV (only if useKV is true)
@@ -131,7 +140,10 @@ export class CacheService implements CacheRepository {
                 ok: () => null,
                 fail: (err) => err,
               });
-              console.error("Cache: Failed to decrypt KV data:", error);
+              console.error(
+                "Cache: Failed to decrypt KV data:",
+                error instanceof DomainError ? error.message : String(error),
+              );
               return Result.fail(error!);
             }
             // successfully decrypted
@@ -144,21 +156,27 @@ export class CacheService implements CacheRepository {
           this.setToMemory(key, kvResult.data, this.defaultTtl);
           console.log("Cache: Saved KV data to memory");
           // return decrypted data from KV
-          console.log("Cache:", {
-            key,
-            hit: true,
-            hasData: kvResult.data !== null,
-          });
+          console.log(
+            "Cache:",
+            JSON.stringify({
+              key,
+              hit: true,
+              hasData: kvResult.data !== null,
+            }),
+          );
           return Result.ok(kvResult);
         }
       }
       // cache miss
       console.log("Cache: Complete miss");
-      console.log("Cache:", {
-        key,
-        hit: false,
-        hasData: false,
-      });
+      console.log(
+        "Cache:",
+        JSON.stringify({
+          key,
+          hit: false,
+          hasData: false,
+        }),
+      );
       return Result.ok({ found: false, data: null });
     } catch (error: unknown) {
       // if any unexpected error occurs, pass through the error
@@ -189,12 +207,15 @@ export class CacheService implements CacheRepository {
     useKV = false,
     useEncryption = false,
   ): Promise<Result<void, DomainError>> {
-    console.log("Setting cache:", {
-      key,
-      hasData: data !== null,
-      useKV,
-      useEncryption,
-    });
+    console.log(
+      "Setting cache:",
+      JSON.stringify({
+        key,
+        hasData: data !== null,
+        useKV,
+        useEncryption,
+      }),
+    );
     try {
       const effectiveTtl = ttl || this.defaultTtl;
       if (useEncryption) {
@@ -217,7 +238,10 @@ export class CacheService implements CacheRepository {
             ok: () => null,
             fail: (err) => err,
           });
-          console.error("Failed to encrypt sensitive data:", error);
+          console.error(
+            "Failed to encrypt sensitive data:",
+            error instanceof DomainError ? error.message : String(error),
+          );
           return Result.fail(error!);
         }
         // use encrypted string for storage
@@ -242,7 +266,7 @@ export class CacheService implements CacheRepository {
           // failed to set to KV, but memory succeeded
           console.warn(
             "Failed to set cache to KV, but memory succeeded:",
-            key,
+            JSON.stringify({ key }),
           );
         }
       } else if (!useKV) {
@@ -252,7 +276,10 @@ export class CacheService implements CacheRepository {
       return Result.ok(undefined);
     } catch (error: unknown) {
       // if any unexpected error occurs, pass through the error
-      console.error("Cache set failed:", error);
+      console.error(
+        "Cache set failed:",
+        error instanceof Error ? error.message : String(error),
+      );
       const errorMessage = `Cache set failed: ${
         error instanceof Error ? error.message : String(error)
       }`;
@@ -345,7 +372,7 @@ export class CacheService implements CacheRepository {
       ttl,
     };
     CacheService.memoryCache.set(key, entry);
-    console.log("Set to memory cache:", { key, ttl });
+    console.log("Set to memory cache:", JSON.stringify({ key, ttl }));
   }
 
   /**
@@ -380,7 +407,10 @@ export class CacheService implements CacheRepository {
       await kvNamespace.put(key, JSON.stringify(entry), {
         expirationTtl: kvTtlSeconds,
       });
-      console.log("Set to KV cache:", { key, ttl: kvTtlSeconds });
+      console.log(
+        "Set to KV cache:",
+        JSON.stringify({ key, ttl: kvTtlSeconds }),
+      );
       // succeeded to set to KV
       return true;
     } catch {
