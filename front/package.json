@@ -16,7 +16,7 @@
     "@astrojs/partytown": "^2.1.2",
     "@astrojs/rss": "^4.0.10",
     "@astrojs/sitemap": "^3.2.1",
-    "@astrojs/tailwind": "^5.1.3",
+    "@astrojs/tailwind": "^6.0.0",
     "@fontsource/dotgothic16": "^5.1.0",
     "@fontsource/zen-kaku-gothic-new": "^5.1.0",
     "@iconify-json/file-icons": "^1.2.1",
