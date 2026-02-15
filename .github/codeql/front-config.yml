@@ -2,14 +2,9 @@ name: Frontend CodeQL Config
 
 paths:
   - front/src/**
-  - front/astro.config.mjs
-  - front/tailwind.config.cjs
-  - front/tsconfig.json
-  - front/package.json
-  - front/pnpm-lock.yaml
-
-paths-ignore:
-  - front/public/**
+  - front/_config.ts
+  - front/deno.json
+  - front/deno.lock
 
 queries:
   - name: security-extended

@@ -1,0 +1,105 @@
+/**
+ * Card Components
+ *
+ * Card-related styles including article cards, content cards, and TOC cards.
+ */
+
+@layer components {
+  .card-content,
+  .terminal-card,
+  .card-article {
+    background-color: var(--color-card-bg);
+    border-color: var(--color-card-border);
+    transition:
+      var(--transition-colors),
+      var(--transition-interactive);
+    contain: layout style paint;
+  }
+
+  .card-content {
+    border-width: 1px;
+    border-style: solid;
+    content-visibility: auto;
+  }
+
+  .terminal-card {
+    border-width: 1px;
+    border-style: solid;
+    content-visibility: auto;
+    min-height: 0;
+  }
+
+  .card-article {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .card-article:hover {
+    background-color: var(--color-card-hover-bg);
+    border-color: var(--color-card-hover-border);
+  }
+
+  .card-article a {
+    text-decoration: none;
+  }
+
+  .link-card-icon svg {
+    fill: currentColor;
+  }
+
+  .link-card-icon svg[fill="none"] {
+    fill: none;
+  }
+
+  .stretched-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .card-article-tags {
+    position: relative;
+    z-index: 1;
+    margin-top: 1rem;
+  }
+
+  .card-toc {
+    background-color: var(--color-card-bg);
+    border-color: var(--color-card-border);
+    transition: var(--transition-colors);
+  }
+
+  .toc-heading {
+    font-size: var(--font-size-large);
+    margin: 0 0 1rem 0;
+  }
+
+  .card-toc ol {
+    margin: 0;
+    padding-inline-start: 0;
+  }
+
+  .card-toc li:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Scrollbar for markdown code blocks (can't add utility class to generated elements) */
+  .card-content pre,
+  .card-content pre code {
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    &::-webkit-scrollbar-track {
+      background: var(--color-bg-secondary);
+    }
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-border-primary);
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: var(--color-border-secondary);
+    }
+  }
+}

@@ -1,108 +1,101 @@
 /**
- * @fileoverview Track entity
+ * Track entity
  */
 
 // domain
 import { DomainError, ValidationError } from "@/domain/error/error.ts";
 
 /**
- * Track Entity
- * @class Track
+ * Track entity
  */
 export class Track {
   /**
    * Construct a new Track
-   * @param {string} _imageUrl - Image URL
-   * @param {string} _trackName - Track name
-   * @param {string} _trackUrl - Track URL
-   * @param {string} _albumName - Album name
-   * @param {string} _albumUrl - Album URL
-   * @param {string} _artistName - Artist name
-   * @param {string} _artistUrl - Artist URL
-   * @param {string} _playedAt - Played at timestamp (optional)
+   * @param _albumName - Album name
+   * @param _albumUrl - Album URL
+   * @param _artistName - Artist name
+   * @param _artistUrl - Artist URL
+   * @param _imageUrl - Album image URL
+   * @param _trackName - Track name
+   * @param _trackUrl - Track URL
+   * @param _playedAt - Played at timestamp (ISO 8601 format, optional)
    */
   private constructor(
-    private readonly _imageUrl: string,
-    private readonly _trackName: string,
-    private readonly _trackUrl: string,
     private readonly _albumName: string,
     private readonly _albumUrl: string,
     private readonly _artistName: string,
     private readonly _artistUrl: string,
+    private readonly _imageUrl: string,
+    private readonly _trackName: string,
+    private readonly _trackUrl: string,
     private readonly _playedAt?: string,
   ) {}
 
   /**
    * Reconstruct Track from external data (database, API response)
-   * @param {string} imageUrl - Image URL
-   * @param {string} trackName - Track name
-   * @param {string} trackUrl - Track URL
-   * @param {string} albumName - Album name
-   * @param {string} albumUrl - Album URL
-   * @param {string} artistName - Artist name
-   * @param {string} artistUrl - Artist URL
-   * @param {string} playedAt - Played at timestamp (optional)
-   * @returns {Track | DomainError} Track instance or error
+   * @param albumName - Album name
+   * @param albumUrl - Album URL
+   * @param artistName - Artist name
+   * @param artistUrl - Artist URL
+   * @param imageUrl - Album image URL
+   * @param trackName - Track name
+   * @param trackUrl - Track URL
+   * @param playedAt - Played at timestamp (ISO 8601 format, optional)
+   * @returns Track instance or error
    */
   static reconstruct(
-    imageUrl: string,
-    trackName: string,
-    trackUrl: string,
     albumName: string,
     albumUrl: string,
     artistName: string,
     artistUrl: string,
+    imageUrl: string,
+    trackName: string,
+    trackUrl: string,
     playedAt?: string,
   ): Track | DomainError {
     return this.newTrack(
-      imageUrl,
-      trackName,
-      trackUrl,
       albumName,
       albumUrl,
       artistName,
       artistUrl,
+      imageUrl,
+      trackName,
+      trackUrl,
       playedAt,
     );
   }
 
   /**
    * Create new Track
-   * @param {string} imageUrl - Image URL
-   * @param {string} trackName - Track name
-   * @param {string} trackUrl - Track URL
-   * @param {string} albumName - Album name
-   * @param {string} albumUrl - Album URL
-   * @param {string} artistName - Artist name
-   * @param {string} artistUrl - Artist URL
-   * @param {string} playedAt - Played at timestamp (optional)
-   * @returns {Track | DomainError} - Track instance or error
+   * @param albumName - Album name
+   * @param albumUrl - Album URL
+   * @param artistName - Artist name
+   * @param artistUrl - Artist URL
+   * @param imageUrl - Album image URL
+   * @param trackName - Track name
+   * @param trackUrl - Track URL
+   * @param playedAt - Played at timestamp (ISO 8601 format, optional)
+   * @returns Track instance or error
    */
   static newTrack(
-    imageUrl: string,
-    trackName: string,
-    trackUrl: string,
     albumName: string,
     albumUrl: string,
     artistName: string,
     artistUrl: string,
+    imageUrl: string,
+    trackName: string,
+    trackUrl: string,
     playedAt?: string,
   ): Track | DomainError {
     // validate inputs
-    if (!trackName || trackName.trim().length === 0) {
-      return new ValidationError("Track name is required");
-    }
-    if (!artistName || artistName.trim().length === 0) {
-      return new ValidationError("Artist name is required");
-    }
     if (!albumName || albumName.trim().length === 0) {
       return new ValidationError("Album name is required");
     }
-    if (!this.isValidUrl(trackUrl)) {
-      return new ValidationError("Track URL format is invalid");
-    }
     if (!this.isValidUrl(albumUrl)) {
       return new ValidationError("Album URL format is invalid");
+    }
+    if (!artistName || artistName.trim().length === 0) {
+      return new ValidationError("Artist name is required");
     }
     if (!this.isValidUrl(artistUrl)) {
       return new ValidationError("Artist URL format is invalid");
@@ -110,49 +103,31 @@ export class Track {
     if (imageUrl && !this.isValidUrl(imageUrl)) {
       return new ValidationError("Image URL format is invalid");
     }
+    if (!trackName || trackName.trim().length === 0) {
+      return new ValidationError("Track name is required");
+    }
+    if (!this.isValidUrl(trackUrl)) {
+      return new ValidationError("Track URL format is invalid");
+    }
     if (playedAt && !this.isValidTimestamp(playedAt)) {
       return new ValidationError("Played at timestamp format is invalid");
     }
-
+    // create and return Track instance
     return new Track(
-      imageUrl,
-      trackName.trim(),
-      trackUrl,
       albumName.trim(),
       albumUrl,
       artistName.trim(),
       artistUrl,
+      imageUrl,
+      trackName.trim(),
+      trackUrl,
       playedAt,
     );
   }
 
   /**
-   * Get image URL
-   * @returns {string} - Image URL
-   */
-  imageUrl(): string {
-    return this._imageUrl;
-  }
-
-  /**
-   * Get track name
-   * @returns {string} - Track name
-   */
-  trackName(): string {
-    return this._trackName;
-  }
-
-  /**
-   * Get track URL
-   * @returns {string} - Track URL
-   */
-  trackUrl(): string {
-    return this._trackUrl;
-  }
-
-  /**
    * Get album name
-   * @returns {string} - Album name
+   * @returns Album name
    */
   albumName(): string {
     return this._albumName;
@@ -160,7 +135,7 @@ export class Track {
 
   /**
    * Get album URL
-   * @returns {string} - Album URL
+   * @returns Album URL
    */
   albumUrl(): string {
     return this._albumUrl;
@@ -168,7 +143,7 @@ export class Track {
 
   /**
    * Get artist name
-   * @returns {string} - Artist name
+   * @returns Artist name
    */
   artistName(): string {
     return this._artistName;
@@ -176,15 +151,39 @@ export class Track {
 
   /**
    * Get artist URL
-   * @returns {string} - Artist URL
+   * @returns Artist URL
    */
   artistUrl(): string {
     return this._artistUrl;
   }
 
   /**
+   * Get image URL
+   * @returns Image URL
+   */
+  imageUrl(): string {
+    return this._imageUrl;
+  }
+
+  /**
+   * Get track name
+   * @returns Track name
+   */
+  trackName(): string {
+    return this._trackName;
+  }
+
+  /**
+   * Get track URL
+   * @returns Track URL
+   */
+  trackUrl(): string {
+    return this._trackUrl;
+  }
+
+  /**
    * Get played at timestamp
-   * @returns {string} - Played at timestamp
+   * @returns Played at timestamp or undefined
    */
   playedAt(): string | undefined {
     return this._playedAt;
@@ -192,8 +191,8 @@ export class Track {
 
   /**
    * Basic URL validation
-   * @param {string} url - URL string to validate
-   * @returns {boolean} - True if valid URL format
+   * @param url - URL string to validate
+   * @returns True if valid URL format
    */
   private static isValidUrl(url: string): boolean {
     try {
@@ -206,8 +205,8 @@ export class Track {
 
   /**
    * Basic timestamp validation
-   * @param {string} timestamp - Timestamp string to validate
-   * @returns {boolean} - True if valid timestamp format
+   * @param timestamp - Timestamp string to validate
+   * @returns True if valid timestamp format
    */
   private static isValidTimestamp(timestamp: string): boolean {
     const date = new Date(timestamp);
@@ -216,35 +215,35 @@ export class Track {
 
   /**
    * Convert Track to serializable format for caching
-   * @returns {SerializableTrack} - Serializable track data
+   * @returns Serializable track data
    */
   toSerializable(): SerializableTrack {
     return {
-      imageUrl: this._imageUrl,
-      trackName: this._trackName,
-      trackUrl: this._trackUrl,
       albumName: this._albumName,
       albumUrl: this._albumUrl,
       artistName: this._artistName,
       artistUrl: this._artistUrl,
+      imageUrl: this._imageUrl,
+      trackName: this._trackName,
+      trackUrl: this._trackUrl,
       playedAt: this._playedAt,
     };
   }
 
   /**
    * Create Track from serializable format
-   * @param {SerializableTrack} data - Serializable track data
-   * @returns {Track | DomainError} - Track instance or error
+   * @param data - Serializable track data
+   * @returns Track instance or error
    */
   static fromSerializable(data: SerializableTrack): Track | DomainError {
     return this.reconstruct(
-      data.imageUrl,
-      data.trackName,
-      data.trackUrl,
       data.albumName,
       data.albumUrl,
       data.artistName,
       data.artistUrl,
+      data.imageUrl,
+      data.trackName,
+      data.trackUrl,
       data.playedAt,
     );
   }
@@ -252,15 +251,22 @@ export class Track {
 
 /**
  * Serializable track data for cache storage
- * @interface SerializableTrack
  */
 export interface SerializableTrack {
-  imageUrl: string;
-  trackName: string;
-  trackUrl: string;
+  /** Album name */
   albumName: string;
+  /** Album URL */
   albumUrl: string;
+  /** Artist name */
   artistName: string;
+  /** Artist URL */
   artistUrl: string;
+  /** Album image URL */
+  imageUrl: string;
+  /** Track name */
+  trackName: string;
+  /** Track URL */
+  trackUrl: string;
+  /** Played at timestamp (ISO 8601 format, optional) */
   playedAt?: string;
 }

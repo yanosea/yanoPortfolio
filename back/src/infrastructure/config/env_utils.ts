@@ -1,5 +1,5 @@
 /**
- * @fileoverview Environment utility functions for Domain layer
+ * Environment utility functions for domain layer
  */
 
 // domain
@@ -13,7 +13,7 @@ let environmentUtils: EnvironmentUtils | null = null;
 
 /**
  * Get EnvironmentUtils singleton instance
- * @returns {EnvironmentUtils} - EnvironmentUtils instance
+ * @returns EnvironmentUtils instance
  */
 export function getEnvironmentUtils(): EnvironmentUtils {
   if (!environmentUtils) {
@@ -27,7 +27,7 @@ export function getEnvironmentUtils(): EnvironmentUtils {
 
 /**
  * Initialize EnvironmentUtils singleton
- * @param {EnvironmentConfig} env - Environment configuration
+ * @param env - Environment configuration
  */
 export function initializeEnvironmentUtils(
   env: EnvironmentConfig,
@@ -39,26 +39,25 @@ export function initializeEnvironmentUtils(
 
 /**
  * Type-safe environment configuration utilities
- * @class EnvironmentUtils
  */
 export class EnvironmentUtils {
   /**
    * Construct a new EnvironmentUtils
-   * @param {EnvironmentConfig} env - Environment configuration
+   * @param env - Environment configuration
    */
   constructor(private env: EnvironmentConfig) {}
 
   /**
-   * Get Spotify Client ID
-   * @returns {string} - Spotify Client ID
+   * Get Spotify client ID
+   * @returns Spotify client ID
    */
   getSpotifyClientId(): string {
     return this.getRequired(this.env.SPOTIFY_CLIENT_ID, "SPOTIFY_CLIENT_ID");
   }
 
   /**
-   * Get Spotify Client Secret
-   * @returns {string} - Spotify Client Secret
+   * Get Spotify client secret
+   * @returns Spotify client secret
    */
   getSpotifyClientSecret(): string {
     return this.getRequired(
@@ -68,8 +67,8 @@ export class EnvironmentUtils {
   }
 
   /**
-   * Get Spotify Refresh Token
-   * @returns {string} - Spotify Refresh Token
+   * Get Spotify refresh token
+   * @returns Spotify Refresh Token
    */
   getSpotifyRefreshToken(): string {
     return this.getRequired(
@@ -79,8 +78,8 @@ export class EnvironmentUtils {
   }
 
   /**
-   * Get Spotify Cache setting
-   * @returns {number} - Spotify Cache TTL in seconds
+   * Get Spotify cache setting
+   * @returns Spotify Cache TTL in seconds
    */
   getCacheTtlSeconds(): number {
     return this.getAsNumber(this.env.CACHE_TTL_SECONDS, "CACHE_TTL_SECONDS");
@@ -88,7 +87,7 @@ export class EnvironmentUtils {
 
   /**
    * Get CORS enabled setting
-   * @returns {boolean} - CORS enabled
+   * @returns CORS enabled
    */
   isCorsEnabled(): boolean {
     return this.getAsBoolean(this.env.CORS_ENABLED, "CORS_ENABLED");
@@ -96,7 +95,7 @@ export class EnvironmentUtils {
 
   /**
    * Get CORS origins
-   * @returns {string[]} - CORS origins
+   * @returns CORS origins
    */
   getCorsOrigins(): string[] {
     const value = this.getRequired(this.env.CORS_ORIGINS, "CORS_ORIGINS");
@@ -107,8 +106,8 @@ export class EnvironmentUtils {
   }
 
   /**
-   * Get Token Buffer Time (ms)
-   * @returns {number} - Token Buffer Time in milliseconds
+   * Get token buffer time (ms)
+   * @returns Token Buffer Time in milliseconds
    */
   getTokenBufferTimeMs(): number {
     return this.getAsNumber(
@@ -118,8 +117,8 @@ export class EnvironmentUtils {
   }
 
   /**
-   * Get Encryption Key
-   * @returns {string} - Encryption Key for secure token storage
+   * Get encryption Key
+   * @returns Encryption Key for secure token storage
    */
   getEncryptionKey(): string {
     return this.getRequired(this.env.ENCRYPTION_KEY, "ENCRYPTION_KEY");
@@ -127,7 +126,7 @@ export class EnvironmentUtils {
 
   /**
    * Check if local development
-   * @returns {boolean} - True if local development
+   * @returns True if local development
    */
   isLocalDevelopment(): boolean {
     try {
@@ -165,9 +164,9 @@ export class EnvironmentUtils {
 
   /**
    * Get required environment variable or throw error
-   * @param {string | undefined} value - Environment variable value
-   * @param {string} varName - Environment variable name
-   * @returns {string} - Environment variable value
+   * @param value - Environment variable value
+   * @param varName - Environment variable name
+   * @returns Environment variable value
    */
   private getRequired(value: string | undefined, varName: string): string {
     if (!value || value === "") {
@@ -180,9 +179,9 @@ export class EnvironmentUtils {
 
   /**
    * Get environment variable as number or throw error
-   * @param {string | undefined} value - Environment variable value
-   * @param {string} varName - Environment variable name
-   * @returns {number} - Parsed number value
+   * @param value - Environment variable value
+   * @param varName - Environment variable name
+   * @returns Parsed number value
    */
   private getAsNumber(value: string | undefined, varName: string): number {
     const str = this.getRequired(value, varName);
@@ -197,9 +196,9 @@ export class EnvironmentUtils {
 
   /**
    * Get environment variable as boolean or throw error
-   * @param {string | undefined} value - Environment variable value
-   * @param {string} varName - Environment variable name
-   * @returns {boolean} - Parsed boolean value
+   * @param value - Environment variable value
+   * @param varName - Environment variable name
+   * @returns Parsed boolean value
    */
   private getAsBoolean(value: string | undefined, varName: string): boolean {
     const str = this.getRequired(value, varName);

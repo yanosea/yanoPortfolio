@@ -1,7 +1,8 @@
 # IGNORE FOLDER
-front/.astro/
-front/dist/
 front/node_modules/
+front/src/assets/fonts/
+front/_cache/
+front/_site/
 # IGNORE FILE
 .DS_Store
 .Identifier

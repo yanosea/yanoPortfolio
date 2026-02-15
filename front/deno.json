@@ -1,0 +1,38 @@
+{
+  "tasks": {
+    "check": "deno check **/*.ts && deno fmt --check && deno lint",
+    "deploy": "deno task lume && deno run -A npm:wrangler pages deploy _site --project-name=yanoportfolio-front",
+    "fmt": "deno fmt",
+    "lume": "echo \"import 'lume/cli.ts'\" | deno run -A -",
+    "serve": "deno task lume -s",
+    "test": "echo 'TODO : No tests yet'"
+  },
+  "imports": {
+    "@/": "./src/",
+    "lume/": "https://deno.land/x/lume@v3.0.11/",
+    "lume/jsx-runtime": "https://deno.land/x/ssx@v0.1.12/jsx-runtime.ts"
+  },
+  "compilerOptions": {
+    "checkJs": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "lume",
+    "lib": ["deno.ns"],
+    "types": ["lume/types.ts"]
+  },
+  "fmt": {
+    "include": ["./src/"],
+    "proseWrap": "preserve",
+    "semiColons": true
+  },
+  "lint": {
+    "include": ["./src/"],
+    "plugins": ["https://deno.land/x/lume@v3.0.11/lint.ts"],
+    "rules": {
+      "tags": ["recommended"]
+    }
+  },
+  "allow-scripts": {
+    "npm:@tailwindcss/oxide": true
+  },
+  "nodeModulesDir": "auto"
+}

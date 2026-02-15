@@ -1,0 +1,35 @@
+/**
+ * Tag Components
+ *
+ * Tag and badge styles for categorization.
+ */
+
+@layer components {
+  .tag {
+    font-size: var(--font-size-xs);
+    color: var(--color-fg-secondary);
+    background-color: var(--color-tag-bg);
+    border-color: var(--color-tag-border);
+    transition: var(--transition-colors);
+    text-decoration: none;
+  }
+
+  .tag:hover {
+    background-color: var(--color-bg-secondary);
+    border-color: var(--color-border-primary);
+    color: var(--color-fg-primary);
+  }
+
+  .tag-active {
+    font-size: var(--font-size-xs);
+    color: var(--color-accent-primary);
+    background-color: var(--color-tag-active-bg);
+    border-color: var(--color-accent-primary);
+    transition: filter var(--duration-fast) var(--ease-smooth);
+    text-decoration: none;
+  }
+
+  .tag-active:hover {
+    filter: brightness(1.1);
+  }
+}

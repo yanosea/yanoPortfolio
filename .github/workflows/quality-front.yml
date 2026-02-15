@@ -5,11 +5,10 @@ on:
     branches: [main]
     paths:
       - "front/**"
-      - ".github/workflows/quality-frontend.yml"
+      - ".github/workflows/quality-front.yml"
 
 env:
-  NODE_VERSION: "latest"
-  PNPM_VERSION: "latest"
+  DENO_VERSION: "2.x"
 
 jobs:
   quality-check:
@@ -17,19 +16,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        uses: actions/checkout@v5
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
         with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
-          cache-dependency-path: front/pnpm-lock.yaml
+          deno-version: ${{ env.DENO_VERSION }}
 
       - name: Quality checks
         run: make front.check

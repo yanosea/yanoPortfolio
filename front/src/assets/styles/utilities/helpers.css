@@ -1,0 +1,95 @@
+/**
+ * Custom Utility Classes
+ * Helper utilities using @utility directive
+ */
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Text Color Utilities
+   ───────────────────────────────────────────────────────────────────────── */
+
+@utility text-primary {
+  color: var(--color-fg-primary);
+}
+
+@utility text-secondary {
+  color: var(--color-fg-secondary);
+}
+
+@utility text-muted {
+  color: var(--color-fg-muted);
+}
+
+@utility text-accent {
+  color: var(--color-accent-primary);
+}
+
+@utility text-red {
+  color: var(--color-accent-red);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Background Utilities
+   ───────────────────────────────────────────────────────────────────────── */
+
+@utility bg-primary {
+  background-color: var(--color-bg-primary);
+}
+
+@utility bg-elevated {
+  background-color: var(--color-bg-elevated);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Border Utilities
+   ───────────────────────────────────────────────────────────────────────── */
+
+@utility border-primary {
+  border-color: var(--color-border-primary);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Interactive Utilities
+   ───────────────────────────────────────────────────────────────────────── */
+
+@utility hover-fade {
+  transition: var(--transition-opacity);
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Scrollbar Utilities
+   ───────────────────────────────────────────────────────────────────────── */
+
+@utility custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: var(--color-bg-secondary);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-border-primary);
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--color-border-secondary);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Link Utilities
+   ───────────────────────────────────────────────────────────────────────── */
+
+@utility link-text {
+  color: var(--color-accent-blue);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-smooth);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-accent-aqua);
+  }
+}

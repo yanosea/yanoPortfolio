@@ -1,0 +1,56 @@
+/**
+ * Prose Styles
+ * Typography plugin configuration for Everforest theme
+ */
+
+@utility prose {
+  --tw-prose-body: var(--color-light-fg);
+  --tw-prose-headings: var(--color-light-fg);
+  --tw-prose-lead: var(--color-light-fg);
+  --tw-prose-links: var(--color-light-blue);
+  --tw-prose-bold: var(--color-light-fg);
+  --tw-prose-counters: var(--color-light-grey1);
+  --tw-prose-bullets: var(--color-light-grey1);
+  --tw-prose-hr: var(--color-light-bg3);
+  --tw-prose-quotes: var(--color-light-fg);
+  --tw-prose-quote-borders: var(--color-light-bg3);
+  --tw-prose-captions: var(--color-light-grey1);
+  --tw-prose-code: var(--color-light-green);
+  --tw-prose-pre-code: var(--color-light-fg);
+  --tw-prose-pre-bg: var(--color-light-bg2);
+  --tw-prose-th-borders: var(--color-light-bg3);
+  --tw-prose-td-borders: var(--color-light-bg2);
+  --tw-prose-invert-body: var(--color-dark-fg);
+  --tw-prose-invert-headings: var(--color-dark-fg);
+  --tw-prose-invert-lead: var(--color-dark-fg);
+  --tw-prose-invert-links: var(--color-dark-blue);
+  --tw-prose-invert-bold: var(--color-dark-fg);
+  --tw-prose-invert-counters: var(--color-dark-grey1);
+  --tw-prose-invert-bullets: var(--color-dark-grey1);
+  --tw-prose-invert-hr: var(--color-dark-bg3);
+  --tw-prose-invert-quotes: var(--color-dark-fg);
+  --tw-prose-invert-quote-borders: var(--color-dark-bg3);
+  --tw-prose-invert-captions: var(--color-dark-grey1);
+  --tw-prose-invert-code: var(--color-dark-green);
+  --tw-prose-invert-pre-code: var(--color-dark-fg);
+  --tw-prose-invert-pre-bg: var(--color-dark-bg1);
+  --tw-prose-invert-th-borders: var(--color-dark-bg3);
+  --tw-prose-invert-td-borders: var(--color-dark-bg2);
+
+  :not(pre) > code::before,
+  :not(pre) > code::after {
+    content: none;
+  }
+}
+
+@layer components {
+  .prose a {
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-smooth);
+  }
+
+  .prose a:hover,
+  .prose a:focus-visible {
+    color: var(--color-accent-aqua);
+  }
+}

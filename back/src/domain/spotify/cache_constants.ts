@@ -1,21 +1,16 @@
 /**
- * @fileoverview Cache constants
+ * Cache constants
  */
 
 /**
  * Cache keys for Spotify-related data
  * These match the actual keys used in SpotifyApiClient and OAuthService
- * @constant {object} SPOTIFY_CACHE_KEYS - Cache keys
  */
 export const SPOTIFY_CACHE_KEYS = {
-  NOW_PLAYING: "now-playing",
-  LAST_PLAYED: "last-played",
+  /** Key for Spotify access token */
   ACCESS_TOKEN: "access-token",
+  /** Key for last played track data */
+  LAST_PLAYED: "last-played",
+  /** Key for currently playing track data */
+  NOW_PLAYING: "now-playing",
 } as const;
-
-/**
- * Type alias for cache key values
- * @type {(typeof SPOTIFY_CACHE_KEYS)[keyof typeof SPOTIFY_CACHE_KEYS]} - SpotifyCacheKey
- */
-export type SpotifyCacheKey =
-  (typeof SPOTIFY_CACHE_KEYS)[keyof typeof SPOTIFY_CACHE_KEYS];

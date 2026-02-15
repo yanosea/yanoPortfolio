@@ -1,0 +1,27 @@
+/**
+ * Typography System
+ * Font families and fluid typography scale
+ */
+
+@theme {
+  /* ─────────────────────────────────────────────────────────────────────────
+     Font Family
+     ───────────────────────────────────────────────────────────────────────── */
+
+  --font-family-base:
+    "M PLUS 1 Code", monospace, system-ui, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Fluid Typography Scale
+     ───────────────────────────────────────────────────────────────────────── */
+
+  --font-size-xs: clamp(0.75rem, 0.7rem + 0.2vw, 0.8125rem);
+  --font-size-small: clamp(0.8125rem, 0.75rem + 0.25vw, 0.875rem);
+  --font-size-medium: clamp(0.875rem, 0.8rem + 0.3vw, 0.9375rem);
+  --font-size-base: clamp(0.875rem, 0.8rem + 0.4vw, 1rem);
+  --font-size-large: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --font-size-xl: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+  --font-size-2xl: clamp(1.125rem, 1.05rem + 0.35vw, 1.25rem);
+  --font-size-3xl: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+}

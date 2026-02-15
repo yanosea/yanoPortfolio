@@ -1,0 +1,54 @@
+/**
+ * Main CSS Entry Point
+ * Organized with CSS Cascade Layers
+ *
+ * Layer order: theme, base, components, utilities
+ * - theme: Design tokens (colors, typography, animations)
+ * - base: Reset and document-level styles
+ * - components: Component-specific styles
+ * - utilities: Helper classes
+ */
+
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Theme Layer - Design Tokens
+   ───────────────────────────────────────────────────────────────────────── */
+@import "./theme/colors.css";
+@import "./theme/typography.css";
+@import "./theme/animations.css";
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Base Layer - Reset and Document Styles
+   ───────────────────────────────────────────────────────────────────────── */
+@import "./base/reset.css";
+@import "./base/document.css";
+@import "./base/prose.css";
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Components Layer - Component Styles
+   ───────────────────────────────────────────────────────────────────────── */
+@import "./components/card.css";
+@import "./components/terminal.css";
+@import "./components/spotify.css";
+@import "./components/modal.css";
+@import "./components/tag.css";
+@import "./components/navigation.css";
+@import "./components/buttons.css";
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Utilities Layer - Helper Classes
+   ───────────────────────────────────────────────────────────────────────── */
+@import "./utilities/helpers.css";
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Configuration
+   ───────────────────────────────────────────────────────────────────────── */
+@variant dark (&:is(.dark *));
+@view-transition {
+  navigation: auto;
+}
+
+/* Code highlight theme placeholder */
+/* insert-code-theme */

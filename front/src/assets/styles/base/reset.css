@@ -1,0 +1,32 @@
+/**
+ * Base Reset Styles
+ * Minimal reset extending Tailwind's preflight
+ */
+
+@layer base {
+  /* Ensure smooth scrolling and basic accessibility */
+  html {
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+  }
+
+  /* Accessibility: Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none;
+    }
+  }
+}

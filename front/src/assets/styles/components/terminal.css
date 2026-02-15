@@ -1,0 +1,221 @@
+/**
+ * Terminal Components
+ *
+ * Terminal emulator UI styles including prompt, input, output, and history.
+ */
+
+@layer components {
+  .terminal-container {
+    background-color: var(--color-card-bg);
+    font-size: var(--font-size-medium);
+    line-height: 1.6;
+    color: var(--color-fg-primary);
+    scroll-behavior: smooth;
+    contain: layout style paint;
+    flex: 1;
+    min-height: 0;
+    transition: var(--transition-colors);
+  }
+
+  .terminal-ascii-art {
+    color: var(--color-accent-primary);
+    font-size: var(--font-size-small);
+    line-height: 1.2;
+  }
+
+  .terminal-command {
+    color: var(--color-accent-aqua);
+    font-weight: 500;
+  }
+
+  .terminal-error {
+    color: var(--color-accent-red);
+  }
+
+  .terminal-success {
+    color: var(--color-accent-primary);
+  }
+
+  .terminal-link {
+    color: var(--color-accent-blue);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color var(--duration-fast) var(--ease-smooth);
+  }
+
+  .terminal-link:hover {
+    color: var(--color-accent-aqua);
+  }
+
+  .terminal-prompt {
+    display: inline;
+    flex-shrink: 0;
+    font-size: var(--font-size-medium);
+    white-space: nowrap;
+  }
+
+  .terminal-prompt span {
+    display: inline;
+  }
+
+  .terminal-user {
+    color: var(--color-accent-primary);
+    font-weight: 500;
+  }
+
+  .terminal-at {
+    color: var(--color-fg-primary);
+  }
+
+  .terminal-host {
+    color: var(--color-accent-blue);
+    font-weight: 500;
+  }
+
+  .terminal-colon {
+    color: var(--color-fg-primary);
+  }
+
+  .terminal-path {
+    color: var(--color-accent-purple);
+  }
+
+  .terminal-dollar {
+    color: var(--color-fg-primary);
+  }
+
+  .terminal-input-wrapper {
+    position: relative;
+  }
+
+  .terminal-input {
+    flex: 0 1 auto;
+    width: auto;
+    min-width: 0;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: var(--color-fg-primary);
+    font-size: var(--font-size-medium);
+    caret-color: transparent;
+  }
+
+  /* Box cursor with blink animation */
+  .terminal-cursor {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1ch;
+    height: 1.2em;
+    background-color: var(--color-accent-primary);
+    pointer-events: none;
+    animation: cursor-blink 1s step-end infinite;
+  }
+
+  /* Blink animation keyframes */
+  @keyframes cursor-blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
+  /* Hide cursor when input is not focused */
+  .terminal-form:not(:focus-within) .terminal-cursor {
+    display: none;
+  }
+
+  /* Accessibility: disable animation for users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .terminal-cursor {
+      animation: none;
+    }
+  }
+
+  .terminal-input::placeholder {
+    color: var(--color-fg-secondary);
+    opacity: 0.5;
+  }
+
+  .terminal-hint {
+    color: var(--color-accent-aqua);
+    font-size: var(--font-size-small);
+  }
+
+  .terminal-history-output {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .man-page .man-section {
+    margin-top: 1em;
+  }
+
+  .man-page .man-body {
+    padding-left: 4ch;
+  }
+
+  .man-page .man-options {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .terminal-stdin-prompt {
+    color: var(--color-accent-yellow);
+    font-weight: 500;
+    margin-right: 0.5ch;
+  }
+
+  .terminal-help-list {
+    display: flex;
+    flex-direction: column;
+    padding-left: 2ch;
+  }
+
+  .terminal-help-item {
+    display: grid;
+    grid-template-columns: 12ch 1fr;
+    align-items: baseline;
+  }
+
+  .terminal-help-desc {
+    color: var(--color-fg-primary);
+  }
+
+  .terminal-info {
+    color: var(--color-accent-aqua);
+  }
+
+  body:has(#terminal-container) {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  body:has(#terminal-container) #main-content {
+    min-height: 0;
+  }
+
+  @media (max-width: 640px) {
+    .terminal-container {
+      min-height: 400px;
+      font-size: var(--font-size-small);
+    }
+
+    .terminal-ascii-art {
+      font-size: 0.55rem;
+    }
+
+    .terminal-form {
+      gap: 0.25rem;
+    }
+
+    .terminal-prompt,
+    .terminal-input {
+      font-size: var(--font-size-small);
+    }
+  }
+}

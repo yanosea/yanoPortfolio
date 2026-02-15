@@ -1,0 +1,3 @@
+/* Tailwind CSS base */
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";

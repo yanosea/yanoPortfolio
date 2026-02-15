@@ -1,0 +1,13 @@
+#
+# Automatic image transformation for all images in this directory and subdirectories
+#
+
+transformImages:
+  - resize: [800]
+    format: [avif, webp, jpg]
+  - resize: [400]
+    suffix: -small
+    format: [avif, webp, jpg]
+  - resize: [800, 800]
+    suffix: "@2"
+    format: [avif, webp, jpg]

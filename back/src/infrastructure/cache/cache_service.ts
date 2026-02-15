@@ -1,11 +1,12 @@
 /**
- * @fileoverview Cache repository implementation
+ * Cache repository implementation
  */
 
 // domain
 import { EnvironmentConfig } from "@/domain/common/environments.ts";
 import { Result } from "@/domain/common/result.ts";
 import { DomainError, ExternalServiceError } from "@/domain/error/error.ts";
+import { ERROR_CODES } from "@/domain/error/error_codes.ts";
 import { EncryptionRepository } from "@/domain/security/encryption_repository.ts";
 import { CacheRepository } from "@/domain/spotify/cache_repository.ts";
 
@@ -13,17 +14,18 @@ import { EnvironmentUtils, getEnvironmentUtils } from "../config/env_utils.ts";
 
 /**
  * Generic cache entry
- * @interface CacheEntry
  */
 interface CacheEntry {
+  /** Cached data */
   data: unknown;
+  /** Timestamp when the data was cached (in milliseconds since epoch) */
   timestamp: number;
+  /** Time to live in milliseconds */
   ttl: number;
 }
 
 /**
- * Cache Service
- * @class CacheService
+ * Cache Service implementation
  */
 export class CacheService implements CacheRepository {
   private static memoryCache = new Map<string, CacheEntry>();
@@ -34,8 +36,8 @@ export class CacheService implements CacheRepository {
 
   /**
    * Construct a new CacheService
-   * @param {EnvironmentConfig} env - Environment configuration
-   * @param {EncryptionRepository} encryptionService - Encryption service for secure data handling
+   * @param env - Environment configuration
+   * @param encryptionService - Encryption service for secure data handling
    */
   constructor(
     env: EnvironmentConfig,
@@ -49,11 +51,11 @@ export class CacheService implements CacheRepository {
 
   /**
    * Get cached data
-   * @param {string} key - Cache key
-   * @param {number} maxAge - Maximum age in milliseconds (optional)
-   * @param {boolean} useKV - Use KV storage in addition to memory cache (optional, defaults to false)
-   * @param {boolean} needDecryption - Whether the cached data needs to be decrypted (optional, defaults to false)
-   * @returns {Promise<Result<{ found: boolean; data: unknown }, DomainError>>} - Result with cache hit status and data
+   * @param key - Cache key
+   * @param maxAge - Maximum age in milliseconds (optional)
+   * @param useKV - Use KV storage in addition to memory cache (optional, defaults to false)
+   * @param needDecryption - Whether the cached data needs to be decrypted (optional, defaults to false)
+   * @returns Result with cache hit status and data
    */
   async get(
     key: string,
@@ -77,7 +79,7 @@ export class CacheService implements CacheRepository {
             return Result.fail(
               new DomainError(
                 "Decryption requested but encryption service is not available",
-                "ENCRYPTION_UNAVAILABLE",
+                ERROR_CODES.ENCRYPTION_UNAVAILABLE,
               ),
             );
           }
@@ -126,7 +128,7 @@ export class CacheService implements CacheRepository {
               return Result.fail(
                 new DomainError(
                   "Decryption requested but encryption service is not available",
-                  "ENCRYPTION_UNAVAILABLE",
+                  ERROR_CODES.ENCRYPTION_UNAVAILABLE,
                 ),
               );
             }
@@ -185,7 +187,7 @@ export class CacheService implements CacheRepository {
       }`;
       return Result.fail(
         this.envUtils.isLocalDevelopment()
-          ? new DomainError(errorMessage, "CACHE_ERROR")
+          ? new DomainError(errorMessage, ERROR_CODES.CACHE_ERROR)
           : new ExternalServiceError(errorMessage, "Cloudflare KV"),
       );
     }
@@ -193,12 +195,12 @@ export class CacheService implements CacheRepository {
 
   /**
    * Set cached data
-   * @param {string} key - Cache key
-   * @param {unknown} data - Data to cache
-   * @param {number} ttl - Time to live in milliseconds (optional)
-   * @param {boolean} useKV - Use KV storage in addition to memory cache (optional, defaults to false)
-   * @param {boolean} useEncryption - Whether the data should be encrypted before storage (optional, defaults to false)
-   * @returns {Promise<Result<void, DomainError>>} - Result indicating success or failure
+   * @param key - Cache key
+   * @param data - Data to cache
+   * @param ttl - Time to live in milliseconds (optional)
+   * @param useKV - Use KV storage in addition to memory cache (optional, defaults to false)
+   * @param useEncryption - Whether the data should be encrypted before storage (optional, defaults to false)
+   * @returns Result indicating success or failure
    */
   async set(
     key: string,
@@ -224,7 +226,7 @@ export class CacheService implements CacheRepository {
           return Result.fail(
             new DomainError(
               "Encryption requested but encryption service is not available",
-              "ENCRYPTION_UNAVAILABLE",
+              ERROR_CODES.ENCRYPTION_UNAVAILABLE,
             ),
           );
         }
@@ -285,7 +287,7 @@ export class CacheService implements CacheRepository {
       }`;
       return Result.fail(
         this.envUtils.isLocalDevelopment()
-          ? new DomainError(errorMessage, "CACHE_ERROR")
+          ? new DomainError(errorMessage, ERROR_CODES.CACHE_ERROR)
           : new ExternalServiceError(errorMessage, "Cloudflare KV"),
       );
     }
@@ -293,9 +295,9 @@ export class CacheService implements CacheRepository {
 
   /**
    * Get data from memory cache
-   * @param {string} key - Cache key
-   * @param {number} maxAge - Maximum age in milliseconds
-   * @returns {{ found: boolean; data: unknown }} - Cache hit status and data
+   * @param key - Cache key
+   * @param maxAge - Maximum age in milliseconds
+   * @returns Cache hit status and data
    */
   private getFromMemory(
     key: string,
@@ -321,9 +323,9 @@ export class CacheService implements CacheRepository {
 
   /**
    * Get data from KV cache
-   * @param {string} key - Cache key
-   * @param {number} maxAge - Maximum age in milliseconds
-   * @returns {Promise<{ found: boolean; data: unknown }>} - Cache hit status and data
+   * @param key - Cache key
+   * @param maxAge - Maximum age in milliseconds
+   * @returns Cache hit status and data
    */
   private async getFromKV(
     key: string,
@@ -356,9 +358,9 @@ export class CacheService implements CacheRepository {
 
   /**
    * Set data to memory cache
-   * @param {string} key - Cache key
-   * @param {unknown} data - Data to cache
-   * @param {number} ttl - Time to live in milliseconds
+   * @param key - Cache key
+   * @param data - Data to cache
+   * @param ttl - Time to live in milliseconds
    */
   private setToMemory(
     key: string,
@@ -377,10 +379,10 @@ export class CacheService implements CacheRepository {
 
   /**
    * Set data to KV cache
-   * @param {string} key - Cache key
-   * @param {unknown} data - Data to cache
-   * @param {number} ttl - Time to live in milliseconds
-   * @returns {Promise<boolean>} - Success status
+   * @param key - Cache key
+   * @param data - Data to cache
+   * @param ttl - Time to live in milliseconds
+   * @returns Success status
    */
   private async setToKV(
     key: string,
