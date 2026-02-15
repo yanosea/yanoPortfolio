@@ -1,5 +1,5 @@
 /**
- * @fileoverview Spotify Handler
+ * Spotify handler
  */
 
 // application
@@ -14,21 +14,22 @@ import {
 import { GetLastPlayedResponse, GetNowPlayingResponse } from "./response.ts";
 
 /**
- * Spotify Handler
- * @class SpotifyHandler
+ * Spotify handler
  */
 export class SpotifyHandler {
   /**
    * Construct a new SpotifyHandler
+   * @param getLastPlayedUseCase - Get last played use case
+   * @param getNowPlayingUseCase - Get now playing use case
    */
   constructor(
-    private readonly getNowPlayingUseCase: GetNowPlayingUseCase,
     private readonly getLastPlayedUseCase: GetLastPlayedUseCase,
+    private readonly getNowPlayingUseCase: GetNowPlayingUseCase,
   ) {}
 
   /**
    * Handle GET /spotify/now-playing request
-   * @returns {Promise<Response>} - HTTP response
+   * @returns HTTP response
    */
   async handleGetNowPlaying(): Promise<Response> {
     try {
@@ -71,7 +72,7 @@ export class SpotifyHandler {
 
   /**
    * Handle GET /spotify/last-played request
-   * @returns {Promise<Response>} - HTTP response
+   * @returns HTTP response
    */
   async handleGetLastPlayed(): Promise<Response> {
     try {

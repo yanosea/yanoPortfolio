@@ -1,5 +1,5 @@
 /**
- * @fileoverview Cache repository interface
+ * Cache repository interface
  */
 
 // domain
@@ -7,17 +7,16 @@ import { Result } from "@/domain/common/result.ts";
 import { DomainError } from "@/domain/error/error.ts";
 
 /**
- * Cache Repository Interface
- * @interface CacheRepository
+ * Cache repository interface
  */
 export interface CacheRepository {
   /**
    * Get cached data
-   * @param {string} key - Cache key
-   * @param {number} maxAge - Maximum age in milliseconds (optional)
-   * @param {boolean} useKV - Use KV storage in addition to memory cache (optional, defaults to false)
-   * @param {boolean} needDecryption - Whether the cached data needs to be decrypted (optional, defaults to false)
-   * @returns {Promise<Result<{ found: boolean; data: unknown }, DomainError>>} - Result containing found status and data
+   * @param key - Cache key
+   * @param maxAge - Maximum age in milliseconds (optional)
+   * @param useKV - Use KV storage in addition to memory cache (optional, defaults to false)
+   * @param needDecryption - Whether the cached data needs to be decrypted (optional, defaults to false)
+   * @returns Result containing found status and data
    */
   get(
     key: string,
@@ -28,12 +27,12 @@ export interface CacheRepository {
 
   /**
    * Set cached data
-   * @param {string} key - Cache key
-   * @param {unknown} data - Data to cache
-   * @param {number} ttl - Time to live in milliseconds (optional)
-   * @param {boolean} useKV - Use KV storage in addition to memory cache (optional, defaults to false)
-   * @param {boolean} useEncryption - Whether the data should be encrypted before storage (optional, defaults to false)
-   * @returns {Promise<Result<void, DomainError>>} - Result indicating success or failure
+   * @param key - Cache key
+   * @param data - Data to cache
+   * @param ttl - Time to live in milliseconds (optional)
+   * @param useKV - Use KV storage in addition to memory cache (optional, defaults to false)
+   * @param useEncryption - Whether the data should be encrypted before storage (optional, defaults to false)
+   * @returns Result indicating success or failure
    */
   set(
     key: string,

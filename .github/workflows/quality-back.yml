@@ -1,0 +1,30 @@
+name: Backend Quality Check
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "back/**"
+      - ".github/workflows/quality-backend.yml"
+
+env:
+  DENO_VERSION: "2.x"
+
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Quality checks
+        run: make back.check
+
+      - name: Test
+        run: make back.test

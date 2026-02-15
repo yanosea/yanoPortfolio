@@ -1,5 +1,0 @@
-# IGNORE FOLDER
-pnpm-lock.yaml
-# IGNORE FILE
-.astro/
-dist/

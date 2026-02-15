@@ -1,0 +1,119 @@
+/**
+ * Everforest Color Palette & Theme Configuration
+ * Based on: https://github.com/sainnhe/everforest
+ * A comfortable & pleasant color scheme designed to protect developers' eyes.
+ */
+
+@theme {
+  /* ─────────────────────────────────────────────────────────────────────────
+     Everforest Color Palette - Raw Values
+     ───────────────────────────────────────────────────────────────────────── */
+
+  /* Dark Palette (Medium variant) */
+  --color-dark-bg-dim: #232a2e;
+  --color-dark-bg0: #2d353b;
+  --color-dark-bg1: #343f44;
+  --color-dark-bg2: #3d484d;
+  --color-dark-bg3: #475258;
+  --color-dark-bg4: #4f585e;
+  --color-dark-bg-green: #3d484d;
+
+  --color-dark-fg: #d3c6aa;
+  --color-dark-red: #e67e80;
+  --color-dark-yellow: #dbbc7f;
+  --color-dark-green: #a7c080;
+  --color-dark-aqua: #83c092;
+  --color-dark-blue: #7fbbb3;
+  --color-dark-purple: #d699b6;
+
+  --color-dark-grey1: #859289;
+  --color-dark-grey2: #9da9a0;
+
+  /* Light Palette (Medium variant) */
+  --color-light-bg-dim: #efebd4;
+  --color-light-bg0: #fdf6e3;
+  --color-light-bg1: #f4f0d9;
+  --color-light-bg2: #efebd4;
+  --color-light-bg3: #e6e2cc;
+  --color-light-bg4: #e0dcc7;
+  --color-light-bg-green: #f1f3d4;
+
+  --color-light-fg: #5c6a72;
+  --color-light-red: #f85552;
+  --color-light-yellow: #dfa000;
+  --color-light-green: #8da101;
+  --color-light-aqua: #35a77c;
+  --color-light-blue: #3a94c5;
+  --color-light-purple: #df69ba;
+
+  --color-light-grey1: #939f91;
+  --color-light-grey2: #829181;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Semantic Color Tokens - Light Mode (Default)
+     ───────────────────────────────────────────────────────────────────────── */
+
+  --color-bg-primary: var(--color-light-bg0);
+  --color-bg-secondary: var(--color-light-bg1);
+  --color-bg-elevated: var(--color-light-bg2);
+  --color-bg-dim: var(--color-light-bg-dim);
+
+  --color-fg-primary: var(--color-light-fg);
+  --color-fg-secondary: var(--color-light-grey1);
+  --color-fg-muted: var(--color-light-grey2);
+
+  --color-border-primary: var(--color-light-bg4);
+  --color-border-secondary: var(--color-light-bg3);
+
+  --color-accent-primary: var(--color-light-green);
+  --color-accent-blue: var(--color-light-blue);
+  --color-accent-red: var(--color-light-red);
+  --color-accent-yellow: var(--color-light-yellow);
+  --color-accent-purple: var(--color-light-purple);
+  --color-accent-aqua: var(--color-light-aqua);
+
+  --color-card-bg: var(--color-light-bg1);
+  --color-card-border: var(--color-light-bg3);
+  --color-card-hover-bg: var(--color-light-bg2);
+  --color-card-hover-border: var(--color-light-bg4);
+
+  --color-tag-bg: var(--color-light-bg2);
+  --color-tag-border: var(--color-light-bg3);
+  --color-tag-active-bg: var(--color-light-bg-green);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Dark Mode Theme Override
+   ───────────────────────────────────────────────────────────────────────── */
+
+@layer theme {
+  .dark {
+    --color-bg-primary: var(--color-dark-bg0);
+    --color-bg-secondary: var(--color-dark-bg1);
+    --color-bg-elevated: var(--color-dark-bg2);
+    --color-bg-dim: var(--color-dark-bg-dim);
+
+    --color-fg-primary: var(--color-dark-fg);
+    --color-fg-secondary: var(--color-dark-grey1);
+    --color-fg-muted: var(--color-dark-grey2);
+
+    --color-border-primary: var(--color-dark-bg4);
+    --color-border-secondary: var(--color-dark-bg3);
+
+    --color-accent-primary: var(--color-dark-green);
+    --color-accent-blue: var(--color-dark-blue);
+    --color-accent-red: var(--color-dark-red);
+    --color-accent-yellow: var(--color-dark-yellow);
+    --color-accent-purple: var(--color-dark-purple);
+    --color-accent-aqua: var(--color-dark-aqua);
+
+    --color-card-bg: var(--color-dark-bg1);
+    --color-card-border: var(--color-dark-bg3);
+    --color-card-hover-bg: var(--color-dark-bg2);
+    --color-card-hover-border: var(--color-dark-bg4);
+
+    --color-tag-bg: var(--color-dark-bg2);
+    --color-tag-border: var(--color-dark-bg3);
+    --color-tag-active-bg: var(--color-dark-bg-green);
+  }
+}

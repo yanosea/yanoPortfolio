@@ -1,5 +1,5 @@
 /**
- * @fileoverview Routes configuration with manual DI
+ * Routes configuration with manual DI
  */
 
 // application
@@ -14,13 +14,14 @@ import { getEnvironmentUtils } from "@/infrastructure/config/env_utils.ts";
 import { OAuthService } from "@/infrastructure/oauth/oauth_service.ts";
 import { EncryptionService } from "@/infrastructure/security/encryption_service.ts";
 
+import { SPOTIFY_ROUTES } from "./route_constants.ts";
+import { HTTP_METHODS } from "../common/http_constants.ts";
 import { createNotFoundResponse } from "../settings/common.ts";
 import { CorsMiddleware } from "../settings/middleware.ts";
 import { SpotifyHandler } from "../spotify/handler.ts";
 
 /**
  * Application routes with manual dependency injection
- * @class Routes
  */
 export class Routes {
   private readonly corsMiddleware: CorsMiddleware;
@@ -28,7 +29,7 @@ export class Routes {
 
   /**
    * Construct a new Routes
-   * @param {EnvironmentConfig} env - Environment configuration
+   * @param env - Environment configuration
    */
   constructor(env: EnvironmentConfig) {
     this.env = env;
@@ -39,8 +40,8 @@ export class Routes {
 
   /**
    * Handle incoming HTTP request
-   * @param {Request} request - HTTP request
-   * @returns {Promise<Response>} - HTTP response
+   * @param request - HTTP request
+   * @returns HTTP response
    */
   async handle(request: Request): Promise<Response> {
     // performance measurement
@@ -50,13 +51,13 @@ export class Routes {
     const method = request.method;
     console.log("Request:", JSON.stringify({ method, path }));
     // handle CORS preflight
-    if (method === "OPTIONS") {
+    if (method === HTTP_METHODS.OPTIONS) {
       return this.corsMiddleware.handlePreflight(request);
     }
     // route handling
     let response: Response;
     // only GET method is supported
-    if (method === "GET") {
+    if (method === HTTP_METHODS.GET) {
       response = await this.handleGetRequest(path);
     } else {
       response = createNotFoundResponse();
@@ -83,17 +84,14 @@ export class Routes {
 
   /**
    * Handle GET requests
-   * @param {string} path - Request path
-   * @returns {Promise<Response>} - HTTP response
+   * @param path - Request path
+   * @returns HTTP response
    */
   private async handleGetRequest(
     path: string,
   ): Promise<Response> {
     // spotify routes
-    if (path === "/spotify/now-playing") {
-      return await this.spotifyRoute(path);
-    }
-    if (path === "/spotify/last-played") {
+    if ((Object.values(SPOTIFY_ROUTES) as string[]).includes(path)) {
       return await this.spotifyRoute(path);
     }
     // not found
@@ -102,36 +100,35 @@ export class Routes {
 
   /**
    * Spotify routes with manual DI
-   * @param {string} path - Request path
-   * @returns {Promise<Response>} - HTTP response
+   * @param path - Request path
+   * @returns HTTP response
    */
   private async spotifyRoute(
     path: string,
   ): Promise<Response> {
     // manual dependency injection per route
+    const envUtils = getEnvironmentUtils();
     const encryptionService = new EncryptionService();
     const cacheRepository = new CacheService(this.env, encryptionService);
-    const tokenRepository = new OAuthService(cacheRepository);
+    const tokenRepository = new OAuthService(cacheRepository, envUtils);
     const trackRepository = new SpotifyApiClient(
       tokenRepository,
       cacheRepository,
     );
     // application layer
-    const getNowPlayingUseCase = new GetNowPlayingUseCase(trackRepository);
     const getLastPlayedUseCase = new GetLastPlayedUseCase(trackRepository);
+    const getNowPlayingUseCase = new GetNowPlayingUseCase(trackRepository);
     // presentation layer
     const spotifyHandler = new SpotifyHandler(
-      getNowPlayingUseCase,
       getLastPlayedUseCase,
+      getNowPlayingUseCase,
     );
     // route to appropriate handler method
-    if (path === "/spotify/now-playing") {
-      return await spotifyHandler.handleGetNowPlaying();
-    }
-    if (path === "/spotify/last-played") {
-      return await spotifyHandler.handleGetLastPlayed();
-    }
-    // not found
-    return createNotFoundResponse();
+    const routeHandlers: Record<string, () => Promise<Response>> = {
+      [SPOTIFY_ROUTES.LAST_PLAYED]: () => spotifyHandler.handleGetLastPlayed(),
+      [SPOTIFY_ROUTES.NOW_PLAYING]: () => spotifyHandler.handleGetNowPlaying(),
+    };
+    const handler = routeHandlers[path];
+    return handler ? await handler() : createNotFoundResponse();
   }
 }

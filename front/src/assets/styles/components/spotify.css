@@ -1,0 +1,102 @@
+/**
+ * Spotify Components
+ *
+ * Spotify widget styles including status display, album art, and error states.
+ */
+
+@layer components {
+  .spotify-status,
+  .spotify-time,
+  .spotify-track,
+  .spotify-metadata {
+    font-size: var(--font-size-small);
+  }
+
+  #spotify-icon svg,
+  #spotify-error div[aria-hidden="true"] svg {
+    fill: currentColor;
+  }
+
+  .skeleton-box {
+    background-color: var(--color-bg-elevated);
+    opacity: 0.6;
+    animation: skeleton-pulse 1.5s var(--ease-smooth) infinite;
+  }
+
+  @keyframes skeleton-pulse {
+    0%,
+    100% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  #spotify-status-container.loading,
+  #spotify-status-container.collapsed {
+    transform: translateX(calc(100% + 2vw));
+  }
+
+  #spotify-content {
+    opacity: 1;
+  }
+
+  #spotify-toggle-button {
+    cursor: pointer;
+  }
+
+  #spotify-toggle-button span {
+    transition: transform var(--duration-normal) var(--ease-smooth);
+  }
+
+  #spotify-status-container.collapsed #spotify-toggle-button span,
+  #spotify-status-container.loading #spotify-toggle-button span {
+    transform: rotate(180deg);
+  }
+
+  .spotify-album-image {
+    box-shadow:
+      0 0 0 1px
+      color-mix(in srgb, var(--color-border-primary) 30%, transparent),
+      0 4px 6px color-mix(in srgb, var(--color-bg-dim) 15%, transparent);
+    transition: opacity var(--duration-fast) var(--ease-smooth);
+  }
+
+  .spotify-album-image:hover {
+    opacity: 0.8;
+  }
+
+  #spotify-error div[aria-hidden="true"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transform: translateX(-6px);
+    font-size: var(--font-size-3xl);
+  }
+
+  #spotify-error .text-secondary,
+  #spotify-error .text-red {
+    font-size: var(--font-size-small);
+  }
+
+  /* Spotify terminal command output */
+  .spotify-key {
+    color: var(--color-accent-primary);
+    font-weight: 500;
+  }
+
+  .spotify-value {
+    color: var(--color-fg-primary);
+  }
+
+  /* Fade transition for content updates */
+  .spotify-fadeable {
+    transition: opacity var(--duration-normal) var(--ease-smooth);
+  }
+
+  .spotify-fade-out {
+    opacity: 0;
+  }
+}

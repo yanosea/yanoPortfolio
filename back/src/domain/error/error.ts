@@ -1,16 +1,15 @@
 /**
- * @fileoverview Domain Error types
+ * Domain error types
  */
 
 /**
- * Base Domain Error
- * @class DomainError
+ * Base domain error
  */
 export class DomainError extends Error {
   /**
    * Construct a new DomainError
-   * @param {string} message - Error message
-   * @param {string} code - Error code
+   * @param message - Error message
+   * @param code - Error code
    */
   constructor(
     message: string,
@@ -22,13 +21,12 @@ export class DomainError extends Error {
 }
 
 /**
- * Validation Error
- * @class ValidationError
+ * Validation error
  */
 export class ValidationError extends DomainError {
   /**
    * Construct a new ValidationError
-   * @param {string} message - Message
+   * @param message - Message
    */
   constructor(message: string) {
     super(message, "VALIDATION_ERROR");
@@ -37,14 +35,13 @@ export class ValidationError extends DomainError {
 }
 
 /**
- * External Service Error
- * @class ExternalServiceError
+ * External service error
  */
 export class ExternalServiceError extends DomainError {
   /**
    * Construct a new ExternalServiceError
-   * @param {string} message - Message
-   * @param {string} service - Service name
+   * @param message - Message
+   * @param service - Service name
    */
   constructor(
     message: string,
@@ -56,13 +53,12 @@ export class ExternalServiceError extends DomainError {
 }
 
 /**
- * Configuration Error
- * @class ConfigurationError
+ * Configuration error
  */
 export class ConfigurationError extends DomainError {
   /**
    * Construct a new ConfigurationError
-   * @param {string} message - Message
+   * @param message - Message
    */
   constructor(message: string) {
     super(message, "CONFIGURATION_ERROR");

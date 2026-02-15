@@ -1,64 +1,47 @@
 /**
- * @fileoverview OAuth Service
+ * OAuth service
  */
 
 // domain
 import { Result } from "@/domain/common/result.ts";
-import { DomainError } from "@/domain/error/error.ts";
+import { DomainError, ExternalServiceError } from "@/domain/error/error.ts";
 import { SPOTIFY_CACHE_KEYS } from "@/domain/spotify/cache_constants.ts";
-import { ExternalServiceError } from "@/domain/error/error.ts";
-import { TokenRepository } from "@/domain/spotify/token_repository.ts";
 import { CacheRepository } from "@/domain/spotify/cache_repository.ts";
+import { Token } from "@/domain/spotify/token.ts";
+import { TokenRepository } from "@/domain/spotify/token_repository.ts";
 
-import { EnvironmentUtils, getEnvironmentUtils } from "../config/env_utils.ts";
+import { SPOTIFY_API_ENDPOINTS } from "../api/spotify_constants.ts";
+import { EnvironmentUtils } from "../config/env_utils.ts";
 
 /**
- * Spotify token response structure
- * @interface SpotifyTokenResponse
+ * Spotify token
  */
-interface SpotifyTokenResponse {
+interface SpotifyToken {
+  /** Access token */
   access_token: string;
-  token_type: string;
+  /** Token expiration time in seconds */
   expires_in: number;
-  refresh_token?: string;
-  scope?: string;
 }
 
 /**
- * Token data structure for internal use
- * @interface TokenData
- */
-interface TokenData {
-  accessToken: string;
-  tokenType: string;
-  expiresIn?: number;
-  expiresAt?: number;
-  refreshToken?: string;
-  scope?: string;
-}
-
-/**
- * OAuth Service
- * @class OAuthService
+ * OAuth service
  */
 export class OAuthService implements TokenRepository {
-  // Spotify token API endpoint URL
-  private static readonly TOKEN_URL = "https://accounts.spotify.com/api/token";
-  private readonly envUtils: EnvironmentUtils;
-
   /**
    * Construct a new OAuthService
-   * @param {CacheRepository} cacheRepository - Cache repository for token storage
+   * @param cacheRepository - Cache repository for token storage
+   * @param envUtils - Environment utilities
    */
-  constructor(private readonly cacheRepository: CacheRepository) {
-    this.envUtils = getEnvironmentUtils();
-  }
+  constructor(
+    private readonly cacheRepository: CacheRepository,
+    private readonly envUtils: EnvironmentUtils,
+  ) {}
 
   /**
-   * Get valid access token (refresh if needed)
-   * @returns {Promise<Result<string, DomainError>>} - Result containing valid access token
+   * Get valid token (refresh if needed)
+   * @returns Result containing valid token
    */
-  async getValidAccessToken(): Promise<Result<string, DomainError>> {
+  async getValidToken(): Promise<Result<Token, DomainError>> {
     try {
       // check cache first
       const cacheResult = await this.cacheRepository.get(
@@ -71,21 +54,30 @@ export class OAuthService implements TokenRepository {
         ok: (cache) => cache,
         fail: () => ({ found: false, data: null }),
       });
-      if (cacheData.found && cacheData.data) {
-        // if in cache and not expired, return
-        return Result.ok(cacheData.data as string);
+      if (cacheData.found) {
+        // if cache data is null, continue to refresh token
+        if (cacheData.data === null) {
+          // continue to refresh token
+        } else {
+          const tokenResult = Token.reconstruct(cacheData.data as string);
+          if (tokenResult instanceof DomainError) {
+            console.warn(
+              "Cache data corruption detected:",
+              JSON.stringify({ message: tokenResult.message }),
+            );
+            // continue to refresh token
+          } else {
+            return Result.ok(tokenResult);
+          }
+        }
       }
       // if not in cache or expired, refresh token
-      const refreshResult = await this.refreshAccessToken();
-      return refreshResult.match({
-        ok: (tokenData) => Result.ok(tokenData.accessToken),
-        fail: (error) => Result.fail(error),
-      });
+      return await this.refreshToken();
     } catch (error) {
       // if any unexpected error occurs, return an error
       return Result.fail(
         new ExternalServiceError(
-          `Failed to get access token: ${
+          `Failed to get token: ${
             error instanceof Error ? error.message : String(error)
           }`,
           "Spotify",
@@ -95,15 +87,13 @@ export class OAuthService implements TokenRepository {
   }
 
   /**
-   * Refresh access token using refresh token
-   * @returns {Promise<Result<TokenData, DomainError>>} - Result containing new access token data
+   * Refresh token using refresh token
+   * @returns Result containing new token
    */
-  private async refreshAccessToken(): Promise<
-    Result<TokenData, DomainError>
-  > {
+  private async refreshToken(): Promise<Result<Token, DomainError>> {
     try {
       // create POST request to Spotify token endpoint
-      const response = await fetch(OAuthService.TOKEN_URL, {
+      const response = await fetch(SPOTIFY_API_ENDPOINTS.TOKEN, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -129,43 +119,66 @@ export class OAuthService implements TokenRepository {
         );
       }
       // parse response
-      const tokenResponse = (await response.json()) as SpotifyTokenResponse;
-      const now = Date.now();
-      const tokenData: TokenData = {
-        accessToken: tokenResponse.access_token,
-        tokenType: tokenResponse.token_type,
-        expiresIn: tokenResponse.expires_in,
-        expiresAt: now + tokenResponse.expires_in * 1000,
-        refreshToken: tokenResponse.refresh_token ||
-          getEnvironmentUtils().getSpotifyRefreshToken(),
-        scope: tokenResponse.scope,
-      };
-      // log success
-      console.log(
-        "Token refresh success:",
-        JSON.stringify({
-          expiresIn: tokenResponse.expires_in,
-        }),
+      const spotifyTokenResponse = (await response.json()) as SpotifyToken;
+      const tokenResult = this.mapSpotifyTokenToDomain(
+        spotifyTokenResponse,
       );
-      // cache the new token with buffer time to prevent expiration issues
-      const bufferTimeMs = this.envUtils.getTokenBufferTimeMs();
-      const tokenTtl = tokenData.expiresIn
-        ? (tokenData.expiresIn * 1000) - bufferTimeMs
-        : undefined;
-      await this.cacheRepository.set(
-        SPOTIFY_CACHE_KEYS.ACCESS_TOKEN,
-        tokenData.accessToken,
-        tokenTtl,
-        true, // use KV
-        true, // use encryption
-      );
-      // return new token data
-      return Result.ok(tokenData);
+      if (tokenResult.isOk()) {
+        const token = tokenResult.unwrap();
+        // log success
+        console.log(
+          "Token refresh success:",
+          JSON.stringify({ expiresIn: spotifyTokenResponse.expires_in }),
+        );
+        // cache the new token with buffer time to prevent expiration issues
+        const bufferTimeMs = this.envUtils.getTokenBufferTimeMs();
+        const tokenTtl = (spotifyTokenResponse.expires_in * 1000) -
+          bufferTimeMs;
+        await this.cacheRepository.set(
+          SPOTIFY_CACHE_KEYS.ACCESS_TOKEN,
+          token.accessToken(),
+          tokenTtl,
+          true, // use KV
+          true, // use encryption
+        );
+        return Result.ok(token);
+      } else {
+        return Result.fail(tokenResult.unwrapError());
+      }
     } catch (error) {
       // if any unexpected error occurs, return an error
       return Result.fail(
         new ExternalServiceError(
           `Token refresh request failed: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+          "Spotify",
+        ),
+      );
+    }
+  }
+
+  /**
+   * Map Spotify API token response to domain Token entity
+   * @param spotifyToken - Spotify token data
+   * @returns Result containing the mapped Token or an error
+   */
+  private mapSpotifyTokenToDomain(
+    spotifyToken: SpotifyToken,
+  ): Result<Token, DomainError> {
+    try {
+      const tokenResult = Token.reconstruct(spotifyToken.access_token);
+      // handle potential reconstruction errors
+      if (tokenResult instanceof DomainError) {
+        return Result.fail(tokenResult);
+      }
+      // return the successfully mapped token
+      return Result.ok(tokenResult);
+    } catch (error) {
+      // if any unexpected error occurs during mapping, return a generic mapping error
+      return Result.fail(
+        new ExternalServiceError(
+          `Failed to map Spotify token: ${
             error instanceof Error ? error.message : String(error)
           }`,
           "Spotify",

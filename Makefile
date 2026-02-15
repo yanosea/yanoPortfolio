@@ -13,7 +13,7 @@ FRONT_DIR := ./front
 BACK_PID_FILE := $(BACK_DIR)/.pid
 FRONT_PID_FILE := $(FRONT_DIR)/.pid
 # development port settings
-DEV_FRONT_PORT := 4321
+DEV_FRONT_PORT := 3000
 DEV_BACK_PORT := 8080
 # shows help message defaultly
 .DEFAULT_GOAL := help
@@ -25,32 +25,32 @@ MAKEFLAGS += --no-print-directory
 .IGNORE:
 
 #
-# development targets
+# serve targets
 #
-.PHONY: dev.start dev.stop dev.back.start dev.back.stop dev.front.start dev.front.stop
+.PHONY: serve serve.stop back.serve back.serve.stop front.serve front.serve.stop
 
 # start both backend and frontend servers locally
-dev.start:
+serve:
 	@echo "$(COLOR_TITLE)starting development servers...$(COLOR_RESET)"
 	@echo ""
-	make dev.back.start
+	make back.serve
 	@echo ""
-	make dev.front.start
+	make front.serve
 	@echo ""
 	@echo "$(COLOR_DONE)all development servers started successfully!$(COLOR_RESET)"
 
 # stop both backend and frontend servers locally
-dev.stop:
+serve.stop:
 	@echo "$(COLOR_TITLE)stopping development servers...$(COLOR_RESET)"
 	@echo ""
-	make dev.back.stop
+	make back.serve.stop
 	@echo ""
-	make dev.front.stop
+	make front.serve.stop
 	@echo ""
 	@echo "$(COLOR_DONE)all development servers stopped successfully!$(COLOR_RESET)"
 
 # start backend server locally
-dev.back.start:
+back.serve:
 	@set -e; \
 	if [ -e $(BACK_PID_FILE) ]; then \
 		echo "$(COLOR_ERROR)backend server is already running...$(COLOR_RESET)"; \
@@ -58,11 +58,11 @@ dev.back.start:
 	fi; \
 	cd $(BACK_DIR) && \
 	echo "$(COLOR_HEADER)starting backend server...$(COLOR_RESET)" && \
-	deno task dev > /dev/null 2>&1 & \
+	deno task serve > /dev/null 2>&1 & \
 	echo "$(COLOR_HEADER)waiting for backend server to start...$(COLOR_RESET)" && \
 	for i in {1..60}; do \
 		sleep 1; \
-		SERVER_PID=$$(lsof -i:$(DEV_BACK_PORT) -t 2>/dev/null); \
+		SERVER_PID=$$(lsof -i:$(DEV_BACK_PORT) -t 2>/dev/null | head -1); \
 		if [ -n "$$SERVER_PID" ]; then \
 			break; \
 		fi; \
@@ -75,7 +75,7 @@ dev.back.start:
 	echo "$(COLOR_DONE)backend server started on port $(DEV_BACK_PORT) (PID: $$SERVER_PID)!$(COLOR_RESET)"
 
 # stop local backend server
-dev.back.stop:
+back.serve.stop:
 	@set -e; \
 	if [ ! -e $(BACK_PID_FILE) ]; then \
 		echo "$(COLOR_ERROR)backend server is not running...$(COLOR_RESET)"; \
@@ -97,33 +97,22 @@ dev.back.stop:
 	echo "$(COLOR_DONE)backend server stopped!$(COLOR_RESET)"
 
 # start frontend server locally
-dev.front.start:
+front.serve:
 	@set -e; \
 	if [ -e $(FRONT_PID_FILE) ]; then \
 		echo "$(COLOR_ERROR)frontend server is already running...$(COLOR_RESET)"; \
 		exit 1; \
 	fi; \
 	cd $(FRONT_DIR) && \
-	if command -v pnpm >/dev/null 2>&1; then \
-		PACKAGE_MANAGER="pnpm"; \
-	else \
-		PACKAGE_MANAGER="npx pnpm"; \
-	fi && \
-	$$PACKAGE_MANAGER install && \
 	echo "$(COLOR_HEADER)starting frontend server...$(COLOR_RESET)" && \
-	PORT=$(DEV_FRONT_PORT) $$PACKAGE_MANAGER dev > /dev/null 2>&1 & \
+	deno task lume -s --port $(DEV_FRONT_PORT) > /dev/null 2>&1 & \
 	echo "$(COLOR_HEADER)waiting for frontend server to start...$(COLOR_RESET)" && \
-	sleep 3 && \
 	for i in {1..60}; do \
-		SERVER_PID=$$(lsof -i:$(DEV_FRONT_PORT) -t 2>/dev/null | head -1); \
-		if [ -n "$$SERVER_PID" ] && ps -p $$SERVER_PID > /dev/null 2>&1; then \
-			sleep 1; \
-			VERIFY_PID=$$(lsof -i:$(DEV_FRONT_PORT) -t 2>/dev/null | head -1); \
-			if [ "$$SERVER_PID" = "$$VERIFY_PID" ]; then \
-				break; \
-			fi; \
-		fi; \
 		sleep 1; \
+		SERVER_PID=$$(lsof -i:$(DEV_FRONT_PORT) -t 2>/dev/null | head -1); \
+		if [ -n "$$SERVER_PID" ]; then \
+			break; \
+		fi; \
 		if [ $$i -eq 60 ]; then \
 			echo "$(COLOR_ERROR)timeout: frontend server failed to start within 60 seconds...$(COLOR_RESET)"; \
 			exit 1; \
@@ -133,7 +122,7 @@ dev.front.start:
 	echo "$(COLOR_DONE)frontend server started on port $(DEV_FRONT_PORT) (PID: $$SERVER_PID)!$(COLOR_RESET)"
 
 # stop local frontend server
-dev.front.stop:
+front.serve.stop:
 	@set -e; \
 	if [ ! -e $(FRONT_PID_FILE) ]; then \
 		echo "$(COLOR_ERROR)frontend server is not running...$(COLOR_RESET)"; \
@@ -162,54 +151,25 @@ dev.front.stop:
 # run frontend quality checks
 front.check:
 	@echo "$(COLOR_HEADER)running frontend quality checks...$(COLOR_RESET)"
-	@cd $(FRONT_DIR) && \
-	if command -v pnpm >/dev/null 2>&1; then \
-		PACKAGE_MANAGER="pnpm"; \
-	else \
-		PACKAGE_MANAGER="npx pnpm"; \
-	fi && \
-	$$PACKAGE_MANAGER install && \
-	$$PACKAGE_MANAGER run check
+	@cd $(FRONT_DIR) && deno task check
 	@echo "$(COLOR_DONE)frontend quality checks completed!$(COLOR_RESET)"
 
 # deploy frontend to Cloudflare Pages
 front.deploy:
 	@echo "$(COLOR_HEADER)deploying frontend...$(COLOR_RESET)"
-	@cd $(FRONT_DIR) && \
-	if command -v pnpm >/dev/null 2>&1; then \
-		PACKAGE_MANAGER="pnpm"; \
-	else \
-		PACKAGE_MANAGER="npx pnpm"; \
-	fi && \
-	$$PACKAGE_MANAGER install && \
-	$$PACKAGE_MANAGER build && \
-	$$PACKAGE_MANAGER run deploy
+	@cd $(FRONT_DIR) && deno task deploy
 	@echo "$(COLOR_DONE)frontend deployed to Cloudflare Pages!$(COLOR_RESET)"
 
 # format frontend code
 front.fmt:
 	@echo "$(COLOR_HEADER)formatting frontend code...$(COLOR_RESET)"
-	@cd $(FRONT_DIR) && \
-	if command -v pnpm >/dev/null 2>&1; then \
-		PACKAGE_MANAGER="pnpm"; \
-	else \
-		PACKAGE_MANAGER="npx pnpm"; \
-	fi && \
-	$$PACKAGE_MANAGER install && \
-	$$PACKAGE_MANAGER run fmt
+	@cd $(FRONT_DIR) && deno task fmt
 	@echo "$(COLOR_DONE)frontend code formatting completed!$(COLOR_RESET)"
 
 # run frontend tests
 front.test:
 	@echo "$(COLOR_HEADER)running frontend tests...$(COLOR_RESET)"
-	@cd $(FRONT_DIR) && \
-	if command -v pnpm >/dev/null 2>&1; then \
-		PACKAGE_MANAGER="pnpm"; \
-	else \
-		PACKAGE_MANAGER="npx pnpm"; \
-	fi && \
-	$$PACKAGE_MANAGER install && \
-	$$PACKAGE_MANAGER run test
+	@cd $(FRONT_DIR) && deno task test
 	@echo "$(COLOR_DONE)frontend tests completed!$(COLOR_RESET)"
 
 #
@@ -248,6 +208,17 @@ back.test:
 	@echo "$(COLOR_DONE)backend tests completed!$(COLOR_RESET)"
 
 #
+# documentation tasks
+#
+.PHONY: docs.diagram
+
+# generate architecture diagram
+docs.diagram:
+	@echo "$(COLOR_HEADER)generating architecture diagram...$(COLOR_RESET)"
+	@mmdc -i docs/architecture.mmd -o docs/architecture.svg -c docs/mermaid-config.json
+	@echo "$(COLOR_DONE)architecture diagram generated!$(COLOR_RESET)"
+
+#
 # universal targets
 #
 .PHONY: all clean help test
@@ -259,9 +230,9 @@ all: help
 clean:
 	@echo "$(COLOR_TITLE)cleaning build artifacts...$(COLOR_RESET)"
 	@echo ""
-	rm -rf $(FRONT_DIR)/dist
-	rm -rf $(FRONT_DIR)/.astro
-	rm -rf $(BACK_DIR)/dist
+	rm -rf $(FRONT_DIR)/node_modules
+	rm -rf $(FRONT_DIR)/_cache
+	rm -rf $(FRONT_DIR)/_site
 	rm -f $(FRONT_PID_FILE)
 	rm -f $(BACK_PID_FILE)
 	@echo "$(COLOR_DONE)clean done!$(COLOR_RESET)"
@@ -270,26 +241,29 @@ clean:
 help:
 	@echo "  $(COLOR_TITLE)yanoPortfolio - development commands$(COLOR_RESET)"
 	@echo ""
-	@echo "    $(COLOR_HEADER)[development]$(COLOR_RESET)"
-	@echo "      $(COLOR_CMD)dev.start$(COLOR_RESET)       - start both backend and frontend servers"
-	@echo "      $(COLOR_CMD)dev.stop$(COLOR_RESET)        - stop both backend and frontend servers"
-	@echo "      $(COLOR_CMD)dev.back.start$(COLOR_RESET)  - start backend server (denoflare)"
-	@echo "      $(COLOR_CMD)dev.back.stop$(COLOR_RESET)   - stop backend server"
-	@echo "      $(COLOR_CMD)dev.front.start$(COLOR_RESET) - start frontend server (astro)"
-	@echo "      $(COLOR_CMD)dev.front.stop$(COLOR_RESET)  - stop frontend server"
+	@echo "    $(COLOR_HEADER)[serve]$(COLOR_RESET)"
+	@echo "      $(COLOR_CMD)serve$(COLOR_RESET)           - start both backend and frontend servers"
+	@echo "      $(COLOR_CMD)serve.stop$(COLOR_RESET)      - stop both backend and frontend servers"
 	@echo ""
 	@echo "    $(COLOR_HEADER)[frontend]$(COLOR_RESET)"
-	@echo "      $(COLOR_CMD)front.check$(COLOR_RESET)     - run frontend quality checks (astro + format)"
+	@echo "      $(COLOR_CMD)front.serve$(COLOR_RESET)     - start frontend server (lume)"
+	@echo "      $(COLOR_CMD)front.serve.stop$(COLOR_RESET) - stop frontend server"
+	@echo "      $(COLOR_CMD)front.check$(COLOR_RESET)     - run frontend quality checks (lume + format)"
 	@echo "      $(COLOR_CMD)front.deploy$(COLOR_RESET)    - deploy frontend to Cloudflare Pages"
 	@echo "      $(COLOR_CMD)front.fmt$(COLOR_RESET)       - format frontend code"
 	@echo "      $(COLOR_CMD)front.test$(COLOR_RESET)      - run frontend tests"
 	@echo ""
 	@echo "    $(COLOR_HEADER)[backend]$(COLOR_RESET)"
+	@echo "      $(COLOR_CMD)back.serve$(COLOR_RESET)      - start backend server (denoflare)"
+	@echo "      $(COLOR_CMD)back.serve.stop$(COLOR_RESET) - stop backend server"
 	@echo "      $(COLOR_CMD)back.check$(COLOR_RESET)      - run backend quality checks (type + format + lint)"
 	@echo "      $(COLOR_CMD)back.deploy$(COLOR_RESET)     - deploy backend to Cloudflare Workers"
 	@echo "      $(COLOR_CMD)back.fmt$(COLOR_RESET)        - format backend code"
 	@echo "      $(COLOR_CMD)back.tail$(COLOR_RESET)       - tail prod backend logs"
 	@echo "      $(COLOR_CMD)back.test$(COLOR_RESET)       - run backend tests"
+	@echo ""
+	@echo "    $(COLOR_HEADER)[documentation]$(COLOR_RESET)"
+	@echo "      $(COLOR_CMD)docs.diagram$(COLOR_RESET)    - generate architecture diagram (SVG from Mermaid)"
 	@echo ""
 	@echo "    $(COLOR_HEADER)[universal]$(COLOR_RESET)"
 	@echo "      $(COLOR_CMD)all$(COLOR_RESET)             - show this help message [alias for help]"

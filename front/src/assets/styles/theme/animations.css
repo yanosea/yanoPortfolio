@@ -1,0 +1,39 @@
+/**
+ * Animation & Transition System
+ * Duration, easing, and transition definitions
+ */
+
+@theme {
+  /* ─────────────────────────────────────────────────────────────────────────
+     Duration
+     ───────────────────────────────────────────────────────────────────────── */
+
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Easing
+     ───────────────────────────────────────────────────────────────────────── */
+
+  --ease-smooth: ease-in-out;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Transition Presets
+     ───────────────────────────────────────────────────────────────────────── */
+
+  --transition-opacity: opacity var(--duration-fast) var(--ease-smooth);
+  --transition-colors:
+    color var(--duration-fast) var(--ease-smooth), background-color var(
+    --duration-fast
+  ) var(--ease-smooth), border-color var(--duration-fast) var(--ease-smooth);
+  --transition-interactive:
+    opacity var(--duration-fast) var(--ease-smooth), box-shadow var(
+    --duration-fast
+  ) var(--ease-smooth);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Layout System
+     ───────────────────────────────────────────────────────────────────────── */
+
+  --header-footer-height: 5rem;
+}

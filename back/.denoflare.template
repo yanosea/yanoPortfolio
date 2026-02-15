@@ -37,7 +37,7 @@
         "YANOPORTFOLIO_BACK_CACHE": {
           "kvNamespace": ""
         }
-      },
+      }
     },
     "yanoportfolio-back": {
       "path": "./src/main.ts",
@@ -71,10 +71,10 @@
         }
       },
       "customDomains": [
-        "api.yanosea.org",
+        "api.yanosea.org"
       ],
       "observability": true,
-      "observabilitySampleRate": 1.0,
+      "observabilitySampleRate": 1.0
     }
   }
 }

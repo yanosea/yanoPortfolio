@@ -1,31 +1,27 @@
 /**
- * @fileoverview Web Crypto API based encryption service
+ * Web Crypto API based encryption service
  */
 
 // domain
 import { Result } from "@/domain/common/result.ts";
+import { ERROR_CODES } from "@/domain/error/error_codes.ts";
 import { DomainError } from "@/domain/error/error.ts";
 import { EncryptionRepository } from "@/domain/security/encryption_repository.ts";
 
 import { getEnvironmentUtils } from "../config/env_utils.ts";
+import { ENCRYPTION_CONFIG } from "./encryption_constants.ts";
 
 /**
  * AES-GCM encryption service using Web Crypto API
- * @class EncryptionService
  */
 export class EncryptionService implements EncryptionRepository {
-  private static readonly ALGORITHM = "AES-GCM";
-  private static readonly KEY_LENGTH = 256;
-  private static readonly IV_LENGTH = 12;
-  private static readonly SALT_LENGTH = 16;
-  private static readonly PBKDF2_ITERATIONS = 10000;
   private readonly envUtils = getEnvironmentUtils();
 
   /**
    * Derive encryption key from password using PBKDF2
-   * @param {string} password - Master password
-   * @param {Uint8Array} salt - Random salt
-   * @returns {Promise<CryptoKey>} - Derived encryption key
+   * @param password - Master password
+   * @param salt - Random salt
+   * @returns Derived encryption key
    */
   private async deriveKey(
     password: string,
@@ -35,22 +31,22 @@ export class EncryptionService implements EncryptionRepository {
     const keyMaterial = await crypto.subtle.importKey(
       "raw",
       new TextEncoder().encode(password),
-      "PBKDF2",
+      ENCRYPTION_CONFIG.KEY_DERIVATION_ALGORITHM,
       false,
       ["deriveKey"],
     );
     // derive a key using PBKDF2
     return crypto.subtle.deriveKey(
       {
-        name: "PBKDF2",
+        name: ENCRYPTION_CONFIG.KEY_DERIVATION_ALGORITHM,
         salt: salt as BufferSource,
-        iterations: EncryptionService.PBKDF2_ITERATIONS,
-        hash: "SHA-256",
+        iterations: ENCRYPTION_CONFIG.PBKDF2_ITERATIONS,
+        hash: ENCRYPTION_CONFIG.HASH_ALGORITHM,
       },
       keyMaterial,
       {
-        name: EncryptionService.ALGORITHM,
-        length: EncryptionService.KEY_LENGTH,
+        name: ENCRYPTION_CONFIG.ALGORITHM,
+        length: ENCRYPTION_CONFIG.KEY_LENGTH,
       },
       false,
       ["encrypt", "decrypt"],
@@ -59,8 +55,8 @@ export class EncryptionService implements EncryptionRepository {
 
   /**
    * Encrypt sensitive data using AES-GCM
-   * @param {string} data - Plain text data to encrypt
-   * @returns {Promise<Result<string, DomainError>>} - Encrypted data as base64 string
+   * @param data - Plain text data to encrypt
+   * @returns Encrypted data as base64 string
    */
   async encrypt(data: string): Promise<Result<string, DomainError>> {
     // check if encryption is available
@@ -70,38 +66,38 @@ export class EncryptionService implements EncryptionRepository {
         return Result.fail(
           new DomainError(
             "Encryption key not configured",
-            "ENCRYPTION_UNAVAILABLE",
+            ERROR_CODES.ENCRYPTION_UNAVAILABLE,
           ),
         );
       }
       // generate random salt
       const salt = crypto.getRandomValues(
-        new Uint8Array(EncryptionService.SALT_LENGTH),
+        new Uint8Array(ENCRYPTION_CONFIG.SALT_LENGTH),
       );
       // generate random IV
       const iv = crypto.getRandomValues(
-        new Uint8Array(EncryptionService.IV_LENGTH),
+        new Uint8Array(ENCRYPTION_CONFIG.IV_LENGTH),
       );
       // derive encryption key
       const encryptionKey = this.envUtils.getEncryptionKey();
       const key = await this.deriveKey(encryptionKey, salt);
       // encrypt the data
       const encrypted = await crypto.subtle.encrypt(
-        { name: EncryptionService.ALGORITHM, iv },
+        { name: ENCRYPTION_CONFIG.ALGORITHM, iv },
         key,
         new TextEncoder().encode(data),
       );
       // combine salt + iv + encrypted data
       const combined = new Uint8Array(
-        EncryptionService.SALT_LENGTH +
-          EncryptionService.IV_LENGTH +
+        ENCRYPTION_CONFIG.SALT_LENGTH +
+          ENCRYPTION_CONFIG.IV_LENGTH +
           encrypted.byteLength,
       );
       combined.set(salt, 0);
-      combined.set(iv, EncryptionService.SALT_LENGTH);
+      combined.set(iv, ENCRYPTION_CONFIG.SALT_LENGTH);
       combined.set(
         new Uint8Array(encrypted),
-        EncryptionService.SALT_LENGTH + EncryptionService.IV_LENGTH,
+        ENCRYPTION_CONFIG.SALT_LENGTH + ENCRYPTION_CONFIG.IV_LENGTH,
       );
       // convert to base64
       const base64 = btoa(String.fromCharCode(...combined));
@@ -119,7 +115,7 @@ export class EncryptionService implements EncryptionRepository {
           `Encryption failed: ${
             error instanceof Error ? error.message : String(error)
           }`,
-          "ENCRYPTION_ERROR",
+          ERROR_CODES.ENCRYPTION_ERROR,
         ),
       );
     }
@@ -127,8 +123,8 @@ export class EncryptionService implements EncryptionRepository {
 
   /**
    * Decrypt sensitive data using AES-GCM
-   * @param {string} encryptedData - Base64 encoded encrypted data
-   * @returns {Promise<Result<string, DomainError>>} - Decrypted plain text data
+   * @param encryptedData - Base64 encoded encrypted data
+   * @returns Decrypted plain text data
    */
   async decrypt(encryptedData: string): Promise<Result<string, DomainError>> {
     // check if encryption is available
@@ -138,7 +134,7 @@ export class EncryptionService implements EncryptionRepository {
         return Result.fail(
           new DomainError(
             "Encryption key not configured",
-            "ENCRYPTION_UNAVAILABLE",
+            ERROR_CODES.ENCRYPTION_UNAVAILABLE,
           ),
         );
       }
@@ -147,21 +143,21 @@ export class EncryptionService implements EncryptionRepository {
         atob(encryptedData).split("").map((char) => char.charCodeAt(0)),
       );
       // extract salt, IV, and encrypted data
-      const salt = combined.slice(0, EncryptionService.SALT_LENGTH);
+      const salt = combined.slice(0, ENCRYPTION_CONFIG.SALT_LENGTH);
       const iv = combined.slice(
-        EncryptionService.SALT_LENGTH,
-        EncryptionService.SALT_LENGTH + EncryptionService.IV_LENGTH,
+        ENCRYPTION_CONFIG.SALT_LENGTH,
+        ENCRYPTION_CONFIG.SALT_LENGTH + ENCRYPTION_CONFIG.IV_LENGTH,
       );
       // encrypted data
       const encrypted = combined.slice(
-        EncryptionService.SALT_LENGTH + EncryptionService.IV_LENGTH,
+        ENCRYPTION_CONFIG.SALT_LENGTH + ENCRYPTION_CONFIG.IV_LENGTH,
       );
       // derive decryption key
       const encryptionKey = this.envUtils.getEncryptionKey();
       const key = await this.deriveKey(encryptionKey, salt);
       // decrypt the data
       const decrypted = await crypto.subtle.decrypt(
-        { name: EncryptionService.ALGORITHM, iv },
+        { name: ENCRYPTION_CONFIG.ALGORITHM, iv },
         key,
         encrypted,
       );
@@ -181,7 +177,7 @@ export class EncryptionService implements EncryptionRepository {
           `Decryption failed: ${
             error instanceof Error ? error.message : String(error)
           }`,
-          "DECRYPTION_ERROR",
+          ERROR_CODES.DECRYPTION_ERROR,
         ),
       );
     }
@@ -189,12 +185,13 @@ export class EncryptionService implements EncryptionRepository {
 
   /**
    * Check if encryption is available
-   * @returns {boolean} - True if encryption service is properly configured
+   * @returns True if encryption service is properly configured
    */
   isAvailable(): boolean {
     try {
       const encryptionKey = this.envUtils.getEncryptionKey();
-      return encryptionKey !== null && encryptionKey.length >= 32;
+      return encryptionKey !== null &&
+        encryptionKey.length >= ENCRYPTION_CONFIG.MIN_KEY_LENGTH;
     } catch {
       return false;
     }

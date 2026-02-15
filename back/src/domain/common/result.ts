@@ -1,20 +1,19 @@
 /**
- * @fileoverview Result types for functional error handling
+ * Result type for functional error handling
  */
 
 // domain
 import { DomainError } from "@/domain/error/error.ts";
 
 /**
- * Result type for functional error handling
- * @class Result
+ * Result type representing success or failure
  */
 export class Result<T, E = DomainError> {
   /**
    * Construct a new Result
-   * @param {"ok" | "fail"} _tag - Tag to indicate success or failure
-   * @param {T} [_value] - Success value
-   * @param  {E} [_error] - Error value
+   * @param _tag - Tag to indicate success or failure
+   * @param [_value] - Success value
+   * @param  [_error] - Error value
    */
   private constructor(
     private readonly _tag: "ok" | "fail",
@@ -24,8 +23,8 @@ export class Result<T, E = DomainError> {
 
   /**
    * Create a successful result
-   * @param {T} value - Success value
-   * @returns {Result<T, E>} - Successful Result
+   * @param value - Success value
+   * @returns Successful Result
    */
   static ok<T, E = DomainError>(value: T): Result<T, E> {
     return new Result<T, E>("ok", value, undefined);
@@ -33,8 +32,8 @@ export class Result<T, E = DomainError> {
 
   /**
    * Create a failed result
-   * @param {E} error - Error value
-   * @returns {Result<T, E>} - Failed Result
+   * @param error - Error value
+   * @returns Failed Result
    */
   static fail<T, E = DomainError>(error: E): Result<T, E> {
     return new Result<T, E>("fail", undefined, error);
@@ -42,7 +41,7 @@ export class Result<T, E = DomainError> {
 
   /**
    * Check if the result is successful
-   * @returns {boolean} - True if successful
+   * @returns True if successful
    */
   isOk(): boolean {
     return this._tag === "ok";
@@ -50,7 +49,7 @@ export class Result<T, E = DomainError> {
 
   /**
    * Check if the result is failed
-   * @returns {boolean} - True if failed
+   * @returns True if failed
    */
   isFail(): boolean {
     return this._tag === "fail";
@@ -58,8 +57,8 @@ export class Result<T, E = DomainError> {
 
   /**
    * Get the success value or throw error
-   * @returns {T} - Success value
-   * @throws {E} - If result is failed
+   * @returns Success value
+   * @throws If result is failed
    */
   unwrap(): T {
     if (this.isOk()) {
@@ -70,8 +69,8 @@ export class Result<T, E = DomainError> {
 
   /**
    * Get the error value or throw
-   * @returns {E} - Error value
-   * @throws {Error} - If result is successful
+   * @returns Error value
+   * @throws If result is successful
    */
   unwrapError(): E {
     if (this.isFail()) {
@@ -82,8 +81,8 @@ export class Result<T, E = DomainError> {
 
   /**
    * Pattern match on the result
-   * @param {{ ok: (value: T) => U; fail: (error: E) => U }} patterns - Patterns to match
-   * @returns {U} - Result of the matched pattern
+   * @param patterns - Patterns to match
+   * @returns Result of the matched pattern
    */
   match<U>(patterns: { ok: (value: T) => U; fail: (error: E) => U }): U {
     return this.isOk()

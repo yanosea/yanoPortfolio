@@ -1,0 +1,80 @@
+/**
+ * Navigation Components
+ *
+ * Header, Footer, NavLink, and skip link styles.
+ */
+
+@layer components {
+  /* Header */
+  header {
+    background-color: var(--color-bg-primary);
+  }
+
+  /* Skip Link - Accessibility */
+  .skip-link:focus {
+    background-color: var(--color-accent-primary);
+    color: var(--color-light-bg0);
+    border-color: var(--color-accent-aqua);
+  }
+
+  /* Footer */
+  footer small {
+    font-size: var(--font-size-small);
+  }
+
+  .footer-content {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    opacity: 0;
+    transition: opacity var(--duration-normal) var(--ease-smooth);
+  }
+
+  .footer-content.visible {
+    opacity: 1;
+  }
+
+  #version {
+    color: var(--color-fg-secondary);
+    text-decoration-skip-ink: auto;
+    transition: color var(--duration-fast) var(--ease-smooth);
+  }
+
+  #version:hover {
+    color: var(--color-accent-aqua);
+  }
+
+  /* Link card styles */
+  .link-card-title {
+    font-size: var(--font-size-xl);
+  }
+
+  .link-card-icon {
+    font-size: var(--font-size-2xl);
+  }
+
+  /* Mobile navigation link */
+  .nav-link {
+    padding: 0.5rem 0;
+  }
+
+  /* Mobile menu links container */
+  .mobile-menu-links {
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (min-width: 22.5rem) {
+    .mobile-menu-links {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-evenly;
+      gap: 0 1rem;
+    }
+  }
+
+  /* Utterances comments wrapper */
+  .utterances-wrapper {
+    width: 100%;
+  }
+}

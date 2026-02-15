@@ -1,11 +1,17 @@
 /**
- * @fileOverview Main application entry point
+ * Main application entry point
  */
 
 // third party
 import { ExportedHandler } from "@cloudflare/workers-types";
 // domain
 import { EnvironmentConfig } from "@/domain/common/environments.ts";
+// presentation
+import {
+  CONTENT_TYPES,
+  HTTP_HEADERS,
+  HTTP_STATUS,
+} from "@/presentation/common/http_constants.ts";
 // infrastructure
 import {
   getEnvironmentUtils,
@@ -20,9 +26,9 @@ import { Routes } from "@/presentation/routes/routes.ts";
 export default {
   /**
    * Cloudflare Worker entry point
-   * @param {Request} request incoming request
-   * @param {EnvironmentConfig} env environment configuration
-   * @returns {Promise<Response>} response
+   * @param request - Incoming request
+   * @param env - Environment configuration
+   * @returns Response
    */
   async fetch(request: Request, env: EnvironmentConfig): Promise<Response> {
     // validate all environment variables
@@ -42,8 +48,8 @@ export default {
           timestamp: new Date().toISOString(),
         }),
         {
-          status: 500,
-          headers: { "Content-Type": "application/json" },
+          status: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+          headers: { [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON },
         },
       );
     }
@@ -65,8 +71,8 @@ export default {
           timestamp: new Date().toISOString(),
         }),
         {
-          status: 500,
-          headers: { "Content-Type": "application/json" },
+          status: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+          headers: { [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON },
         },
       );
     }

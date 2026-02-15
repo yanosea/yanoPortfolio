@@ -1,5 +1,5 @@
 /**
- * @fileoverview Middleware
+ * Middleware
  */
 
 // infrastructure
@@ -8,21 +8,26 @@ import {
   getEnvironmentUtils,
 } from "@/infrastructure/config/env_utils.ts";
 
+import { HTTP_STATUS } from "../common/http_constants.ts";
+
 /**
  * CORS configuration
- * @interface CorsConfig
  */
-export interface CorsConfig {
+interface CorsConfig {
+  /** Allowed request headers */
   allowHeaders: string[];
+  /** Allowed HTTP methods */
   allowMethods: string[];
+  /** Allowed request origins */
   allowedOrigins: string[];
+  /** Whether CORS is enabled */
   enabled: boolean;
+  /** Preflight cache max age in seconds */
   maxAge: number;
 }
 
 /**
  * CORS Middleware
- * @class CorsMiddleware
  */
 export class CorsMiddleware {
   private readonly config: CorsConfig;
@@ -38,30 +43,30 @@ export class CorsMiddleware {
 
   /**
    * Handle CORS preflight request
-   * @param {Request} request - Original request
-   * @returns {Response} - CORS preflight response
+   * @param request - Original request
+   * @returns CORS preflight response
    */
   handlePreflight(request: Request): Response {
     // only handle OPTIONS requests
     if (!this.config.enabled) {
-      return new Response(null, { status: 200 });
+      return new Response(null, { status: HTTP_STATUS.OK });
     }
     const origin = request.headers.get("Origin");
     if (!this.isOriginAllowed(origin)) {
       // if origin is not allowed, return 403
-      return new Response(null, { status: 403 });
+      return new Response(null, { status: HTTP_STATUS.FORBIDDEN });
     }
     // create CORS headers
     const headers = this.createCorsHeaders(origin, true);
     // respond with 200 OK and CORS headers
-    return new Response(null, { status: 200, headers });
+    return new Response(null, { status: HTTP_STATUS.OK, headers });
   }
 
   /**
    * Add CORS headers to response
-   * @param {Response} response - Original response
-   * @param {Request} request - Original request
-   * @returns {Promise<Response>} - Response with CORS headers
+   * @param response - Original response
+   * @param request - Original request
+   * @returns Response with CORS headers
    */
   async addCorsHeaders(
     response: Response,
@@ -98,8 +103,8 @@ export class CorsMiddleware {
 
   /**
    * Check if origin is allowed
-   * @param {string | null} origin - Request origin
-   * @returns {boolean} - True if origin is allowed
+   * @param origin - Request origin
+   * @returns True if origin is allowed
    */
   private isOriginAllowed(origin: string | null): boolean {
     // if no origin is provided, allow the request
@@ -130,10 +135,10 @@ export class CorsMiddleware {
 
   /**
    * Create CORS headers
-   * @param {string | null} origin - Request origin
-   * @param {boolean} includePreflight - Whether to include preflight-specific headers
-   * @param {Headers} [existingHeaders] - Existing headers to copy from
-   * @returns {Headers} - CORS headers
+   * @param origin - Request origin
+   * @param includePreflight - Whether to include preflight-specific headers
+   * @param [existingHeaders] - Existing headers to copy from
+   * @returns CORS headers
    */
   private createCorsHeaders(
     origin: string | null,
@@ -160,7 +165,7 @@ export class CorsMiddleware {
 
   /**
    * Create CORS configuration from environment
-   * @returns {CorsConfig} - CORS configuration
+   * @returns CORS configuration
    */
   private createCorsConfig(): CorsConfig {
     // determine if CORS is enabled and get allowed origins from environment
@@ -171,8 +176,8 @@ export class CorsMiddleware {
       ...configuredOrigins,
       ...(this.envUtils.isLocalDevelopment()
         ? [
-          "http://localhost:4321",
-          "http://127.0.0.1:4321",
+          "http://localhost:3000",
+          "http://127.0.0.1:3000",
         ]
         : []),
     ];

@@ -1,5 +1,5 @@
 /**
- * @fileoverview Get Now Playing Use Case
+ * Get now playing use case
  */
 
 // domain
@@ -8,28 +8,32 @@ import { Result } from "@/domain/common/result.ts";
 import { TrackRepository } from "@/domain/spotify/track_repository.ts";
 
 /**
- * Get Now Playing Use Case Output DTO
- * @interface GetNowPlayingUseCaseOutputDto
+ * Get now playing use case output DTO
  */
-export interface GetNowPlayingUseCaseOutputDto {
-  imageUrl: string;
-  trackName: string;
-  trackUrl: string;
+interface GetNowPlayingUseCaseOutputDto {
+  /** Album name */
   albumName: string;
+  /** Album URL */
   albumUrl: string;
+  /** Artist name */
   artistName: string;
+  /** Artist URL */
   artistUrl: string;
-  playedAt?: string;
+  /** Album image URL */
+  imageUrl: string;
+  /** Track name */
+  trackName: string;
+  /** Track URL */
+  trackUrl: string;
 }
 
 /**
- * Get Now Playing Use Case
- * @class GetNowPlayingUseCase
+ * Get now playing use case
  */
 export class GetNowPlayingUseCase {
   /**
    * Construct a new GetNowPlayingUseCase
-   * @param {TrackRepository} trackRepository - Track repository
+   * @param trackRepository - Track repository
    */
   constructor(
     private readonly trackRepository: TrackRepository,
@@ -37,7 +41,7 @@ export class GetNowPlayingUseCase {
 
   /**
    * Execute the use case
-   * @returns {Promise<Result<GetNowPlayingUseCaseOutputDto | null, DomainError>>} - Result containing the output DTO or an error
+   * @returns Result containing the output DTO or an error
    */
   async execute(): Promise<
     Result<GetNowPlayingUseCaseOutputDto | null, DomainError>
@@ -63,7 +67,6 @@ export class GetNowPlayingUseCase {
             albumUrl: track.albumUrl(),
             artistName: track.artistName(),
             artistUrl: track.artistUrl(),
-            playedAt: track.playedAt(),
           };
           // return result with output DTO
           return Result.ok(outputDto);

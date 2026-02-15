@@ -1,5 +1,5 @@
 /**
- * @fileoverview Get Last Played Use Case
+ * Get last played use case
  */
 
 // domain
@@ -8,28 +8,34 @@ import { DomainError } from "@/domain/error/error.ts";
 import { TrackRepository } from "@/domain/spotify/track_repository.ts";
 
 /**
- * Get Last Played Use Case Output DTO
- * @interface GetLastPlayedUseCaseOutputDto
+ * Get last played use case output DTO
  */
-export interface GetLastPlayedUseCaseOutputDto {
-  imageUrl: string;
-  trackName: string;
-  trackUrl: string;
+interface GetLastPlayedUseCaseOutputDto {
+  /** Album name */
   albumName: string;
+  /** Album URL */
   albumUrl: string;
+  /** Artist name */
   artistName: string;
+  /** Artist URL */
   artistUrl: string;
-  playedAt?: string;
+  /** Album image URL */
+  imageUrl: string;
+  /** Played at timestamp (ISO 8601 format) */
+  playedAt: string;
+  /** Track name */
+  trackName: string;
+  /** Track URL */
+  trackUrl: string;
 }
 
 /**
- * Get Last Played Use Case
- * @class GetLastPlayedUseCase
+ * Get last played use case
  */
 export class GetLastPlayedUseCase {
   /**
    * Construct a new GetLastPlayedUseCase
-   * @param {TrackRepository} trackRepository - Track repository
+   * @param trackRepository - Track repository
    */
   constructor(
     private readonly trackRepository: TrackRepository,
@@ -37,7 +43,7 @@ export class GetLastPlayedUseCase {
 
   /**
    * Execute the use case
-   * @returns {Promise<Result<GetLastPlayedUseCaseOutputDto | null, DomainError>>} - Result containing the output DTO or an error
+   * @returns Result containing the output DTO or an error
    */
   async execute(): Promise<
     Result<GetLastPlayedUseCaseOutputDto | null, DomainError>
@@ -54,6 +60,16 @@ export class GetLastPlayedUseCase {
             // if no track is found, return result with null
             return Result.ok(null);
           }
+          // validate playedAt exists for last played track
+          const playedAt = track.playedAt();
+          if (!playedAt) {
+            return Result.fail(
+              new DomainError(
+                "Last played track must have playedAt timestamp",
+                "USE_CASE_ERROR",
+              ),
+            );
+          }
           // convert domain entity to output DTO
           const outputDto: GetLastPlayedUseCaseOutputDto = {
             imageUrl: track.imageUrl(),
@@ -63,7 +79,7 @@ export class GetLastPlayedUseCase {
             albumUrl: track.albumUrl(),
             artistName: track.artistName(),
             artistUrl: track.artistUrl(),
-            playedAt: track.playedAt(),
+            playedAt,
           };
           // return result with output DTO
           return Result.ok(outputDto);

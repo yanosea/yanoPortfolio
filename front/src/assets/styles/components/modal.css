@@ -1,0 +1,58 @@
+/**
+ * Modal Components
+ *
+ * Image modal dialog styles with smooth animations.
+ */
+
+@layer components {
+  .image-modal-dialog {
+    background-color: color-mix(in srgb, var(--color-bg-dim), transparent 5%);
+  }
+
+  .image-modal-caption {
+    color: var(--color-fg-primary);
+  }
+
+  #image-modal {
+    background-color: transparent;
+    opacity: 0;
+    transform: scale(0.95);
+    transition:
+      opacity var(--duration-normal) var(--ease-smooth),
+      transform var(--duration-normal) var(--ease-smooth),
+      overlay var(--duration-normal) var(--ease-smooth) allow-discrete,
+      display var(--duration-normal) var(--ease-smooth) allow-discrete;
+  }
+
+  #image-modal[open] {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  #image-modal::backdrop {
+    background-color: color-mix(in srgb, var(--color-bg-dim), transparent 30%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    opacity: 0;
+    transition:
+      opacity var(--duration-normal) var(--ease-smooth),
+      backdrop-filter var(--duration-normal) var(--ease-smooth),
+      overlay var(--duration-normal) var(--ease-smooth) allow-discrete,
+      display var(--duration-normal) var(--ease-smooth) allow-discrete;
+  }
+
+  #image-modal[open]::backdrop {
+    opacity: 1;
+  }
+
+  @starting-style {
+    #image-modal[open] {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+
+    #image-modal[open]::backdrop {
+      opacity: 0;
+    }
+  }
+}

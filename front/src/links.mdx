@@ -1,0 +1,59 @@
+---
+title: links
+---
+
+{/* Links page */}
+
+<comp.ui.PageTitle title="links" iconName="lucide/link" />
+
+{/* links cards */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+  <comp.ui.LinkCard
+    description="my codes"
+    href={social.github}
+    iconName="simpleicons/github"
+    title="GitHub"
+  />
+  <comp.ui.LinkCard
+    description="my microblog"
+    href={social.x}
+    iconName="simpleicons/x"
+    title="X"
+  />
+  <comp.ui.LinkCard
+    description="my songs"
+    href={social.soundcloud}
+    iconName="simpleicons/soundcloud"
+    title="SoundCloud"
+  />
+  <comp.ui.LinkCard
+    description="my spotify account"
+    href={social.spotify}
+    iconName="simpleicons/spotify"
+    title="Spotify"
+  />
+  <comp.ui.LinkCard
+    description="my streams"
+    href={social.twitch}
+    iconName="simpleicons/twitch"
+    title="Twitch"
+  />
+  <comp.ui.LinkCard
+    description="mail address"
+    href={social.email}
+    iconName="lucide/mail"
+    title="Email"
+  />
+</div>
+
+## credits
+
+{/* credits cards */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+  <comp.ui.LinkCard
+    description="this site uses Everforest color scheme (MIT)"
+    href={credits.everforest}
+    iconName="lucide/tree-pine"
+    title="Everforest"
+  />
+</div>

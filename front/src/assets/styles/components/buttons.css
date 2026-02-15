@@ -1,0 +1,21 @@
+/**
+ * Button Components
+ *
+ * Theme toggle and hamburger button icon color styles.
+ */
+
+@layer components {
+  /* Theme icon colors */
+  .theme-icon-light {
+    color: var(--color-accent-yellow);
+  }
+
+  .theme-icon-dark {
+    color: var(--color-accent-purple);
+  }
+
+  /* Hamburger icon */
+  .hamburger-icon {
+    color: var(--color-fg-primary);
+  }
+}

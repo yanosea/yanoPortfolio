@@ -1,0 +1,35 @@
+---
+title: yanosea.org
+config: ./mermaid-config.json
+---
+graph TB
+    USER[ **👤User**]
+    SITE[**🏹yanosea.org**<br/>☁️on Cloudflare Pages<br/>🔥built with Lume]
+    API[**🏹api.yanosea.org**<br/>☁️on Cloudflare Workers<br/>🔥deployed with Denoflare]
+    KV[**💾Cloudflare KV**]
+    CACHE{🔍Cache Hit?}
+    SPOTIFY_AUTH[**🔑Spotify OAuth API**]
+    SPOTIFY_DATA[**🎧Spotify Web API**]
+
+    USER -->|1: Visit| SITE
+    SITE -->|2: Get Spotify Status | API
+    API -->|3: Get Token| KV
+    KV --> CACHE
+    CACHE -->|4: No - Get New Token | SPOTIFY_AUTH
+    SPOTIFY_AUTH -->|4.5: Return New Token| API
+    API -->|5: Cache New Token with Encryption| KV
+    CACHE -->|4: Yes - Return Cached Token| API
+    API -->|6: Get Track Data with Token| SPOTIFY_DATA
+    SPOTIFY_DATA -->|7: Return Track Data| API
+
+    classDef user fill:#fdf6e3,stroke:#f57d26,stroke-width:3px
+    classDef system fill:#f0f1d2,stroke:#93b259,stroke-width:2px
+    classDef storage fill:#efebd4,stroke:#35a77c,stroke-width:2px
+    classDef decision fill:#faedcd,stroke:#dfa000,stroke-width:2px
+    classDef external fill:#e6e2cc,stroke:#8da101,stroke-width:2px
+
+    class USER user
+    class SITE,API system
+    class KV storage
+    class CACHE decision
+    class SPOTIFY_AUTH,SPOTIFY_DATA external

@@ -1,40 +1,47 @@
 /**
- * @fileoverview Common presentation utilities
+ * Common presentation utilities
  */
 
+import {
+  CONTENT_TYPES,
+  HTTP_HEADERS,
+  HTTP_STATUS,
+} from "../common/http_constants.ts";
 import { ErrorResponse } from "../spotify/response.ts";
 
 /**
  * Create successful response
- * @param {unknown} data - Response data
- * @returns {Response} - HTTP response
+ * @param data - Response data
+ * @returns HTTP response
  */
 export function createSuccessResponse(data: unknown): Response {
   return new Response(JSON.stringify(data), {
-    status: 200,
+    status: HTTP_STATUS.OK,
     headers: {
-      "Content-Type": "application/json",
+      [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
     },
   });
 }
 
 /**
  * Create no content response
- * @returns {Response} - HTTP response
+ * @returns HTTP response
  */
 export function createNoContentResponse(): Response {
   return new Response(null, {
-    status: 204,
+    status: HTTP_STATUS.NO_CONTENT,
   });
 }
 
 /**
  * Create error response
- * @returns {Response} - HTTP response
+ * @param message - Error message
+ * @param status - HTTP status code
+ * @returns HTTP response
  */
 export function createErrorResponse(
   message = "Internal Server Error",
-  status = 500,
+  status: number = HTTP_STATUS.INTERNAL_SERVER_ERROR,
 ): Response {
   const errorResponse: ErrorResponse = {
     error: "Server Error",
@@ -44,15 +51,15 @@ export function createErrorResponse(
   return new Response(JSON.stringify(errorResponse), {
     status,
     headers: {
-      "Content-Type": "application/json",
+      [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
     },
   });
 }
 
 /**
  * Create not found response
- * @returns {Response} - HTTP response
+ * @returns HTTP response
  */
 export function createNotFoundResponse(): Response {
-  return createErrorResponse("Not Found", 404);
+  return createErrorResponse("Not Found", HTTP_STATUS.NOT_FOUND);
 }
