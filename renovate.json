@@ -6,10 +6,19 @@
     ":semanticCommitTypeAll(⚡deps)",
     ":timezone(Asia/Tokyo)"
   ],
-  "labels": ["dependencies", "automated"],
-  "assignees": ["yanosea"],
-  "reviewers": ["yanosea"],
-  "schedule": ["* 0 * * *"],
+  "labels": [
+    "dependencies",
+    "automated"
+  ],
+  "assignees": [
+    "yanosea"
+  ],
+  "reviewers": [
+    "yanosea"
+  ],
+  "schedule": [
+    "* 0 * * *"
+  ],
   "prConcurrentLimit": 10,
   "automerge": false,
   "minimumReleaseAge": "3 days",
@@ -21,12 +30,20 @@
   "packageRules": [
     {
       "description": "All updates require manual approval",
-      "matchUpdateTypes": ["major", "minor", "patch", "pin", "digest"],
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
       "automerge": false
     },
     {
       "description": "Group GitHub Actions updates and pin digests",
-      "matchManagers": ["github-actions"],
+      "matchManagers": [
+        "github-actions"
+      ],
       "groupName": "GitHub Actions",
       "semanticCommitType": "⚡deps",
       "semanticCommitScope": "workflow"
@@ -36,24 +53,34 @@
       "groupName": "Lume",
       "semanticCommitType": "⚡deps",
       "semanticCommitScope": "front",
-      "matchPackageNames": ["/^lume$/", "/^https:\\/\\/deno\\.land\\/x\\/lume@/"]
+      "matchPackageNames": [
+        "/^lume$/",
+        "/^https:\\/\\/deno\\.land\\/x\\/lume@/"
+      ]
     },
     {
       "description": "Group Tailwind-related packages",
       "groupName": "Tailwind CSS",
       "semanticCommitType": "⚡deps",
       "semanticCommitScope": "front",
-      "matchPackageNames": ["/^tailwindcss/", "/^@tailwindcss//"]
+      "matchPackageNames": [
+        "/^tailwindcss/",
+        "/^@tailwindcss//"
+      ]
     },
     {
       "description": "Frontend dependencies",
-      "matchFileNames": ["front/**"],
+      "matchFileNames": [
+        "front/**"
+      ],
       "semanticCommitType": "⚡deps",
       "semanticCommitScope": "front"
     },
     {
       "description": "Backend Deno dependencies",
-      "matchFileNames": ["back/deno.json"],
+      "matchFileNames": [
+        "back/deno.json"
+      ],
       "semanticCommitType": "⚡deps",
       "semanticCommitScope": "back"
     }
@@ -62,7 +89,9 @@
     {
       "customType": "regex",
       "description": "Update npm dependencies in Deno imports",
-      "fileMatch": ["(^|/)deno\\.json$"],
+      "managerFilePatterns": [
+        "/(^|/)deno\\.json$/"
+      ],
       "matchStrings": [
         "\"[^\"]+\": \"npm:(?<packageName>[^@]+)@\\^?(?<currentValue>[^\"]+)\""
       ],
