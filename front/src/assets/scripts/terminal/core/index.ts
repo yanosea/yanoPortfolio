@@ -16,6 +16,7 @@ export {
 export { handleAutocomplete } from "./autocomplete.ts";
 export { executeCommand } from "./executor.ts";
 export {
+  clearRedirectCountdown,
   getPromptHtml,
   isDesktop,
   redirectWithCountdown,
