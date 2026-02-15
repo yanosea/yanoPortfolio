@@ -9,11 +9,10 @@
     font-size: 16px;
     background-color: var(--color-bg-primary);
     color: var(--color-fg-primary);
-    visibility: visible !important;
-    opacity: 1 !important;
   }
 
   body {
     font-size: var(--font-size-base);
+    visibility: visible !important;
   }
 }
