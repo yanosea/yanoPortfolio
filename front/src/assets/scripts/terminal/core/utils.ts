@@ -144,7 +144,7 @@ export function escapeHtml(text: string): string {
  */
 export function getPromptHtml(): string {
   const hostname = getSiteName();
-  return `<span class="terminal-user">you</span> <span class="terminal-at">@</span> <span class="terminal-host">${hostname}</span> <span class="terminal-colon">:</span> <span class="terminal-path">~</span> <span class="terminal-dollar">$</span> `;
+  return `<span class="${CSS_CLASSES.USER}">you</span> <span class="${CSS_CLASSES.AT}">@</span> <span class="${CSS_CLASSES.HOST}">${hostname}</span> <span class="${CSS_CLASSES.COLON}">:</span> <span class="${CSS_CLASSES.PATH}">~</span> <span class="${CSS_CLASSES.DOLLAR}">$</span> `;
 }
 
 /** Active countdown interval ID for cleanup */

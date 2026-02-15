@@ -72,7 +72,7 @@ async function createSpotifyDisplay(
 
   // header line with user@spotify format (like fastfetch's user@host)
   lines.push(
-    `<a href="${spotifyProfileUrl}" target="_blank" rel="noopener noreferrer" class="terminal-link" style="font-weight: 600;">${getUsername()}@spotify</a>`,
+    `<a href="${spotifyProfileUrl}" target="_blank" rel="noopener noreferrer" class="${CSS_CLASSES.LINK}" style="font-weight: 600;">${getUsername()}@spotify</a>`,
   );
   lines.push(
     `<span style="color: var(--color-fg-secondary);">-----------------</span>`,
@@ -92,13 +92,13 @@ async function createSpotifyDisplay(
   }
 
   lines.push(
-    `<span class="${CSS_CLASSES.SPOTIFY_KEY}">${SPOTIFY_FIELD_ICONS.TRACK} Track</span>:  <a href="${track.trackUrl}" target="_blank" rel="noopener noreferrer" class="terminal-link">${track.trackName}</a>`,
+    `<span class="${CSS_CLASSES.SPOTIFY_KEY}">${SPOTIFY_FIELD_ICONS.TRACK} Track</span>:  <a href="${track.trackUrl}" target="_blank" rel="noopener noreferrer" class="${CSS_CLASSES.LINK}">${track.trackName}</a>`,
   );
   lines.push(
-    `<span class="${CSS_CLASSES.SPOTIFY_KEY}">${SPOTIFY_FIELD_ICONS.ALBUM} Album</span>:  <a href="${track.albumUrl}" target="_blank" rel="noopener noreferrer" class="terminal-link">${track.albumName}</a>`,
+    `<span class="${CSS_CLASSES.SPOTIFY_KEY}">${SPOTIFY_FIELD_ICONS.ALBUM} Album</span>:  <a href="${track.albumUrl}" target="_blank" rel="noopener noreferrer" class="${CSS_CLASSES.LINK}">${track.albumName}</a>`,
   );
   lines.push(
-    `<span class="${CSS_CLASSES.SPOTIFY_KEY}">${SPOTIFY_FIELD_ICONS.ARTIST} Artist</span>: <a href="${track.artistUrl}" target="_blank" rel="noopener noreferrer" class="terminal-link">${track.artistName}</a>`,
+    `<span class="${CSS_CLASSES.SPOTIFY_KEY}">${SPOTIFY_FIELD_ICONS.ARTIST} Artist</span>: <a href="${track.artistUrl}" target="_blank" rel="noopener noreferrer" class="${CSS_CLASSES.LINK}">${track.artistName}</a>`,
   );
   // calculate image size based on number of lines
   const { lineHeight, fontFamily, imageMargin } = SPOTIFY_DISPLAY_CONFIG;
@@ -107,7 +107,7 @@ async function createSpotifyDisplay(
   // use table layout for better alignment (neofetch-style)
   return `<pre style="font-family: '${fontFamily}', monospace; line-height: ${lineHeight}; margin: 0.5rem 0;"><span style="display: inline-block; vertical-align: top; margin-right: ${imageMargin};">${
     imageBase64
-      ? `<img src="${imageBase64}" alt="${track.albumName} artwork" class="spotify-album-image" style="width: ${imageSize}; height: ${imageSize}; object-fit: cover; border-radius: 4px; display: block; cursor: pointer;" data-album-name="${track.albumName}">`
+      ? `<img src="${imageBase64}" alt="${track.albumName} artwork" class="${CSS_CLASSES.SPOTIFY_ALBUM_IMAGE}" style="width: ${imageSize}; height: ${imageSize}; object-fit: cover; border-radius: 4px; display: block; cursor: pointer;" data-album-name="${track.albumName}">`
       : `<span style="display: block; width: ${imageSize}; height: ${imageSize}; background-color: var(--color-bg-elevated); border-radius: 4px; text-align: center; line-height: ${imageSize}; color: var(--color-fg-secondary); font-size: 3em;">${SPOTIFY_FIELD_ICONS.SPOTIFY}</span>`
   }</span><span style="display: inline-block; vertical-align: top;">${
     lines.join("\n")

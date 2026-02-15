@@ -5,6 +5,7 @@
 // types
 import type { Command } from "@/types/terminal.ts";
 // config
+import { CSS_CLASSES } from "@/assets/scripts/core/constants.ts";
 import { RESTRICTED_UNIX_COMMANDS } from "./config.ts";
 // utils
 import { escapeHtml, getPromptHtml } from "./utils.ts";
@@ -159,13 +160,14 @@ export async function addToHistory(
     return;
   }
   const historyItem = document.createElement("div");
-  historyItem.className = "terminal-history-item";
+  historyItem.className = CSS_CLASSES.HISTORY_ITEM;
   // command line - create and add immediately
   const commandEl = document.createElement("div");
-  commandEl.className = "terminal-history-command flex items-center gap-2";
+  commandEl.className =
+    `${CSS_CLASSES.HISTORY_COMMAND} flex items-center gap-2`;
   // build prompt separately to avoid innerHTML for the command text
   const promptSpan = document.createElement("span");
-  promptSpan.className = "terminal-prompt";
+  promptSpan.className = CSS_CLASSES.PROMPT;
   promptSpan.innerHTML = getPromptHtml();
   // use textContent for the command to avoid innerHTML re-parsing
   const commandSpan = document.createElement("span");
@@ -177,7 +179,7 @@ export async function addToHistory(
   historyEl.appendChild(historyItem);
   // output - process and add after command execution
   const outputEl = document.createElement("div");
-  outputEl.className = "terminal-history-output";
+  outputEl.className = CSS_CLASSES.HISTORY_OUTPUT;
   if (command) {
     const result = command.execute(args, allCommands);
     // handle both sync and async commands
@@ -193,13 +195,15 @@ export async function addToHistory(
       cmdName as typeof RESTRICTED_UNIX_COMMANDS[number],
     );
     if (isRestrictedCommand) {
-      outputEl.innerHTML = `<span class="terminal-error">permission denied: ${
-        escapeHtml(cmdName)
-      }</span>`;
+      outputEl.innerHTML =
+        `<span class="${CSS_CLASSES.ERROR}">permission denied: ${
+          escapeHtml(cmdName)
+        }</span>`;
     } else {
-      outputEl.innerHTML = `<span class="terminal-error">command not found: ${
-        escapeHtml(commandLine)
-      }</span>`;
+      outputEl.innerHTML =
+        `<span class="${CSS_CLASSES.ERROR}">command not found: ${
+          escapeHtml(commandLine)
+        }</span>`;
     }
     historyItem.appendChild(outputEl);
   }

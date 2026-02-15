@@ -4,6 +4,7 @@
 
 // types
 import type { Command } from "@/types/terminal.ts";
+import { CSS_CLASSES } from "@/assets/scripts/core/constants.ts";
 // commands
 import * as commands from "./commands/index.ts";
 // core
@@ -126,7 +127,7 @@ function initTerminal(): void {
     container.addEventListener("click", (e) => {
       // handle spotify album image clicks
       const target = e.target as HTMLElement;
-      if (target.classList.contains("spotify-album-image")) {
+      if (target.classList.contains(CSS_CLASSES.SPOTIFY_ALBUM_IMAGE)) {
         const img = target as HTMLImageElement;
         const albumName = img.dataset.albumName || img.alt;
         openImageModal(
@@ -168,12 +169,12 @@ function initTerminal(): void {
       const historyEl = document.getElementById("terminal-history");
       if (historyEl) {
         const historyItem = document.createElement("div");
-        historyItem.className = "terminal-history-item";
+        historyItem.className = CSS_CLASSES.HISTORY_ITEM;
         const commandEl = document.createElement("div");
         commandEl.className =
-          "terminal-history-command flex items-center gap-2";
+          `${CSS_CLASSES.HISTORY_COMMAND} flex items-center gap-2`;
         const promptSpan = document.createElement("span");
-        promptSpan.className = "terminal-prompt";
+        promptSpan.className = CSS_CLASSES.PROMPT;
         promptSpan.innerHTML = getPromptHtml();
         commandEl.appendChild(promptSpan);
         historyItem.appendChild(commandEl);

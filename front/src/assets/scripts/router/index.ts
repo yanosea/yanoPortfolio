@@ -156,7 +156,11 @@ async function navigateTo(
     };
     // use View Transitions API if available
     if (document.startViewTransition) {
-      document.startViewTransition(doSwap);
+      document.documentElement.classList.add("spa-navigating");
+      const transition = document.startViewTransition(doSwap);
+      transition.finished.then(() => {
+        document.documentElement.classList.remove("spa-navigating");
+      });
     } else {
       doSwap();
     }

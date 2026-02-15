@@ -2,6 +2,7 @@
  * Terminal Stdin Mode Management
  */
 
+import { CSS_CLASSES } from "@/assets/scripts/core/constants.ts";
 // utils
 import { scrollToBottom } from "./utils.ts";
 
@@ -76,9 +77,9 @@ export function addStdinLine(line: string): void {
   }
   // display the input line with a stdin prompt
   const lineEl = document.createElement("div");
-  lineEl.className = "terminal-history-item";
+  lineEl.className = CSS_CLASSES.HISTORY_ITEM;
   const promptSpan = document.createElement("span");
-  promptSpan.className = "terminal-stdin-prompt";
+  promptSpan.className = CSS_CLASSES.STDIN_PROMPT;
   promptSpan.textContent = "> ";
   const textSpan = document.createElement("span");
   textSpan.textContent = line;

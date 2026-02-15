@@ -479,7 +479,7 @@ export const grep: Command = {
         const historyEl = document.getElementById("terminal-history");
         if (historyEl && result) {
           const outputEl = document.createElement("div");
-          outputEl.className = "terminal-history-output";
+          outputEl.className = CSS_CLASSES.HISTORY_OUTPUT;
           outputEl.innerHTML = result;
           historyEl.appendChild(outputEl);
         }

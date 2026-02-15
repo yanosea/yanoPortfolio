@@ -7,38 +7,36 @@
  */
 export const CSS_CLASSES = {
   // terminal output states
-  /** Error state class */
   ERROR: "terminal-error",
-  /** Success state class */
   SUCCESS: "terminal-success",
-  /** Info state class */
   INFO: "terminal-info",
   // terminal structure
-  /** Link element class */
   LINK: "terminal-link",
-  /** Command text class */
   COMMAND: "terminal-command",
-  // terminal UI
-  /** Prompt line class */
+  // terminal prompt
   PROMPT: "terminal-prompt",
-  /** Username display class */
   USER: "terminal-user",
-  /** Hostname display class */
   HOST: "terminal-host",
-  /** Path display class */
   PATH: "terminal-path",
+  AT: "terminal-at",
+  COLON: "terminal-colon",
+  DOLLAR: "terminal-dollar",
   // terminal history
-  /** History item container class */
   HISTORY_ITEM: "terminal-history-item",
-  /** History command text class */
   HISTORY_COMMAND: "terminal-history-command",
-  /** History output text class */
   HISTORY_OUTPUT: "terminal-history-output",
-  // spotify terminal output
-  /** Spotify field key class */
+  // terminal UI
+  HINT: "terminal-hint",
+  ASCII_ART: "terminal-ascii-art",
+  STDIN_PROMPT: "terminal-stdin-prompt",
+  // terminal help
+  HELP_LIST: "terminal-help-list",
+  HELP_ITEM: "terminal-help-item",
+  HELP_DESC: "terminal-help-desc",
+  // spotify
   SPOTIFY_KEY: "spotify-key",
-  /** Spotify field value class */
   SPOTIFY_VALUE: "spotify-value",
+  SPOTIFY_ALBUM_IMAGE: "spotify-album-image",
 } as const;
 
 export type CssClass = (typeof CSS_CLASSES)[keyof typeof CSS_CLASSES];

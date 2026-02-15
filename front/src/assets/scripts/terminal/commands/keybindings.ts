@@ -4,6 +4,7 @@
 
 // types
 import type { Command } from "@/types/terminal.ts";
+import { CSS_CLASSES } from "@/assets/scripts/core/constants.ts";
 // core
 import { MAN_PAGES } from "../core/man-pages.ts";
 
@@ -20,7 +21,7 @@ export const keybindings: Command = {
         `<pre class="whitespace-pre-wrap text-sm">${manPage.options}</pre>`;
     }
     output +=
-      `<div class="mt-3 text-muted">Tip: Use <span class="terminal-command">man keybindings</span> for detailed manual page</div>`;
+      `<div class="mt-3 text-muted">Tip: Use <span class="${CSS_CLASSES.COMMAND}">man keybindings</span> for detailed manual page</div>`;
     return output;
   },
 };

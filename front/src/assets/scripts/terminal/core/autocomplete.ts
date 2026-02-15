@@ -4,6 +4,7 @@
 
 // types
 import type { Command } from "@/types/terminal.ts";
+import { CSS_CLASSES } from "@/assets/scripts/core/constants.ts";
 
 /**
  * Handle autocomplete for the terminal input
@@ -29,7 +30,7 @@ export function handleAutocomplete(
   } else if (matches.length > 1) {
     // multiple matches - show hints
     hints.innerHTML = matches
-      .map((cmd) => `<span class="terminal-hint">${cmd.name}</span>`)
+      .map((cmd) => `<span class="${CSS_CLASSES.HINT}">${cmd.name}</span>`)
       .join("");
     hints.style.display = "flex";
   } else {

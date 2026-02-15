@@ -2,13 +2,19 @@
  * SPA Router View Transitions
  * Elements with view-transition-name become independent layers during
  * transitions, preserving their stacking order (z-index).
+ * Names are scoped to .spa-navigating so theme toggle uses a single
+ * root layer for uniform cross-fade.
  */
 
-#main-content {
+.spa-navigating #main-content {
   view-transition-name: main-content;
 }
 
-#spotify-status-container {
+.spa-navigating header {
+  view-transition-name: header;
+}
+
+.spa-navigating #spotify-status-container {
   view-transition-name: spotify-widget;
 }
 
