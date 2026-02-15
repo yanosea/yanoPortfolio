@@ -34,12 +34,11 @@ export default (
           content="#2d353b"
           media="(prefers-color-scheme: dark)"
         />
-        {/* hint browser to use system-preferred canvas color before any CSS */}
+        {/* canvas color hint */}
         <meta name="color-scheme" content="dark light" />
         {/* title */}
         <title>{title ? `${title} | ${site.name}` : site.name}</title>
-        {/* critical theme init: must run BEFORE styles to set class and color-scheme */}
-        {/* data-cfasync=false excludes this from Cloudflare Rocket Loader */}
+        {/* theme init: data-cfasync=false to bypass Cloudflare Rocket Loader */}
         <script
           data-cfasync="false"
           dangerouslySetInnerHTML={{
@@ -48,7 +47,7 @@ export default (
           }}
         >
         </script>
-        {/* FOUC prevention: html bg paints the canvas, body hides content */}
+        {/* hide body until main CSS loads */}
         <style
           dangerouslySetInnerHTML={{
             __html:

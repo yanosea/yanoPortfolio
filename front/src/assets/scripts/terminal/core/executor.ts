@@ -5,6 +5,7 @@
 // types
 import type { Command } from "@/types/terminal.ts";
 // utils
+import { CSS_CLASSES } from "@/assets/scripts/core/constants.ts";
 import { addToHistory } from "./history.ts";
 import { escapeHtml, getPromptHtml, scrollToBottom } from "./utils.ts";
 
@@ -69,13 +70,14 @@ async function executePipeChain(
   }
   // create history item container
   const historyItem = document.createElement("div");
-  historyItem.className = "terminal-history-item";
+  historyItem.className = CSS_CLASSES.HISTORY_ITEM;
   // create command display element with prompt
   const commandEl = document.createElement("div");
-  commandEl.className = "terminal-history-command flex items-center gap-2";
+  commandEl.className =
+    `${CSS_CLASSES.HISTORY_COMMAND} flex items-center gap-2`;
   // build prompt span with styled components
   const promptSpan = document.createElement("span");
-  promptSpan.className = "terminal-prompt";
+  promptSpan.className = CSS_CLASSES.PROMPT;
   promptSpan.innerHTML = getPromptHtml();
   // create span to display the full piped command
   const commandSpan = document.createElement("span");
@@ -99,10 +101,11 @@ async function executePipeChain(
     // if command not found, show error and exit
     if (!command) {
       const outputEl = document.createElement("div");
-      outputEl.className = "terminal-history-output";
-      outputEl.innerHTML = `<span class="terminal-error">command not found: ${
-        escapeHtml(cmdName)
-      }</span>`;
+      outputEl.className = CSS_CLASSES.HISTORY_OUTPUT;
+      outputEl.innerHTML =
+        `<span class="${CSS_CLASSES.ERROR}">command not found: ${
+          escapeHtml(cmdName)
+        }</span>`;
       historyItem.appendChild(outputEl);
       return;
     }
@@ -115,7 +118,7 @@ async function executePipeChain(
         // last command in chain: display output to user
         if (output !== undefined && output !== null) {
           const outputEl = document.createElement("div");
-          outputEl.className = "terminal-history-output";
+          outputEl.className = CSS_CLASSES.HISTORY_OUTPUT;
           outputEl.innerHTML = output;
           historyItem.appendChild(outputEl);
         }
@@ -126,8 +129,8 @@ async function executePipeChain(
     } catch (error) {
       // handle command execution error
       const outputEl = document.createElement("div");
-      outputEl.className = "terminal-history-output";
-      outputEl.innerHTML = `<span class="terminal-error">error: ${
+      outputEl.className = CSS_CLASSES.HISTORY_OUTPUT;
+      outputEl.innerHTML = `<span class="${CSS_CLASSES.ERROR}">error: ${
         escapeHtml(error instanceof Error ? error.message : String(error))
       }</span>`;
       historyItem.appendChild(outputEl);

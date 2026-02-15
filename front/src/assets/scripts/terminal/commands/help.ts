@@ -4,6 +4,7 @@
 
 // types
 import type { Command } from "@/types/terminal.ts";
+import { CSS_CLASSES } from "@/assets/scripts/core/constants.ts";
 
 export const help: Command = {
   name: "help",
@@ -19,12 +20,12 @@ export const help: Command = {
     );
     const commandList = filteredCommands
       .map((cmd) =>
-        `<div class="terminal-help-item">` +
-        `<span class="terminal-command">${cmd.name}</span>` +
-        `<span class="terminal-help-desc">${cmd.description}</span>` +
+        `<div class="${CSS_CLASSES.HELP_ITEM}">` +
+        `<span class="${CSS_CLASSES.COMMAND}">${cmd.name}</span>` +
+        `<span class="${CSS_CLASSES.HELP_DESC}">${cmd.description}</span>` +
         `</div>`
       )
       .join("");
-    return `<div class="terminal-success">Available commands:</div><div class="terminal-help-list">${commandList}</div>\n<div>Type a command and press Enter to execute.</div>`;
+    return `<div class="${CSS_CLASSES.SUCCESS}">Available commands:</div><div class="${CSS_CLASSES.HELP_LIST}">${commandList}</div>\n<div>Type a command and press Enter to execute.</div>`;
   },
 };
