@@ -3,9 +3,6 @@ name: Frontend Quality Check
 on:
   pull_request:
     branches: [main]
-    paths:
-      - "front/**"
-      - ".github/workflows/quality-front.yml"
 
 env:
   DENO_VERSION: "2.x"
