@@ -36,6 +36,7 @@
 @import "./components/tag.css";
 @import "./components/navigation.css";
 @import "./components/buttons.css";
+@import "./components/router.css";
 
 /* ─────────────────────────────────────────────────────────────────────────
    Utilities Layer - Helper Classes
@@ -46,9 +47,6 @@
    Configuration
    ───────────────────────────────────────────────────────────────────────── */
 @variant dark (&:is(.dark *));
-@view-transition {
-  navigation: auto;
-}
 
 /* Code highlight theme placeholder */
 /* insert-code-theme */

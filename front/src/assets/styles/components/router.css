@@ -1,0 +1,14 @@
+/**
+ * SPA Router View Transitions
+ * Scoped to #main-content for client-side navigation
+ */
+
+#main-content {
+  view-transition-name: main-content;
+}
+
+::view-transition-old(main-content),
+::view-transition-new(main-content) {
+  animation-duration: var(--duration-normal);
+  animation-timing-function: var(--ease-smooth);
+}

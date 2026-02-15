@@ -51,4 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const isExpanded = menuButton.getAttribute("aria-expanded") === "true";
     updateMenuState(!isExpanded);
   });
+  // force close mobile menu on SPA navigation
+  document.addEventListener("app:navigate", () => {
+    updateMenuState(false);
+  });
 });

@@ -17,10 +17,3 @@
     font-size: var(--font-size-base);
   }
 }
-
-/* View Transitions */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: var(--duration-normal);
-  animation-timing-function: var(--ease-smooth);
-}

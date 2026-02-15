@@ -36,15 +36,21 @@ export default (
         />
         {/* title */}
         <title>{title ? `${title} | ${site.name}` : site.name}</title>
-        {/* FOUC prevention */}
+        {/* FOUC prevention: hide page until CSS loads */}
         <style
           dangerouslySetInnerHTML={{
             __html: "html{visibility:hidden;opacity:0;}",
           }}
         >
         </style>
-        {/* critical script */}
-        <script src="/assets/scripts/core/init.js"></script>
+        {/* critical theme init: must be inline to avoid flash during view transitions */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              `(function(){try{var t=localStorage.getItem("theme");if(!t)t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";if(t==="dark")document.documentElement.classList.add("dark")}catch(e){}})()`,
+          }}
+        >
+        </script>
         {/* styles */}
         <link rel="stylesheet" href="/assets/styles/main.css" />
         {/* RSS feed */}
@@ -55,6 +61,7 @@ export default (
           href="/feed.xml"
         />
         {/* deferred scripts */}
+        <script src="/assets/scripts/router/index.js" defer></script>
         <script src="/assets/scripts/core/version.js" defer></script>
         <script src="/assets/scripts/theme/index.js" defer></script>
         <script src="/assets/scripts/navigation/index.js" defer></script>
