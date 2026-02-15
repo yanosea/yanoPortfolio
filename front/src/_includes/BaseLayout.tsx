@@ -34,24 +34,26 @@ export default (
           content="#2d353b"
           media="(prefers-color-scheme: dark)"
         />
+        {/* hint browser to use system-preferred canvas color before any CSS */}
+        <meta name="color-scheme" content="dark light" />
         {/* title */}
         <title>{title ? `${title} | ${site.name}` : site.name}</title>
+        {/* critical theme init: must run BEFORE styles to set class and color-scheme */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              `(function(){var d=document.documentElement;try{var t=localStorage.getItem("theme")}catch(e){var t=null}if(!t)t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";if(t==="dark"){d.classList.add("dark");d.style.colorScheme="dark"}else{d.style.colorScheme="light"}})()`,
+          }}
+        >
+        </script>
         {/* FOUC prevention: hide content until CSS loads, set canvas bg per theme */}
         <style
           dangerouslySetInnerHTML={{
             __html:
-              "html{visibility:hidden;opacity:0;background-color:#fdf6e3;color-scheme:light}html.dark{background-color:#2d353b;color-scheme:dark}",
+              "html{visibility:hidden;opacity:0;background-color:#fdf6e3}html.dark{background-color:#2d353b}",
           }}
         >
         </style>
-        {/* critical theme init: must be inline to run before first paint */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              `(function(){try{var t=localStorage.getItem("theme");if(!t)t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";if(t==="dark")document.documentElement.classList.add("dark")}catch(e){}})()`,
-          }}
-        >
-        </script>
         {/* styles */}
         <link rel="stylesheet" href="/assets/styles/main.css" />
         {/* RSS feed */}

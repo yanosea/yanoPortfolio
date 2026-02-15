@@ -22,11 +22,13 @@ const getCurrentTheme = (): Theme => {
  * @param theme - The theme to apply
  */
 const applyTheme = (theme: Theme): void => {
+  const root = document.documentElement;
   if (theme === THEME_CONFIG.DARK) {
-    document.documentElement.classList.add("dark");
+    root.classList.add("dark");
   } else {
-    document.documentElement.classList.remove("dark");
+    root.classList.remove("dark");
   }
+  root.style.colorScheme = theme;
 };
 
 /**
