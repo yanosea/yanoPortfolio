@@ -6,9 +6,9 @@
 import type { Command } from "@/types/terminal.ts";
 // utils
 import { CSS_CLASSES } from "@/assets/scripts/core/constants.ts";
-import { ROUTING_CONFIG, TIMING_CONFIG } from "@/assets/scripts/core/config.ts";
+import { ROUTING_CONFIG } from "@/assets/scripts/core/config.ts";
 // core
-import { getAllPages } from "../core/utils.ts";
+import { getAllPages, redirectWithCountdown } from "../core/utils.ts";
 
 /**
  * Map of error messages
@@ -75,38 +75,10 @@ export const cd: Command = {
       // empty path means home
       targetUrl = "/";
     }
-    // hide terminal form during redirect
-    const form = document.getElementById("terminal-form") as HTMLFormElement;
-    if (form) {
-      form.style.display = "none";
-    }
-    let countdown = TIMING_CONFIG.redirectCountdownSeconds;
     const pageName = normalizedArg === "" || normalizedArg === "~" ||
         normalizedArg === "index" || normalizedArg === "/index"
       ? "home"
       : normalizedArg;
-    const outputHtml =
-      `<span class="${CSS_CLASSES.SUCCESS}">Redirecting to ${pageName} page in ${countdown} second${
-        countdown !== 1 ? "s" : ""
-      }...</span>`;
-    // update countdown every second
-    const countdownInterval = setInterval(() => {
-      countdown--;
-      if (countdown > 0) {
-        const outputEl = document.querySelector(
-          ".terminal-history-item:last-child .terminal-history-output",
-        );
-        if (outputEl) {
-          outputEl.innerHTML =
-            `<span class="${CSS_CLASSES.SUCCESS}">Redirecting to ${pageName} page in ${countdown} second${
-              countdown !== 1 ? "s" : ""
-            }...</span>`;
-        }
-      } else {
-        clearInterval(countdownInterval);
-        globalThis.location.href = targetUrl;
-      }
-    }, TIMING_CONFIG.countdownInterval);
-    return outputHtml;
+    return redirectWithCountdown(pageName, targetUrl);
   },
 };

@@ -26,6 +26,19 @@ import {
 // modal
 import { openImageModal } from "../modal/modal-functions.ts";
 
+/** Reference to the global keydown handler for cleanup */
+let globalKeydownHandler: ((e: KeyboardEvent) => void) | null = null;
+
+/**
+ * Clean up terminal event listeners
+ */
+function cleanupTerminal(): void {
+  if (globalKeydownHandler) {
+    globalThis.removeEventListener("keydown", globalKeydownHandler);
+    globalKeydownHandler = null;
+  }
+}
+
 /**
  * Measure text width using a hidden span
  * @param text - Text to measure
@@ -353,11 +366,12 @@ function initTerminal(): void {
   updateInputWidth(input);
   updateCursorPosition(input, cursor);
   // prevent arrow keys from scrolling the page
-  globalThis.addEventListener("keydown", (e) => {
+  globalKeydownHandler = (e: KeyboardEvent) => {
     if (["ArrowUp", "ArrowDown"].includes(e.key)) {
       e.preventDefault();
     }
-  });
+  };
+  globalThis.addEventListener("keydown", globalKeydownHandler);
 }
 
 // initialize when DOM is ready
@@ -366,3 +380,11 @@ if (document.readyState === "loading") {
 } else {
   initTerminal();
 }
+
+// reinitialize on SPA navigation
+document.addEventListener("app:navigate", () => {
+  cleanupTerminal();
+  if (document.getElementById("terminal-form")) {
+    initTerminal();
+  }
+});

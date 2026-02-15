@@ -15,7 +15,12 @@ export {
 
 export { handleAutocomplete } from "./autocomplete.ts";
 export { executeCommand } from "./executor.ts";
-export { getPromptHtml, isDesktop, scrollToBottom } from "./utils.ts";
+export {
+  getPromptHtml,
+  isDesktop,
+  redirectWithCountdown,
+  scrollToBottom,
+} from "./utils.ts";
 export {
   addStdinLine,
   cancelStdinMode,

@@ -4,7 +4,8 @@
 
 // utils
 import { closeImageModal } from "./modal-functions.ts";
-import { initBlogImageModal } from "./blog-images.ts";
+// blog image delegation (registers a single document-level listener)
+import "./blog-images.ts";
 
 // re-export functions for backward compatibility (though direct import is preferred)
 export { closeImageModal, openImageModal } from "./modal-functions.ts";
@@ -41,5 +42,3 @@ function initImageModal(): void {
 
 // initialize modal event listeners
 initImageModal();
-// initialize blog image modal handlers
-initBlogImageModal();

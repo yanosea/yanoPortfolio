@@ -3,7 +3,8 @@
  */
 
 // config
-import { getSiteName } from "@/assets/scripts/core/config.ts";
+import { getSiteName, TIMING_CONFIG } from "@/assets/scripts/core/config.ts";
+import { CSS_CLASSES } from "@/assets/scripts/core/constants.ts";
 
 /**
  * Page information structure
@@ -144,4 +145,49 @@ export function escapeHtml(text: string): string {
 export function getPromptHtml(): string {
   const hostname = getSiteName();
   return `<span class="terminal-user">you</span> <span class="terminal-at">@</span> <span class="terminal-host">${hostname}</span> <span class="terminal-colon">:</span> <span class="terminal-path">~</span> <span class="terminal-dollar">$</span> `;
+}
+
+/**
+ * Start a countdown and navigate via SPA router
+ * Hides the terminal form, shows countdown, then dispatches app:requestNavigate.
+ * @param pageName - Display name for the countdown message
+ * @param targetUrl - URL to navigate to
+ * @returns Initial countdown HTML
+ */
+export function redirectWithCountdown(
+  pageName: string,
+  targetUrl: string,
+): string {
+  const form = document.getElementById("terminal-form") as HTMLFormElement;
+  if (form) {
+    form.style.display = "none";
+  }
+  let countdown = TIMING_CONFIG.redirectCountdownSeconds;
+  const formatMsg = (n: number) =>
+    `<span class="${CSS_CLASSES.SUCCESS}">Redirecting to ${pageName} page in ${n} second${
+      n !== 1 ? "s" : ""
+    }...</span>`;
+  const countdownInterval = setInterval(() => {
+    countdown--;
+    if (!document.getElementById("terminal-form")) {
+      clearInterval(countdownInterval);
+      return;
+    }
+    if (countdown > 0) {
+      const outputEl = document.querySelector(
+        ".terminal-history-item:last-child .terminal-history-output",
+      );
+      if (outputEl) {
+        outputEl.innerHTML = formatMsg(countdown);
+      }
+    } else {
+      clearInterval(countdownInterval);
+      document.dispatchEvent(
+        new CustomEvent("app:requestNavigate", {
+          detail: { url: targetUrl },
+        }),
+      );
+    }
+  }, TIMING_CONFIG.countdownInterval);
+  return formatMsg(countdown);
 }

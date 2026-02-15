@@ -122,3 +122,8 @@ document.addEventListener("DOMContentLoaded", () => {
     attributeFilter: ["class"],
   });
 });
+
+// reinitialize on SPA navigation
+document.addEventListener("app:navigate", () => {
+  initializeUtterances();
+});
