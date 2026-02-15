@@ -46,11 +46,11 @@ export default (
           }}
         >
         </script>
-        {/* FOUC prevention: hide content until CSS loads, set canvas bg per theme */}
+        {/* FOUC prevention: html bg paints the canvas, body hides content */}
         <style
           dangerouslySetInnerHTML={{
             __html:
-              "html{visibility:hidden;opacity:0;background-color:#fdf6e3}html.dark{background-color:#2d353b}",
+              "html{background-color:#fdf6e3}html.dark{background-color:#2d353b}body{visibility:hidden}",
           }}
         >
         </style>
