@@ -1,14 +1,28 @@
 /**
  * SPA Router View Transitions
- * Scoped to #main-content for client-side navigation
+ * Elements with view-transition-name become independent layers during
+ * transitions, preserving their stacking order (z-index).
  */
 
 #main-content {
   view-transition-name: main-content;
 }
 
+#spotify-status-container {
+  view-transition-name: spotify-widget;
+}
+
 ::view-transition-old(main-content),
 ::view-transition-new(main-content) {
   animation-duration: var(--duration-normal);
   animation-timing-function: var(--ease-smooth);
+}
+
+/* spotify widget does not change across pages — skip transition entirely */
+::view-transition-old(spotify-widget) {
+  display: none;
+}
+
+::view-transition-new(spotify-widget) {
+  animation: none;
 }

@@ -12,6 +12,9 @@ const MAX_CACHE_SIZE = 20;
 /** Page cache with LRU eviction */
 const pageCache = new Map<string, string>();
 
+/** Navigation lock to prevent overlapping navigations */
+let isNavigating = false;
+
 /**
  * Check if a link click should be intercepted for SPA navigation
  * @param event - The click event
@@ -22,6 +25,10 @@ function shouldIntercept(
   event: MouseEvent,
   anchor: HTMLAnchorElement,
 ): boolean {
+  // already handled by another handler
+  if (event.defaultPrevented) {
+    return false;
+  }
   // modifier keys — let browser handle (new tab, etc.)
   if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
     return false;
@@ -126,6 +133,8 @@ async function navigateTo(
   pushState = true,
   scrollY = 0,
 ): Promise<void> {
+  if (isNavigating) return;
+  isNavigating = true;
   try {
     const html = await fetchPage(url);
     const doSwap = () => {
@@ -154,6 +163,8 @@ async function navigateTo(
   } catch {
     // fallback to full page navigation on any error
     globalThis.location.href = url;
+  } finally {
+    isNavigating = false;
   }
 }
 

@@ -36,14 +36,15 @@ export default (
         />
         {/* title */}
         <title>{title ? `${title} | ${site.name}` : site.name}</title>
-        {/* FOUC prevention: hide page until CSS loads */}
+        {/* FOUC prevention: hide content until CSS loads, set canvas bg per theme */}
         <style
           dangerouslySetInnerHTML={{
-            __html: "html{visibility:hidden;opacity:0;}",
+            __html:
+              "html{visibility:hidden;opacity:0;background-color:#fdf6e3;color-scheme:light}html.dark{background-color:#2d353b;color-scheme:dark}",
           }}
         >
         </style>
-        {/* critical theme init: must be inline to avoid flash during view transitions */}
+        {/* critical theme init: must be inline to run before first paint */}
         <script
           dangerouslySetInnerHTML={{
             __html:

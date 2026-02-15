@@ -147,6 +147,19 @@ export function getPromptHtml(): string {
   return `<span class="terminal-user">you</span> <span class="terminal-at">@</span> <span class="terminal-host">${hostname}</span> <span class="terminal-colon">:</span> <span class="terminal-path">~</span> <span class="terminal-dollar">$</span> `;
 }
 
+/** Active countdown interval ID for cleanup */
+let countdownIntervalId: ReturnType<typeof setInterval> | null = null;
+
+/**
+ * Clear any active redirect countdown
+ */
+export function clearRedirectCountdown(): void {
+  if (countdownIntervalId !== null) {
+    clearInterval(countdownIntervalId);
+    countdownIntervalId = null;
+  }
+}
+
 /**
  * Start a countdown and navigate via SPA router
  * Hides the terminal form, shows countdown, then dispatches app:requestNavigate.
@@ -158,6 +171,8 @@ export function redirectWithCountdown(
   pageName: string,
   targetUrl: string,
 ): string {
+  // clear any existing countdown
+  clearRedirectCountdown();
   const form = document.getElementById("terminal-form") as HTMLFormElement;
   if (form) {
     form.style.display = "none";
@@ -167,10 +182,10 @@ export function redirectWithCountdown(
     `<span class="${CSS_CLASSES.SUCCESS}">Redirecting to ${pageName} page in ${n} second${
       n !== 1 ? "s" : ""
     }...</span>`;
-  const countdownInterval = setInterval(() => {
+  countdownIntervalId = setInterval(() => {
     countdown--;
     if (!document.getElementById("terminal-form")) {
-      clearInterval(countdownInterval);
+      clearRedirectCountdown();
       return;
     }
     if (countdown > 0) {
@@ -181,7 +196,7 @@ export function redirectWithCountdown(
         outputEl.innerHTML = formatMsg(countdown);
       }
     } else {
-      clearInterval(countdownInterval);
+      clearRedirectCountdown();
       document.dispatchEvent(
         new CustomEvent("app:requestNavigate", {
           detail: { url: targetUrl },

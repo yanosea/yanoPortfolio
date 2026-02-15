@@ -9,6 +9,7 @@ import * as commands from "./commands/index.ts";
 // core
 import {
   addCommandToHistory,
+  clearRedirectCountdown,
   executeCommand,
   getNextCommand,
   getPreviousCommand,
@@ -20,6 +21,7 @@ import {
 } from "./core/index.ts";
 import {
   addStdinLine,
+  cancelStdinMode,
   finishStdinMode,
   isStdinModeActive,
 } from "./core/stdin.ts";
@@ -384,6 +386,8 @@ if (document.readyState === "loading") {
 // reinitialize on SPA navigation
 document.addEventListener("app:navigate", () => {
   cleanupTerminal();
+  cancelStdinMode();
+  clearRedirectCountdown();
   if (document.getElementById("terminal-form")) {
     initTerminal();
   }
