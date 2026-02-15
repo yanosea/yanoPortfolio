@@ -39,7 +39,9 @@ export default (
         {/* title */}
         <title>{title ? `${title} | ${site.name}` : site.name}</title>
         {/* critical theme init: must run BEFORE styles to set class and color-scheme */}
+        {/* data-cfasync=false excludes this from Cloudflare Rocket Loader */}
         <script
+          data-cfasync="false"
           dangerouslySetInnerHTML={{
             __html:
               `(function(){var d=document.documentElement;try{var t=localStorage.getItem("theme")}catch(e){var t=null}if(!t)t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";if(t==="dark"){d.classList.add("dark");d.style.colorScheme="dark"}else{d.style.colorScheme="light"}})()`,
