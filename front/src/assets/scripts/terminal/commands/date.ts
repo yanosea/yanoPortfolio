@@ -55,8 +55,10 @@ function formatCustomDate(date: Date, format: string, utc: boolean): string {
       m: pad(date.getUTCMonth() + 1),
       d: pad(date.getUTCDate()),
       H: pad(date.getUTCHours()),
+      I: pad(date.getUTCHours() % 12 || 12),
       M: pad(date.getUTCMinutes()),
       S: pad(date.getUTCSeconds()),
+      p: date.getUTCHours() >= 12 ? "PM" : "AM",
       a: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][date.getUTCDay()],
       A: [
         "Sunday",
@@ -101,8 +103,10 @@ function formatCustomDate(date: Date, format: string, utc: boolean): string {
       m: pad(date.getMonth() + 1),
       d: pad(date.getDate()),
       H: pad(date.getHours()),
+      I: pad(date.getHours() % 12 || 12),
       M: pad(date.getMinutes()),
       S: pad(date.getSeconds()),
+      p: date.getHours() >= 12 ? "PM" : "AM",
       a: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][date.getDay()],
       A: [
         "Sunday",
@@ -147,8 +151,10 @@ function formatCustomDate(date: Date, format: string, utc: boolean): string {
     .replace(/%m/g, get.m)
     .replace(/%d/g, get.d)
     .replace(/%H/g, get.H)
+    .replace(/%I/g, get.I)
     .replace(/%M/g, get.M)
     .replace(/%S/g, get.S)
+    .replace(/%p/g, get.p)
     .replace(/%a/g, get.a)
     .replace(/%A/g, get.A)
     .replace(/%b/g, get.b)

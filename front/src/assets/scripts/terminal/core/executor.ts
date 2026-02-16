@@ -10,6 +10,53 @@ import { addToHistory } from "./history.ts";
 import { escapeHtml, getPromptHtml, scrollToBottom } from "./utils.ts";
 
 /**
+ * Split a command string into arguments respecting shell-style quoting
+ * Quotes are stripped and their content is kept as a single argument.
+ * @param input - Raw command string
+ * @returns Array of parsed arguments
+ */
+function parseShellArgs(input: string): string[] {
+  // initialize parsing state for whitespace-separated arguments
+  const args: string[] = [];
+  let current = "";
+  let inQuote = false;
+  let quoteChar = "";
+  // iterate through each character in the input
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+    // handle quote characters (toggle quote state)
+    if ((char === '"' || char === "'") && input[i - 1] !== "\\") {
+      if (!inQuote) {
+        // entering a quoted section
+        inQuote = true;
+        quoteChar = char;
+      } else if (char === quoteChar) {
+        // exiting a quoted section
+        inQuote = false;
+        quoteChar = "";
+      } else {
+        // different quote character inside quotes: treat as literal
+        current += char;
+      }
+    } else if (/\s/.test(char) && !inQuote) {
+      // whitespace outside quotes: save current argument and start new one
+      if (current) {
+        args.push(current);
+        current = "";
+      }
+    } else {
+      // regular character: add to current argument
+      current += char;
+    }
+  }
+  // add final argument if not empty
+  if (current) {
+    args.push(current);
+  }
+  return args;
+}
+
+/**
  * Parse command line into pipe segments
  * @param commandLine - Raw command line string
  * @returns Array of pipe segments
@@ -93,7 +140,7 @@ async function executePipeChain(
   for (let i = 0; i < segments.length; i++) {
     // parse command name and arguments from segment
     const segment = segments[i];
-    const parts = segment.trim().split(/\s+/);
+    const parts = parseShellArgs(segment.trim());
     const cmdName = parts[0];
     const args = parts.slice(1);
     // find command handler
@@ -156,7 +203,7 @@ export async function executeCommand(
     await executePipeChain(pipeSegments, commands);
   } else {
     // single command: parse and execute normally
-    const parts = commandLine.trim().split(/\s+/);
+    const parts = parseShellArgs(commandLine.trim());
     const cmdName = parts[0];
     const args = parts.slice(1);
     // find the command handler
