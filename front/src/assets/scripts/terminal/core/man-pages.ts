@@ -89,8 +89,10 @@ export const MAN_PAGES: Record<string, ManPage> = {
     %m     Month (01-12)
     %d     Day (01-31)
     %H     Hour (00-23)
+    %I     Hour (01-12)
     %M     Minute (00-59)
     %S     Second (00-59)
+    %p     AM or PM
     %a     Weekday (short: Sun, Mon, etc.)
     %A     Weekday (full: Sunday, Monday, etc.)
     %b     Month name (short: Jan, Feb, etc.)
