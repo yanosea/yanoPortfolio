@@ -38,6 +38,21 @@ export default (
         <meta name="color-scheme" content="dark light" />
         {/* title */}
         <title>{title ? `${title} | ${site.name}` : site.name}</title>
+        {/* Google Analytics: data-cfasync=false to bypass Cloudflare Rocket Loader */}
+        <script
+          async
+          data-cfasync="false"
+          src="https://www.googletagmanager.com/gtag/js?id=G-SDLQKC1YPM"
+        >
+        </script>
+        <script
+          data-cfasync="false"
+          dangerouslySetInnerHTML={{
+            __html:
+              `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-SDLQKC1YPM");`,
+          }}
+        >
+        </script>
         {/* theme init: data-cfasync=false to bypass Cloudflare Rocket Loader */}
         <script
           data-cfasync="false"
