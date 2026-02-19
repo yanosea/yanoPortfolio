@@ -8,7 +8,11 @@ import type { Command } from "@/types/terminal.ts";
 import { CSS_CLASSES } from "@/assets/scripts/core/constants.ts";
 import { ROUTING_CONFIG } from "@/assets/scripts/core/config.ts";
 // core
-import { getAllPages, redirectWithCountdown } from "../core/utils.ts";
+import {
+  escapeHtml,
+  getAllPages,
+  redirectWithCountdown,
+} from "../core/utils.ts";
 
 /**
  * Map of error messages
@@ -61,7 +65,9 @@ export const cd: Command = {
       });
       // if path doesn't exist, return error message
       if (!pathExists) {
-        return `<span class="${CSS_CLASSES.ERROR}">cd: ${normalizedArg}: ${MESSAGES.NO_SUCH_DIR}</span>`;
+        return `<span class="${CSS_CLASSES.ERROR}">cd: ${
+          escapeHtml(normalizedArg)
+        }: ${MESSAGES.NO_SUCH_DIR}</span>`;
       }
       // allow validated path - construct URL from the path argument
       const normalizedPath = normalizedInputPath;

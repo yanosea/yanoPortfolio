@@ -4,6 +4,8 @@
 
 // types
 import type { Command } from "@/types/terminal.ts";
+// utils
+import { escapeHtml } from "../core/utils.ts";
 
 /**
  * Echo command options
@@ -117,9 +119,9 @@ export const echo: Command = {
       text = interpretEscapes(text);
     }
     if (options.noNewline) {
-      return text;
+      return escapeHtml(text);
     } else {
-      return text || "\n";
+      return text ? escapeHtml(text) : "\n";
     }
   },
 };
