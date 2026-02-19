@@ -9,6 +9,7 @@ import type { Command } from "@/types/terminal.ts";
 import { CSS_CLASSES } from "@/assets/scripts/core/constants.ts";
 import { MAN_PAGES } from "../core/man-pages.ts";
 import { MAN_SECTIONS } from "../core/config.ts";
+import { escapeHtml } from "../core/utils.ts";
 
 /**
  * Man error messages
@@ -45,7 +46,9 @@ function formatNoArgsMessage(): string {
  * @returns Error message HTML
  */
 function formatNoEntryMessage(commandName: string): string {
-  return `<span class="${CSS_CLASSES.ERROR}">${MESSAGES.NO_ENTRY} ${commandName}</span>`;
+  return `<span class="${CSS_CLASSES.ERROR}">${MESSAGES.NO_ENTRY} ${
+    escapeHtml(commandName)
+  }</span>`;
 }
 
 /**
@@ -153,7 +156,9 @@ function searchByKeyword(keyword: string, allCommands?: Command[]): string {
   });
 
   if (matches.length === 0) {
-    return `<span class="${CSS_CLASSES.ERROR}">Nothing appropriate for "${keyword}"</span>`;
+    return `<span class="${CSS_CLASSES.ERROR}">Nothing appropriate for "${
+      escapeHtml(keyword)
+    }"</span>`;
   }
 
   const output = matches

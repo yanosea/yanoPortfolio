@@ -179,9 +179,9 @@ export function redirectWithCountdown(
   }
   let countdown = TIMING_CONFIG.redirectCountdownSeconds;
   const formatMsg = (n: number) =>
-    `<span class="${CSS_CLASSES.SUCCESS}">Redirecting to ${pageName} page in ${n} second${
-      n !== 1 ? "s" : ""
-    }...</span>`;
+    `<span class="${CSS_CLASSES.SUCCESS}">Redirecting to ${
+      escapeHtml(pageName)
+    } page in ${n} second${n !== 1 ? "s" : ""}...</span>`;
   countdownIntervalId = setInterval(() => {
     countdown--;
     if (!document.getElementById("terminal-form")) {
