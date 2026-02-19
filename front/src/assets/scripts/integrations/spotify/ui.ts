@@ -184,28 +184,85 @@ function applyContentUpdates(
     albumImage.src = track.imageUrl;
     albumImage.alt = `${track.albumName} artwork`;
   }
-  // update track link
+  // update track link (escapeHtml sanitizes user input before innerHTML)
   if (trackLink) {
     trackLink.href = track.trackUrl;
-    trackLink.innerHTML = `${SPOTIFY_FIELD_ICONS.TRACK}<span class="truncate">${
-      escapeHtml(track.trackName)
-    }</span>`;
+    trackLink.innerHTML =
+      `${SPOTIFY_FIELD_ICONS.TRACK}<span class="spotify-text-wrapper"><span class="spotify-text-content">${
+        escapeHtml(track.trackName)
+      }</span></span>`;
   }
-  // update album link
+  // update album link (escapeHtml sanitizes user input before innerHTML)
   if (albumLink) {
     albumLink.href = track.albumUrl;
-    albumLink.innerHTML = `${SPOTIFY_FIELD_ICONS.ALBUM}<span class="truncate">${
-      escapeHtml(track.albumName)
-    }</span>`;
+    albumLink.innerHTML =
+      `${SPOTIFY_FIELD_ICONS.ALBUM}<span class="spotify-text-wrapper"><span class="spotify-text-content">${
+        escapeHtml(track.albumName)
+      }</span></span>`;
   }
-  // update artist link
+  // update artist link (escapeHtml sanitizes user input before innerHTML)
   if (artistLink) {
     artistLink.href = track.artistUrl;
     artistLink.innerHTML =
-      `${SPOTIFY_FIELD_ICONS.ARTIST}<span class="truncate">${
+      `${SPOTIFY_FIELD_ICONS.ARTIST}<span class="spotify-text-wrapper"><span class="spotify-text-content">${
         escapeHtml(track.artistName)
-      }</span>`;
+      }</span></span>`;
   }
+}
+
+/** Scroll speed for marquee animation (pixels per second) */
+const MARQUEE_SPEED = 30;
+
+/**
+ * Set up marquee scrolling for overflowing text elements
+ * @param elements - Text wrapper elements to check for overflow
+ */
+function setupMarquees(elements: HTMLElement[]): void {
+  requestAnimationFrame(() => {
+    for (const wrapper of elements) {
+      const content = wrapper.querySelector(
+        ".spotify-text-content",
+      ) as HTMLElement | null;
+      if (!content) continue;
+      // reset marquee state
+      wrapper.classList.remove("marquee");
+      // restore original single-span structure if previously marqueed
+      const existingTrack = wrapper.querySelector(".spotify-marquee-track");
+      if (existingTrack) {
+        wrapper.textContent = "";
+        wrapper.appendChild(content.cloneNode(true));
+      }
+      // check if text overflows
+      if (wrapper.scrollWidth <= wrapper.clientWidth) continue;
+      // build marquee track with duplicated text
+      const track = document.createElement("span");
+      track.className = "spotify-marquee-track";
+      const original = content.cloneNode(true) as HTMLElement;
+      const duplicate = content.cloneNode(true) as HTMLElement;
+      duplicate.setAttribute("aria-hidden", "true");
+      track.appendChild(original);
+      track.appendChild(duplicate);
+      // set scroll speed based on content width
+      const duration = wrapper.scrollWidth / MARQUEE_SPEED;
+      track.style.setProperty("--marquee-duration", `${duration}s`);
+      // replace wrapper content with marquee track
+      wrapper.textContent = "";
+      wrapper.appendChild(track);
+      wrapper.classList.add("marquee");
+    }
+  });
+}
+
+/**
+ * Get text wrapper elements for marquee setup
+ * @returns Array of spotify-text-wrapper elements
+ */
+function getTextWrappers(): HTMLElement[] {
+  return Array.from(
+    document.querySelectorAll<HTMLElement>(
+      "#spotify-content .spotify-text-wrapper",
+    ),
+  );
 }
 
 /**
@@ -286,8 +343,9 @@ export function updateUI(isNowPlaying: boolean, track: Track): void {
         }
       };
     }
-    // apply content and return
+    // apply content and set up marquees
     applyContentUpdates(isNowPlaying, track, contentElements);
+    setupMarquees(getTextWrappers());
     return;
   }
   // subsequent updates: use fade animation
@@ -302,11 +360,13 @@ export function updateUI(isNowPlaying: boolean, track: Track): void {
     if (albumImage && oldImageSrc !== track.imageUrl) {
       albumImage.onload = () => {
         fadeIn(fadeableElements);
+        setupMarquees(getTextWrappers());
       };
     } else {
       // same image or no image element, fade in immediately
       requestAnimationFrame(() => {
         fadeIn(fadeableElements);
+        setupMarquees(getTextWrappers());
       });
     }
   }, FADE_DURATION);

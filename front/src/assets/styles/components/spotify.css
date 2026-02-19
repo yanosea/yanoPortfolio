@@ -99,4 +99,38 @@
   .spotify-fade-out {
     opacity: 0;
   }
+
+  /* Marquee scroll for overflowing text */
+  .spotify-text-wrapper {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  .spotify-text-wrapper.marquee {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 8%,
+      black 92%,
+      transparent
+    );
+  }
+
+  .spotify-marquee-track {
+    display: inline-flex;
+    gap: 2rem;
+    animation: spotify-marquee-scroll var(--marquee-duration, 10s) linear
+      infinite;
+  }
+
+  @keyframes spotify-marquee-scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(calc(-50% - 1rem));
+    }
+  }
 }
