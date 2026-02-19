@@ -113,8 +113,15 @@ async function createSpotifyDisplay(
   const { lineHeight, fontFamily, imageMargin } = SPOTIFY_DISPLAY_CONFIG;
   const imageSize = `${lines.length * lineHeight}em`;
 
-  // use table layout for better alignment (neofetch-style)
-  return `<pre style="font-family: '${fontFamily}', monospace; line-height: ${lineHeight}; margin: 0.5rem 0;"><span style="display: inline-block; vertical-align: top; margin-right: ${imageMargin};">${
+  // wrap each line in a block span with ellipsis overflow
+  const ellipsisStyle =
+    "display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;";
+  const wrappedLines = lines
+    .map((line) => `<span style="${ellipsisStyle}">${line}</span>`)
+    .join("");
+
+  // use flex layout for neofetch-style alignment
+  return `<pre style="font-family: '${fontFamily}', monospace; line-height: ${lineHeight}; margin: 0.5rem 0; display: flex; align-items: flex-start;"><span style="flex-shrink: 0; margin-right: ${imageMargin};">${
     imageBase64
       ? `<img src="${imageBase64}" alt="${
         escapeHtml(track.albumName)
@@ -122,9 +129,7 @@ async function createSpotifyDisplay(
         escapeHtml(track.albumName)
       }">`
       : `<span style="display: block; width: ${imageSize}; height: ${imageSize}; background-color: var(--color-bg-elevated); border-radius: 4px; text-align: center; line-height: ${imageSize}; color: var(--color-fg-secondary); font-size: 3em;">${SPOTIFY_FIELD_ICONS.SPOTIFY}</span>`
-  }</span><span style="display: inline-block; vertical-align: top;">${
-    lines.join("\n")
-  }</span></pre>`;
+  }</span><span style="min-width: 0; overflow: hidden;">${wrappedLines}</span></pre>`;
 }
 
 /**
@@ -186,11 +191,11 @@ function fetchSpotifyStatusFromDOM(): {
   // determine if playing (no playedAt means currently playing)
   const isPlaying = !playedAtElement?.textContent;
 
-  // helper to get text content from element, preferring truncate span if present
+  // helper to get text content from element, preferring text content span if present
   const getTextContent = (element: HTMLElement): string => {
-    const truncateSpan = element.querySelector(".truncate");
-    if (truncateSpan) {
-      return truncateSpan.textContent?.trim() || "";
+    const textSpan = element.querySelector(".spotify-text-content");
+    if (textSpan) {
+      return textSpan.textContent?.trim() || "";
     }
     // removes everything from start to first space
     return element.textContent?.replace(/^\S+\s+/, "").trim() || "";
