@@ -20,7 +20,7 @@ export default function Tag({
   baseUrl?: string;
   className?: string;
 }) {
-  const href = `${baseUrl}${tag}.html`;
+  const href = `${baseUrl}${tag}`;
 
   return (
     // tag

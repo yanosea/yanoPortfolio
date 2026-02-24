@@ -58,6 +58,13 @@ site.process([".html"], (pages) => {
       link.setAttribute("target", "_blank");
       link.setAttribute("rel", "noopener noreferrer");
     });
+    // strip trailing slashes from internal links
+    page.document.querySelectorAll('a[href^="/"]').forEach((link) => {
+      const href = link.getAttribute("href");
+      if (href && href !== "/" && href.endsWith("/")) {
+        link.setAttribute("href", href.replace(/\/+$/, ""));
+      }
+    });
   }
 });
 // plugin config

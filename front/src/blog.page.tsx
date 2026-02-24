@@ -25,7 +25,7 @@ export default function* (
   const blogPosts = posts
     .filter((page) => {
       return page?.url?.toString().startsWith("/blog/") &&
-        page?.url !== "/blog.html" &&
+        page?.url !== "/blog/" &&
         !!page.title &&
         !!page.date;
     })
@@ -34,7 +34,7 @@ export default function* (
     }) as unknown as BlogPost[];
   // pagination options
   const options = {
-    url: (n: number) => n === 1 ? `/blog.html` : `/blog/page/${n}.html`,
+    url: (n: number) => n === 1 ? `/blog/` : `/blog/page/${n}/`,
     size: 5,
   };
   // yield paginated blog pages

@@ -39,15 +39,15 @@ export default function Header(
           {/* navigation links */}
           <div className="hidden items-baseline gap-4 py-5 md:flex">
             {/* about page */}
-            <comp.ui.NavLink href="/about.html" iconName="lucide/info">
+            <comp.ui.NavLink href="/about" iconName="lucide/info">
               about
             </comp.ui.NavLink>
             {/* blog page */}
-            <comp.ui.NavLink href="/blog.html" iconName="lucide/notebook-pen">
+            <comp.ui.NavLink href="/blog" iconName="lucide/notebook-pen">
               blog
             </comp.ui.NavLink>
             {/* links page */}
-            <comp.ui.NavLink href="/links.html" iconName="lucide/link">
+            <comp.ui.NavLink href="/links" iconName="lucide/link">
               links
             </comp.ui.NavLink>
             {/* RSS */}

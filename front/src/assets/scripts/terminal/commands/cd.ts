@@ -69,14 +69,7 @@ export const cd: Command = {
           escapeHtml(normalizedArg)
         }: ${MESSAGES.NO_SUCH_DIR}</span>`;
       }
-      // allow validated path - construct URL from the path argument
-      const normalizedPath = normalizedInputPath;
-      // if path doesn't have .html extension, add it
-      if (!normalizedPath.endsWith(".html") && !normalizedPath.endsWith("/")) {
-        targetUrl = `${normalizedPath}.html`;
-      } else {
-        targetUrl = normalizedPath;
-      }
+      targetUrl = normalizedInputPath;
     } else {
       // empty path means home
       targetUrl = "/";
