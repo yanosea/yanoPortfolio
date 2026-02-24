@@ -20,217 +20,173 @@ export interface ManPage {
 export const MAN_PAGES: Record<string, ManPage> = {
   help: {
     synopsis: "help",
-    description: "Display a list of all available commands with descriptions.",
+    description:
+      "Display a list of available commands with brief descriptions.",
   },
   about: {
     synopsis: "about",
     description:
-      "Navigate to the about page. Redirects after a 2-second countdown.",
+      "Display the about page. Redirects to /about after a countdown.",
   },
   blog: {
     synopsis: "blog",
-    description:
-      "Navigate to the blog page. Redirects after a 2-second countdown.",
+    description: "Display the blog page. Redirects to /blog after a countdown.",
+  },
+  index: {
+    synopsis: "index",
+    description: "Display the index page. Redirects to / after a countdown.",
   },
   links: {
     synopsis: "links",
     description:
-      "Navigate to the links page. Redirects after a 2-second countdown.",
+      "Display the links page. Redirects to /links after a countdown.",
   },
   clear: {
     synopsis: "clear",
-    description: "Clear the terminal history and output.",
+    description: "Clear the terminal screen.",
   },
   cd: {
-    synopsis: "cd [DIRECTORY]",
+    synopsis: "cd [directory]",
     description:
-      "Change the current directory. Navigate to different pages on the site. If no directory is specified, navigate to the home page.",
-    options: `    DIRECTORY    Directory to change to
-                 Available directories:
-                 ~           Navigate to home page
-                 about       Navigate to about page
-                 blog        Navigate to blog page
-                 links       Navigate to links page`,
+      "Change the working directory. If directory is not supplied, the value of the HOME variable is used. If directory is -, the previous working directory is used (see OLDPWD). Paths outside /home/you are restricted.",
+    options: `       directory  The target directory.
+       -          Change to the previous working directory ($OLDPWD).`,
   },
   echo: {
-    synopsis: "echo [OPTION]... [STRING]...",
-    description: "Print the given string(s) to the terminal output.",
-    options: `    -n     Do not output the trailing newline
-    -e     Enable interpretation of backslash escapes
-    -E     Disable interpretation of backslash escapes (default)
+    synopsis: "echo [-neE] [string ...]",
+    description:
+      "Display a line of text. Echo the STRING(s) to standard output.",
+    options: `       -n     Do not output the trailing newline.
+       -e     Enable interpretation of backslash escapes.
+       -E     Disable interpretation of backslash escapes (default).
 
-    Escape sequences (with -e):
-    \\n     Newline
-    \\t     Horizontal tab
-    \\r     Carriage return
-    \\b     Backspace
-    \\\\     Backslash`,
+       If -e is in effect, the following sequences are recognized:
+       \\\\     backslash
+       \\n     new line
+       \\t     horizontal tab
+       \\r     carriage return
+       \\b     backspace`,
+  },
+  env: {
+    synopsis: "env",
+    description: "Print the current environment.",
   },
   whoami: {
     synopsis: "whoami",
-    description: "Display the current user name.",
+    description: "Print the current user name.",
   },
   pwd: {
     synopsis: "pwd",
-    description:
-      "Print the current working directory in the format: /home/you/page",
+    description: "Print the full filename of the current working directory.",
   },
   date: {
     synopsis: "date [OPTION]... [+FORMAT]",
-    description:
-      "Display the current date and time in the format: Day Mon DD HH:MM:SS TZ YYYY",
-    options:
-      `    -u, --utc          Display date in UTC (Coordinated Universal Time)
-    -I, --iso-8601     Output date in ISO 8601 format (YYYY-MM-DD)
-    +FORMAT            Output date in custom format
+    description: "Display the current date and time.",
+    options: `       -u, --utc      Print Coordinated Universal Time (UTC).
+       -I, --iso-8601 Output date/time in ISO 8601 format.
+       +FORMAT        Output date/time according to FORMAT.
 
-    FORMAT sequences:
-    %Y     Year (4 digits)
-    %m     Month (01-12)
-    %d     Day (01-31)
-    %H     Hour (00-23)
-    %I     Hour (01-12)
-    %M     Minute (00-59)
-    %S     Second (00-59)
-    %p     AM or PM
-    %a     Weekday (short: Sun, Mon, etc.)
-    %A     Weekday (full: Sunday, Monday, etc.)
-    %b     Month name (short: Jan, Feb, etc.)
-    %B     Month name (full: January, February, etc.)
-    %T     Time (HH:MM:SS)
-    %F     Date (YYYY-MM-DD)
-    %%     Literal %`,
+       FORMAT sequences:
+       %Y     year (4 digits)           %m     month (01-12)
+       %d     day of month (01-31)      %H     hour (00-23)
+       %I     hour (01-12)              %M     minute (00-59)
+       %S     second (00-59)            %p     locale's AM or PM
+       %a     abbreviated weekday       %A     full weekday name
+       %b     abbreviated month         %B     full month name
+       %T     time (HH:MM:SS)           %F     date (YYYY-MM-DD)
+       %%     a literal %`,
   },
   welcome: {
     synopsis: "welcome",
-    description: "Display the welcome message with ASCII art.",
+    description: "Display the welcome message and ASCII art banner.",
   },
   ls: {
-    synopsis: "ls [OPTION]...",
-    description:
-      "List pages and content based on the current location. Shows main pages (about, blog, links).",
-    options: `    -l     Use long listing format (permissions, size, date)
-    -a     Show all entries (including hidden files)
-    -h     Human-readable sizes (K, M, G) when used with -l`,
+    synopsis: "ls [-alh]",
+    description: "List directory contents.",
+    options: `       -a     Do not ignore entries starting with .
+       -l     Use a long listing format.
+       -h     With -l, print sizes in human readable format.`,
   },
   history: {
-    synopsis: "history [OPTION] [N]",
-    description:
-      "Display the command history with line numbers. Shows all previously executed commands in chronological order.",
-    options: `    -c     Clear the history list
-    N      Display only the last N history entries`,
+    synopsis: "history [-c] [n]",
+    description: "Display the command history list with line numbers.",
+    options: `       -c     Clear the history list.
+       n      List only the last n entries.`,
   },
   tree: {
-    synopsis: "tree [OPTION]...",
-    description:
-      "Display the site structure in a tree format with ASCII art visualization.",
-    options: `    -L level   Descend only level directories deep
-    -d         List directories only
-    -a         Show all files (including hidden files)`,
+    synopsis: "tree [-adL level]",
+    description: "List contents of directories in a tree-like format.",
+    options: `       -a     All files are listed.
+       -d     List directories only.
+       -L level  Descend only level directories deep.`,
   },
   man: {
-    synopsis: "man [OPTION]... [SECTION] COMMAND",
-    description:
-      "Display manual pages for commands. Shows detailed information about command usage, synopsis, description, and options.",
-    options: `    SECTION    Section number to search (1-9)
-    -k keyword Search for keyword in all manual pages (apropos)
-    -f name    Display short description for command (whatis)
-    -a         Display all matching manual pages`,
+    synopsis: "man [-afk] [section] name ...",
+    description: "Format and display the on-line manual pages.",
+    options: `       section    Section number (1-9).
+       -k keyword Equivalent to apropos. Search short descriptions.
+       -f name    Equivalent to whatis. Display one-line descriptions.
+       -a         Display all matching manual pages.`,
   },
   keybindings: {
     synopsis: "keybindings",
     description:
-      "Terminal keyboard shortcuts and keybindings reference. Supports standard readline (Emacs mode) keybindings for efficient command-line editing.",
-    options: `    NAVIGATION:
-    Ctrl+A         Move cursor to beginning of line
-    Ctrl+E         Move cursor to end of line
-    Ctrl+B         Move cursor backward one character (browser default)
-    Ctrl+F         Move cursor forward one character (browser default)
-    Arrow Left     Move cursor backward one character
-    Arrow Right    Move cursor forward one character
+      "Display terminal keyboard shortcuts reference. Standard readline (Emacs mode) keybindings are supported.",
+    options: `       NAVIGATION:
+       Ctrl+A         Move cursor to beginning of line.
+       Ctrl+E         Move cursor to end of line.
+       Arrow Left     Move cursor backward one character.
+       Arrow Right    Move cursor forward one character.
 
-    EDITING:
-    Ctrl+K         Kill (cut) text from cursor to end of line
-    Ctrl+U         Kill (cut) text from beginning of line to cursor
-    Ctrl+W         Delete word before cursor
-    Ctrl+D         Delete character at cursor
-    Backspace      Delete character before cursor
+       EDITING:
+       Ctrl+K         Kill text from cursor to end of line.
+       Ctrl+U         Kill text from cursor to beginning of line.
+       Ctrl+W         Delete the word behind cursor.
+       Ctrl+D         Delete the character at cursor.
+       Backspace      Delete the character behind cursor.
 
-    HISTORY:
-    Arrow Up       Previous command in history
-    Arrow Down     Next command in history
-    Ctrl+P         Previous command (if not browser-intercepted)
-    Ctrl+N         Next command (if not browser-intercepted)
+       HISTORY:
+       Arrow Up       Previous command in history.
+       Arrow Down     Next command in history.
 
-    COMPLETION:
-    Tab            Auto-complete command
-    Ctrl+I         Auto-complete command (alternative to Tab)
+       COMPLETION:
+       Tab            Attempt command completion.
 
-    TERMINAL CONTROL:
-    Ctrl+L         Clear screen
-    Ctrl+C         (Browser default - copy)
-    Ctrl+V         (Browser default - paste)
-
-    Note: Some keybindings may be intercepted by the browser.
-    Clipboard operations (Ctrl+K, Ctrl+U, Ctrl+W) will copy text when possible.`,
+       TERMINAL CONTROL:
+       Ctrl+L         Clear the screen.`,
   },
   grep: {
-    synopsis: "grep [OPTION]... PATTERN [FILE]...",
+    synopsis: "grep [-invcEF] PATTERN [FILE]...",
     description:
-      "Search for PATTERN in each FILE or all pages. By default, grep prints the matching lines with highlighted matches.",
-    options: `    -i     Ignore case distinctions in patterns and data
-    -n     Prefix each line of output with line number
-    -v     Invert match: select non-matching lines
-    -c     Print count of matching lines per file
-    -E     Interpret PATTERN as extended regular expression
-    -F     Interpret PATTERN as fixed string (not regex)
-
-    PATTERN    Regular expression or fixed string to search for
-    FILE       Page name or path to search in (searches all pages if omitted)
-
-    Examples:
-    grep "react" blog           Search for "react" in blog pages
-    grep -i "typescript"        Case-insensitive search in all pages
-    grep -n "function"          Show line numbers for matches
-    grep -c "error"             Count matching lines per page`,
+      "Print lines that match patterns. grep searches for PATTERN in each FILE. If no FILE is given, all pages are searched.",
+    options: `       -i     Ignore case distinctions in patterns and data.
+       -n     Prefix each line of output with the line number.
+       -v     Invert the sense of matching, to select non-matching lines.
+       -c     Suppress normal output; print a count of matching lines.
+       -E     Interpret PATTERN as an extended regular expression (ERE).
+       -F     Interpret PATTERN as a fixed string, not a regex.`,
   },
   egrep: {
     synopsis: "egrep [OPTION]... PATTERN [FILE]...",
     description:
-      "Extended grep - equivalent to grep -E. Interprets PATTERN as an extended regular expression (ERE). Supports additional regex features like +, ?, |, and grouping.",
-    options: `    -i     Ignore case distinctions
-    -n     Prefix each line with line number
-    -v     Invert match: select non-matching lines
-    -c     Print count of matching lines per file
-
-    Extended regex features:
-    +      Match one or more occurrences
-    ?      Match zero or one occurrence
-    |      Alternation (OR)
-    ()     Grouping
-    {n,m}  Match between n and m occurrences
-
-    Examples:
-    egrep "react|vue|angular"   Search for any framework name
-    egrep "\\w+@\\w+\\.\\w+"      Search for email-like patterns`,
+      "Interpret PATTERN as an extended regular expression (ERE). This is equivalent to grep -E.",
+    options: `       -i     Ignore case distinctions.
+       -n     Prefix each line with the line number.
+       -v     Select non-matching lines.
+       -c     Print a count of matching lines.`,
   },
   fgrep: {
     synopsis: "fgrep [OPTION]... STRING [FILE]...",
     description:
-      "Fixed string grep - equivalent to grep -F. Interprets PATTERN as a fixed string, not a regular expression. Useful for searching literal strings that contain regex special characters.",
-    options: `    -i     Ignore case distinctions
-    -n     Prefix each line with line number
-    -v     Invert match: select non-matching lines
-    -c     Print count of matching lines per file
-
-    Examples:
-    fgrep "foo.bar"            Search for literal "foo.bar" (not regex)
-    fgrep "a+b*c"              Search for literal "a+b*c" (not regex pattern)
-    fgrep -i "hello world"     Case-insensitive literal string search`,
+      "Interpret PATTERN as a list of fixed strings. This is equivalent to grep -F.",
+    options: `       -i     Ignore case distinctions.
+       -n     Prefix each line with the line number.
+       -v     Select non-matching lines.
+       -c     Print a count of matching lines.`,
   },
   spotify: {
     synopsis: "spotify",
     description:
-      "Display the site owner's current or last played Spotify track in neofetch/fastfetch style. Shows album artwork (if available), track information, album, artist, and playback status. Fetches data from the Spotify API endpoint.",
+      "Display the currently playing or last played Spotify track. Shows album artwork, track metadata, and playback status.",
   },
 };

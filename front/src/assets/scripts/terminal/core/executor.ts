@@ -7,49 +7,85 @@ import type { Command } from "@/types/terminal.ts";
 // utils
 import { CSS_CLASSES } from "@/assets/scripts/core/constants.ts";
 import { addToHistory } from "./history.ts";
-import { escapeHtml, getPromptHtml, scrollToBottom } from "./utils.ts";
+import {
+  escapeHtml,
+  getPromptHtml,
+  getShellVariables,
+  HOME_PREFIX,
+  scrollToBottom,
+} from "./utils.ts";
 
 /**
  * Split a command string into arguments respecting shell-style quoting
- * Quotes are stripped and their content is kept as a single argument.
+ * Performs shell variable expansion ($VAR) and tilde expansion (~).
+ * - Single quotes: no expansion (literal)
+ * - Double quotes / unquoted: $VAR expanded
+ * - Tilde: expanded at word start outside quotes
  * @param input - Raw command string
  * @returns Array of parsed arguments
  */
 function parseShellArgs(input: string): string[] {
-  // initialize parsing state for whitespace-separated arguments
+  const vars = getShellVariables();
   const args: string[] = [];
   let current = "";
   let inQuote = false;
   let quoteChar = "";
-  // iterate through each character in the input
+
   for (let i = 0; i < input.length; i++) {
     const char = input[i];
+
     // handle quote characters (toggle quote state)
     if ((char === '"' || char === "'") && input[i - 1] !== "\\") {
       if (!inQuote) {
-        // entering a quoted section
         inQuote = true;
         quoteChar = char;
       } else if (char === quoteChar) {
-        // exiting a quoted section
         inQuote = false;
         quoteChar = "";
       } else {
-        // different quote character inside quotes: treat as literal
         current += char;
       }
-    } else if (/\s/.test(char) && !inQuote) {
-      // whitespace outside quotes: save current argument and start new one
+      continue;
+    }
+
+    // whitespace outside quotes: save current argument and start new one
+    if (/\s/.test(char) && !inQuote) {
       if (current) {
         args.push(current);
         current = "";
       }
-    } else {
-      // regular character: add to current argument
-      current += char;
+      continue;
     }
+
+    // tilde expansion: only outside quotes and at word start
+    if (char === "~" && !inQuote && current === "") {
+      current += HOME_PREFIX;
+      continue;
+    }
+
+    // variable expansion: $VAR (not inside single quotes)
+    if (char === "$" && !(inQuote && quoteChar === "'")) {
+      // capture variable name: [A-Z_][A-Z_0-9]*
+      let varName = "";
+      let j = i + 1;
+      while (j < input.length && /[A-Z_0-9]/.test(input[j])) {
+        varName += input[j];
+        j++;
+      }
+      if (varName && /^[A-Z_]/.test(varName)) {
+        current += vars[varName] ?? "";
+        i = j - 1; // advance past variable name
+      } else {
+        // not a valid variable: keep $ as literal
+        current += char;
+      }
+      continue;
+    }
+
+    // regular character
+    current += char;
   }
-  // add final argument if not empty
+
   if (current) {
     args.push(current);
   }
