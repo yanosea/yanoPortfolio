@@ -3,12 +3,14 @@
  */
 
 export { help } from "./help.ts";
+export { index as indexPage } from "./indexPage.ts";
 export { about } from "./about.ts";
 export { blog } from "./blog.ts";
 export { links } from "./links.ts";
 export { clear } from "./clear.ts";
 export { cd } from "./cd.ts";
 export { echo } from "./echo.ts";
+export { env } from "./env.ts";
 export { whoami } from "./whoami.ts";
 export { pwd } from "./pwd.ts";
 export { date } from "./date.ts";

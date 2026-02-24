@@ -232,7 +232,7 @@ function renderTree(
 
       if (childrenToRender.length > 0) {
         const childPrefix = prefix +
-          (isLast ? TREE_CHARS.SPACE : TREE_CHARS.VERTICAL) + "   ";
+          (isLast ? "    " : TREE_CHARS.VERTICAL + "   ");
         childrenToRender.forEach((child, index) => {
           const isLastChild = index === childrenToRender.length - 1;
           lines.push(
@@ -272,7 +272,7 @@ export const tree: Command = {
 
     treeLines.push("");
     treeLines.push(
-      `<span class="${CSS_CLASSES.SUCCESS}">${counts.directories} ${dirLabel}, ${counts.files} ${fileLabel}</span>`,
+      `${counts.directories} ${dirLabel}, ${counts.files} ${fileLabel}`,
     );
 
     return `<pre>${treeLines.join("\n")}</pre>`;

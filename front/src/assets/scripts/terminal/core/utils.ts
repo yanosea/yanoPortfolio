@@ -3,8 +3,95 @@
  */
 
 // config
-import { getSiteName, TIMING_CONFIG } from "@/assets/scripts/core/config.ts";
+import {
+  getSiteName,
+  getUsername,
+  TIMING_CONFIG,
+} from "@/assets/scripts/core/config.ts";
 import { CSS_CLASSES } from "@/assets/scripts/core/constants.ts";
+
+/**
+ * Virtual filesystem home directory prefix
+ */
+export const HOME_PREFIX = "/home/you";
+
+/**
+ * Convert URL pathname to virtual filesystem path
+ * @param pathname - URL pathname (e.g., "/about")
+ * @returns Virtual path (e.g., "/home/you/about")
+ */
+export function urlToVirtualPath(pathname: string): string {
+  const cleaned = pathname.replace(/\/+$/, "") || "/";
+  if (cleaned === "/") return HOME_PREFIX;
+  return HOME_PREFIX + cleaned;
+}
+
+/**
+ * Convert virtual filesystem path to URL pathname
+ * @param virtualPath - Virtual path (e.g., "/home/you/about")
+ * @returns URL pathname (e.g., "/about") or null if outside home
+ */
+export function virtualPathToUrl(virtualPath: string): string | null {
+  if (virtualPath === HOME_PREFIX) return "/";
+  if (virtualPath.startsWith(HOME_PREFIX + "/")) {
+    return virtualPath.slice(HOME_PREFIX.length);
+  }
+  return null;
+}
+
+/**
+ * Get the current page's virtual filesystem path
+ * @returns Current virtual path (e.g., "/home/you" or "/home/you/about")
+ */
+export function getCurrentVirtualPath(): string {
+  return urlToVirtualPath(globalThis.location.pathname);
+}
+
+/**
+ * Get shell environment variables
+ * @returns Record of variable names to their values
+ */
+export function getShellVariables(): Record<string, string> {
+  return {
+    HOME: HOME_PREFIX,
+    USER: getUsername() || "you",
+    PWD: getCurrentVirtualPath(),
+    HOSTNAME: getSiteName(),
+    SHELL: "/bin/bash",
+  };
+}
+
+/**
+ * Resolve a user-input path to an absolute virtual path
+ * Supports: .., ., relative paths, absolute paths
+ * Shell variable expansion (~, $HOME) is handled by the executor layer.
+ * @param arg - User input path argument
+ * @param cwd - Current working directory (virtual path)
+ * @returns Resolved absolute virtual path
+ */
+export function resolveVirtualPath(arg: string, cwd: string): string {
+  let target: string;
+
+  if (arg.startsWith("/")) {
+    target = arg;
+  } else {
+    // relative path
+    target = cwd + "/" + arg;
+  }
+
+  // normalize: resolve . and .. segments
+  const parts = target.split("/");
+  const resolved: string[] = [];
+  for (const part of parts) {
+    if (part === "" || part === ".") continue;
+    if (part === "..") {
+      resolved.pop();
+    } else {
+      resolved.push(part);
+    }
+  }
+  return "/" + resolved.join("/") || "/";
+}
 
 /**
  * Page information structure
@@ -144,7 +231,12 @@ export function escapeHtml(text: string): string {
  */
 export function getPromptHtml(): string {
   const hostname = getSiteName();
-  return `<span class="${CSS_CLASSES.USER}">you</span> <span class="${CSS_CLASSES.AT}">@</span> <span class="${CSS_CLASSES.HOST}">${hostname}</span> <span class="${CSS_CLASSES.COLON}">:</span> <span class="${CSS_CLASSES.PATH}">~</span> <span class="${CSS_CLASSES.DOLLAR}">$</span> `;
+  const virtualPath = getCurrentVirtualPath();
+  // display path relative to home: /home/you → ~, /home/you/about → ~/about
+  const displayPath = virtualPath === HOME_PREFIX
+    ? "~"
+    : "~" + virtualPath.slice(HOME_PREFIX.length);
+  return `<span class="${CSS_CLASSES.USER}">you</span> <span class="${CSS_CLASSES.AT}">@</span> <span class="${CSS_CLASSES.HOST}">${hostname}</span> <span class="${CSS_CLASSES.COLON}">:</span> <span class="${CSS_CLASSES.PATH}">${displayPath}</span> <span class="${CSS_CLASSES.DOLLAR}">$</span> `;
 }
 
 /** Active countdown interval ID for cleanup */
