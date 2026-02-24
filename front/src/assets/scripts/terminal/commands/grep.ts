@@ -415,7 +415,7 @@ async function searchInPages(
 
   for (const page of targetPages) {
     try {
-      const fetchPath = page.path === "/" ? "/" : page.path + ".html";
+      const fetchPath = page.path;
       const response = await fetch(fetchPath);
       if (!response.ok) continue;
 

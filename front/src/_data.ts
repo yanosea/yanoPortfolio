@@ -68,8 +68,13 @@ export const metas = {
  * @returns URL string
  */
 export function url(page: Lume.Page) {
-  if (page.src.path === "index") {
+  const path = page.src.path.replace(/^\//, "");
+  if (path === "index") {
     return "/";
   }
-  return page.src.path + ".html";
+  // 404 page must be output as /404.html for static hosting
+  if (path === "404") {
+    return "/404.html";
+  }
+  return page.src.path + "/";
 }

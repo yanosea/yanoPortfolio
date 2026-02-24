@@ -16,7 +16,7 @@ export default function MobileMenu({ comp }: Lume.Data) {
         <div className="px-6 pb-4 mobile-menu-links">
           {/* about page */}
           <comp.ui.NavLink
-            href="/about.html"
+            href="/about"
             className="nav-link"
             iconName="lucide/info"
           >
@@ -24,7 +24,7 @@ export default function MobileMenu({ comp }: Lume.Data) {
           </comp.ui.NavLink>
           {/* blog page */}
           <comp.ui.NavLink
-            href="/blog.html"
+            href="/blog"
             className="nav-link"
             iconName="lucide/notebook-pen"
           >
@@ -32,7 +32,7 @@ export default function MobileMenu({ comp }: Lume.Data) {
           </comp.ui.NavLink>
           {/* links page */}
           <comp.ui.NavLink
-            href="/links.html"
+            href="/links"
             className="nav-link"
             iconName="lucide/link"
           >

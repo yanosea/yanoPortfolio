@@ -80,16 +80,16 @@ export async function getAllPages(): Promise<PageInfo[]> {
       if (!path.startsWith("/")) {
         path = "/" + path;
       }
-      // remove .html extension for display
-      const pathWithoutExt = path.replace(/\.html$/, "");
+      // remove trailing slash for display
+      const pathWithoutSlash = path.replace(/\/+$/, "") || "/";
       // extract name from path
-      const pathParts = pathWithoutExt.split("/").filter((p) => p);
+      const pathParts = pathWithoutSlash.split("/").filter((p) => p);
       const name = pathParts[pathParts.length - 1] || "index";
-      // use path without .html as key
-      if (!pagesMap.has(pathWithoutExt)) {
-        pagesMap.set(pathWithoutExt, {
+      // use path without trailing slash as key
+      if (!pagesMap.has(pathWithoutSlash)) {
+        pagesMap.set(pathWithoutSlash, {
           name: name,
-          path: pathWithoutExt,
+          path: pathWithoutSlash,
         });
       }
     });

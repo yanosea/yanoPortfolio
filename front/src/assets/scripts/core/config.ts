@@ -87,11 +87,11 @@ export const ROUTING_CONFIG = {
   /** Page paths */
   pages: {
     /** About page */
-    about: "/about.html",
+    about: "/about",
     /** Blog page */
-    blog: "/blog.html",
+    blog: "/blog",
     /** Links page */
-    links: "/links.html",
+    links: "/links",
     /** Home page */
     home: "/",
   },

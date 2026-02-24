@@ -16,6 +16,16 @@ const pageCache = new Map<string, string>();
 let isNavigating = false;
 
 /**
+ * Remove trailing slash from a URL (except for root "/")
+ * @param url - URL string (full or pathname)
+ * @returns URL with trailing slash removed
+ */
+function stripTrailingSlash(url: string): string {
+  if (url === "/" || !url.endsWith("/")) return url;
+  return url.replace(/\/+$/, "");
+}
+
+/**
  * Check if a link click should be intercepted for SPA navigation
  * @param event - The click event
  * @param anchor - The anchor element
@@ -50,10 +60,9 @@ function shouldIntercept(
     return false;
   }
   // hash-only link (same page scroll)
-  if (
-    anchor.pathname === globalThis.location.pathname &&
-    anchor.hash
-  ) {
+  const anchorPath = anchor.pathname.replace(/\/+$/, "") || "/";
+  const currentPath = globalThis.location.pathname.replace(/\/+$/, "") || "/";
+  if (anchorPath === currentPath && anchor.hash) {
     return false;
   }
   // non-HTML resources (.xml, .pdf, .json, etc.)
@@ -63,8 +72,11 @@ function shouldIntercept(
   ) {
     return false;
   }
-  // same URL — skip
-  if (anchor.href === globalThis.location.href) {
+  // same URL — skip (normalize trailing slashes for comparison)
+  if (
+    stripTrailingSlash(anchor.href) ===
+      stripTrailingSlash(globalThis.location.href)
+  ) {
     return false;
   }
   return true;
@@ -145,7 +157,11 @@ async function navigateTo(
           { scrollY: globalThis.scrollY },
           "",
         );
-        globalThis.history.pushState({ scrollY: 0 }, "", url);
+        globalThis.history.pushState(
+          { scrollY: 0 },
+          "",
+          stripTrailingSlash(url),
+        );
       }
       // restore scroll position (0 for forward nav, saved for back/forward)
       globalThis.scrollTo(0, scrollY);
