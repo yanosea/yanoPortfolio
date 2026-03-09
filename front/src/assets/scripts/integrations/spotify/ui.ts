@@ -8,10 +8,15 @@ import type { Track } from "@/types/spotify.ts";
 import { getElement, getElements } from "@/assets/scripts/core/dom.ts";
 import {
   getUsername,
+  LYRICS_ELEMENT_IDS,
   SPOTIFY_ELEMENT_IDS,
 } from "@/assets/scripts/core/config.ts";
-import { SPOTIFY_FIELD_ICONS } from "@/assets/scripts/core/constants.ts";
+import {
+  LYRICS_ICONS,
+  SPOTIFY_FIELD_ICONS,
+} from "@/assets/scripts/core/constants.ts";
 import { updateCurrentTrack } from "./modal.ts";
+import { fetchLyrics } from "../lrclib/lyrics.ts";
 
 /** Duration for fade animation (matches CSS --duration-normal) */
 const FADE_DURATION = 300;
@@ -267,6 +272,66 @@ function getTextWrappers(): HTMLElement[] {
 }
 
 /**
+ * Set up lyrics ticker display
+ * @param artistName - Artist name for lyrics lookup
+ * @param trackName - Track name for lyrics lookup
+ */
+async function setupLyricsTicker(
+  artistName: string,
+  trackName: string,
+): Promise<void> {
+  const lyricsEl = document.getElementById(LYRICS_ELEMENT_IDS.ticker);
+  if (!lyricsEl) return;
+
+  // fetch lyrics
+  const lyrics = await fetchLyrics(artistName, trackName);
+  if (!lyrics) {
+    lyricsEl.classList.add("hidden");
+    lyricsEl.textContent = "";
+    return;
+  }
+
+  // join all lyrics into single line
+  const lyricsText = lyrics.join(" ");
+
+  // build ticker with duplicated content for seamless loop
+  const ticker = document.createElement("span");
+  ticker.className = "lyrics-ticker-track";
+  const original = document.createElement("span");
+  original.textContent = lyricsText;
+  const duplicate = document.createElement("span");
+  duplicate.textContent = lyricsText;
+  duplicate.setAttribute("aria-hidden", "true");
+  ticker.appendChild(original);
+  ticker.appendChild(duplicate);
+
+  // build icon element
+  const iconEl = document.createElement("span");
+  iconEl.className = "lyrics-ticker-icon";
+  iconEl.innerHTML = LYRICS_ICONS.LYRICS;
+
+  // wrap ticker in a scroll container for fixed mask
+  const scrollWrapper = document.createElement("span");
+  scrollWrapper.className = "lyrics-ticker-scroll";
+  scrollWrapper.appendChild(ticker);
+
+  // replace content
+  lyricsEl.replaceChildren();
+  lyricsEl.appendChild(iconEl);
+  lyricsEl.appendChild(scrollWrapper);
+  lyricsEl.classList.remove("hidden");
+
+  // calculate duration based on text width
+  requestAnimationFrame(() => {
+    const textWidth = original.offsetWidth;
+    if (textWidth > 0) {
+      const duration = textWidth / MARQUEE_SPEED;
+      ticker.style.setProperty("--lyrics-duration", `${duration}s`);
+    }
+  });
+}
+
+/**
  * Update UI with track information
  * @param isNowPlaying - Whether track is currently playing
  * @param track - Track information to display
@@ -328,27 +393,36 @@ export function updateUI(isNowPlaying: boolean, track: Track): void {
   // initial load: use slide-in animation
   if (isInitialLoad) {
     const shouldSlideIn = isPageReload();
-    // set up image load handler
-    if (albumImage && container) {
-      albumImage.onload = () => {
-        // hide loading and error states
-        loadingEl?.classList.add("hidden");
-        errorEl?.classList.add("hidden");
-        // animate slide-in if page was reloaded
-        if (shouldSlideIn) {
-          void container.offsetHeight;
-          requestAnimationFrame(() => {
-            container.classList.remove("loading");
-          });
-        } else {
-          // no animation for navigation
-          container.classList.remove("loading");
-        }
-      };
-    }
     // apply content and set up marquees
     applyContentUpdates(isNowPlaying, track, contentElements);
     setupMarquees(getTextWrappers());
+    // fetch lyrics before showing widget
+    const lyricsReady = setupLyricsTicker(track.artistName, track.trackName);
+    // show widget after both image and lyrics are ready
+    const showWidget = () => {
+      loadingEl?.classList.add("hidden");
+      errorEl?.classList.add("hidden");
+      if (shouldSlideIn) {
+        void container?.offsetHeight;
+        requestAnimationFrame(() => {
+          container?.classList.remove("loading");
+        });
+      } else {
+        container?.classList.remove("loading");
+      }
+    };
+    if (albumImage && container) {
+      let imageLoaded = false;
+      let lyricsLoaded = false;
+      albumImage.onload = () => {
+        imageLoaded = true;
+        if (lyricsLoaded) showWidget();
+      };
+      lyricsReady.then(() => {
+        lyricsLoaded = true;
+        if (imageLoaded) showWidget();
+      });
+    }
     return;
   }
   // subsequent updates: use fade animation
@@ -359,6 +433,8 @@ export function updateUI(isNowPlaying: boolean, track: Track): void {
   // after fade out completes, update content and fade in
   setTimeout(() => {
     applyContentUpdates(isNowPlaying, track, contentElements);
+    // fetch and display lyrics ticker
+    setupLyricsTicker(track.artistName, track.trackName);
     // wait for new image to load before fading in (if image changed)
     if (albumImage && oldImageSrc !== track.imageUrl) {
       albumImage.onload = () => {

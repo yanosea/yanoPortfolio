@@ -200,13 +200,32 @@ export function isDesktop(): boolean {
 }
 
 /**
+ * Measure text width using a hidden span
+ * @param text - Text to measure
+ * @param font - Font style string
+ * @returns Width in pixels
+ */
+export function measureTextWidth(text: string, font: string): number {
+  const measureSpan = document.createElement("span");
+  measureSpan.style.visibility = "hidden";
+  measureSpan.style.position = "absolute";
+  measureSpan.style.whiteSpace = "pre";
+  measureSpan.style.font = font;
+  measureSpan.textContent = text;
+  document.body.appendChild(measureSpan);
+  const width = measureSpan.offsetWidth;
+  document.body.removeChild(measureSpan);
+  return width;
+}
+
+/**
  * Scroll to the bottom of the terminal container
  */
 export function scrollToBottom(): void {
   const content = document.getElementById("terminal-container");
   if (content) {
     setTimeout(() => {
-      content.scrollTop = content.scrollHeight;
+      content.scrollTo({ top: content.scrollHeight, behavior: "instant" });
     }, 10);
   }
 }
@@ -236,7 +255,7 @@ export function getPromptHtml(): string {
   const displayPath = virtualPath === HOME_PREFIX
     ? "~"
     : "~" + virtualPath.slice(HOME_PREFIX.length);
-  return `<span class="${CSS_CLASSES.USER}">you</span> <span class="${CSS_CLASSES.AT}">@</span> <span class="${CSS_CLASSES.HOST}">${hostname}</span> <span class="${CSS_CLASSES.COLON}">:</span> <span class="${CSS_CLASSES.PATH}">${displayPath}</span> <span class="${CSS_CLASSES.DOLLAR}">$</span> `;
+  return `<span class="${CSS_CLASSES.USER}">you</span> <span class="${CSS_CLASSES.AT}">@</span> <span class="${CSS_CLASSES.HOST}">${hostname}</span> <span class="${CSS_CLASSES.COLON}">:</span> <span class="${CSS_CLASSES.PATH}">${displayPath}</span> <span class="${CSS_CLASSES.DOLLAR}">$</span>`;
 }
 
 /** Active countdown interval ID for cleanup */

@@ -17,6 +17,7 @@ import {
   getPromptHtml,
   handleAutocomplete,
   isDesktop,
+  measureTextWidth,
   scrollToBottom,
   setHistoryPointer,
 } from "./core/index.ts";
@@ -40,25 +41,6 @@ function cleanupTerminal(): void {
     globalThis.removeEventListener("keydown", globalKeydownHandler);
     globalKeydownHandler = null;
   }
-}
-
-/**
- * Measure text width using a hidden span
- * @param text - Text to measure
- * @param font - Font style string
- * @returns Width in pixels
- */
-function measureTextWidth(text: string, font: string): number {
-  const measureSpan = document.createElement("span");
-  measureSpan.style.visibility = "hidden";
-  measureSpan.style.position = "absolute";
-  measureSpan.style.whiteSpace = "pre";
-  measureSpan.style.font = font;
-  measureSpan.textContent = text;
-  document.body.appendChild(measureSpan);
-  const width = measureSpan.offsetWidth;
-  document.body.removeChild(measureSpan);
-  return width;
 }
 
 /**
@@ -146,7 +128,7 @@ function initTerminal(): void {
     });
   }
   // handle form submission
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const command = input.value.trim();
     // check if we're in stdin mode
@@ -162,8 +144,19 @@ function initTerminal(): void {
     }
     // normal mode: execute command or show empty prompt
     if (command) {
-      executeCommand(command, allCommands).catch(console.error);
+      // hide form while command is executing
+      input.value = "";
+      form.style.visibility = "hidden";
+      try {
+        await executeCommand(command, allCommands);
+      } catch (err) {
+        console.error(err);
+      }
       addCommandToHistory(command);
+      // restore form after command completes
+      form.style.visibility = "";
+      input.focus();
+      scrollToBottom();
     } else {
       // empty enter: just show a new prompt line (like a real terminal)
       const historyEl = document.getElementById("terminal-history");

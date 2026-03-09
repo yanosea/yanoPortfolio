@@ -169,7 +169,12 @@ async function executePipeChain(
   commandEl.appendChild(promptSpan);
   commandEl.appendChild(commandSpan);
   historyItem.appendChild(commandEl);
+  // add waiting cursor on next line
+  const waitLine = document.createElement("div");
+  waitLine.className = "terminal-wait-line";
+  historyItem.appendChild(waitLine);
   historyEl.appendChild(historyItem);
+  scrollToBottom();
   // execute pipe chain with input/output passing
   let input: string | undefined = undefined;
   // iterate through each command in the pipe chain
@@ -190,6 +195,7 @@ async function executePipeChain(
           escapeHtml(cmdName)
         }</span>`;
       historyItem.appendChild(outputEl);
+      waitLine.remove();
       return;
     }
     try {
@@ -217,9 +223,11 @@ async function executePipeChain(
         escapeHtml(error instanceof Error ? error.message : String(error))
       }</span>`;
       historyItem.appendChild(outputEl);
+      waitLine.remove();
       return;
     }
   }
+  waitLine.remove();
 }
 
 /**

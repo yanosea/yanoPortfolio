@@ -1,5 +1,5 @@
 /**
- * Spotify Lyrics Integration via LRCLIB API
+ * LRCLIB Lyrics API Client
  */
 
 /** LRCLIB API base URL */

@@ -130,6 +130,14 @@ export const SPOTIFY_ELEMENT_IDS = {
 } as const;
 
 /**
+ * Lyrics ticker element IDs
+ */
+export const LYRICS_ELEMENT_IDS = {
+  /** Lyrics ticker display element */
+  ticker: "lyrics-ticker",
+} as const;
+
+/**
  * Site data from body data attributes
  */
 

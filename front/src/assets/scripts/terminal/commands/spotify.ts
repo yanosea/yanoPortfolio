@@ -9,8 +9,10 @@ import type { Track } from "@/types/spotify.ts";
 // utils
 import {
   CSS_CLASSES,
+  LYRICS_ICONS,
   SPOTIFY_FIELD_ICONS,
 } from "@/assets/scripts/core/constants.ts";
+import { fetchLyrics } from "@/assets/scripts/integrations/lrclib/lyrics.ts";
 import { getElements } from "@/assets/scripts/core/dom.ts";
 import {
   getUsername,
@@ -18,6 +20,9 @@ import {
   SPOTIFY_ELEMENT_IDS,
 } from "@/assets/scripts/core/config.ts";
 import { escapeHtml } from "../core/utils.ts";
+
+/** Scroll speed for command lyrics ticker (pixels per second, matches widget marquee) */
+const CMD_LYRICS_SCROLL_SPEED = 30;
 
 /**
  * Spotify command messages
@@ -109,6 +114,31 @@ async function createSpotifyDisplay(
       escapeHtml(track.artistName)
     }</a>`,
   );
+
+  // fetch and add lyrics line
+  const lyrics = await fetchLyrics(track.artistName, track.trackName);
+  if (lyrics) {
+    const lyricsText = escapeHtml(lyrics.join(" "));
+    lines.push(
+      `<span class="${CSS_CLASSES.SPOTIFY_KEY}">${LYRICS_ICONS.LYRICS} Lyrics</span>: <span class="cmd-lyrics-wrapper"><span class="cmd-lyrics-ticker"><span>${lyricsText}</span><span aria-hidden="true">${lyricsText}</span></span></span>`,
+    );
+    // schedule lyrics ticker duration calculation after DOM insertion
+    requestAnimationFrame(() => {
+      const tickers = document.querySelectorAll<HTMLElement>(
+        ".cmd-lyrics-ticker",
+      );
+      for (const ticker of tickers) {
+        // skip already-configured tickers
+        if (ticker.style.getPropertyValue("--lyrics-duration")) continue;
+        const firstSpan = ticker.firstElementChild as HTMLElement | null;
+        if (firstSpan && firstSpan.offsetWidth > 0) {
+          const duration = firstSpan.offsetWidth / CMD_LYRICS_SCROLL_SPEED;
+          ticker.style.setProperty("--lyrics-duration", `${duration}s`);
+        }
+      }
+    });
+  }
+
   // calculate image size based on number of lines
   const { lineHeight, fontFamily, imageMargin } = SPOTIFY_DISPLAY_CONFIG;
   const imageSize = `${lines.length * lineHeight}em`;
@@ -116,8 +146,15 @@ async function createSpotifyDisplay(
   // wrap each line in a block span with ellipsis overflow
   const ellipsisStyle =
     "display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;";
+  const lyricsLineStyle =
+    "display: block; white-space: nowrap; overflow: hidden;";
   const wrappedLines = lines
-    .map((line) => `<span style="${ellipsisStyle}">${line}</span>`)
+    .map((line) => {
+      const isLyricsLine = line.includes("cmd-lyrics-wrapper");
+      return `<span style="${
+        isLyricsLine ? lyricsLineStyle : ellipsisStyle
+      }">${line}</span>`;
+    })
     .join("");
 
   // use flex layout for neofetch-style alignment
