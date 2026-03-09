@@ -21,6 +21,8 @@ export default function ImageModal() {
             className="max-w-full max-h-[85vh] object-contain"
           />
         </div>
+        {/* lyrics overlay (niconico-style, viewport-wide) */}
+        <div id="modal-lyrics-overlay" className="lyrics-overlay"></div>
         {/* caption */}
         <div
           id="modal-image-caption"

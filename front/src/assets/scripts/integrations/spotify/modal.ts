@@ -5,6 +5,25 @@
 // utils
 import { getElement } from "@/assets/scripts/core/dom.ts";
 import { openImageModal } from "../../modal/modal-functions.ts";
+import { fetchLyrics } from "./lyrics.ts";
+import { startLyrics, stopLyrics } from "../../modal/lyrics-renderer.ts";
+
+/** Current track info for lyrics fetching */
+let currentArtist = "";
+let currentTrack = "";
+
+/**
+ * Update current track info for lyrics
+ * @param artistName - Current artist name
+ * @param trackName - Current track name
+ */
+export function updateCurrentTrack(
+  artistName: string,
+  trackName: string,
+): void {
+  currentArtist = artistName;
+  currentTrack = trackName;
+}
 
 /**
  * Initialize Spotify album image modal
@@ -18,11 +37,28 @@ export function initImageModal(): void {
     return;
   }
   // add click handler to open modal with album artwork
-  albumImage.addEventListener("click", () => {
+  albumImage.addEventListener("click", async () => {
     openImageModal(
       albumImage.src,
       albumImage.alt,
       albumLink.textContent ?? "",
     );
+    // fetch and render lyrics
+    if (currentArtist && currentTrack) {
+      const lyricsData = await fetchLyrics(currentArtist, currentTrack);
+      if (lyricsData) {
+        const overlay = getElement("modal-lyrics-overlay", HTMLDivElement);
+        if (overlay) {
+          startLyrics(lyricsData, overlay);
+        }
+      }
+    }
   });
+  // stop lyrics when modal closes
+  const imageModal = getElement("image-modal", HTMLDialogElement);
+  if (imageModal) {
+    imageModal.addEventListener("close", () => {
+      stopLyrics();
+    });
+  }
 }
