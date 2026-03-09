@@ -109,6 +109,12 @@ export default function SpotifyStatus(
                 className="inline-flex items-center gap-2 link-text spotify-metadata-link spotify-metadata spotify-fadeable min-w-0"
               >
               </a>
+              {/* lyrics ticker */}
+              <div
+                id="lyrics-ticker"
+                className="hidden lyrics-ticker-container"
+              >
+              </div>
             </div>
           </div>
         </div>

@@ -64,3 +64,12 @@ export const SPOTIFY_FIELD_ICONS = {
 
 export type SpotifyFieldIcon =
   (typeof SPOTIFY_FIELD_ICONS)[keyof typeof SPOTIFY_FIELD_ICONS];
+
+/**
+ * Lyrics field icons
+ */
+export const LYRICS_ICONS = {
+  /** Lyrics icon */
+  LYRICS:
+    '<svg class="w-4 h-4 flex-shrink-0" style="display: inline-block; vertical-align: middle;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h4"/><path d="M2 10h4"/><path d="M2 14h4"/><path d="M2 18h4"/><rect x="8" y="2" width="13" height="20" rx="1"/><path d="M13 7h3"/><path d="M13 11h3"/><path d="M13 15h1"/></svg>',
+} as const;

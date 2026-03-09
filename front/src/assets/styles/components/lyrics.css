@@ -1,0 +1,74 @@
+/**
+ * Lyrics Components
+ *
+ * Lyrics ticker styles for widget and terminal command display.
+ */
+
+@layer components {
+  /* Widget lyrics ticker */
+  .lyrics-ticker-container {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: var(--font-size-small);
+    color: var(--color-fg-secondary);
+  }
+
+  .lyrics-ticker-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .lyrics-ticker-scroll {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 8%,
+      black 92%,
+      transparent
+    );
+  }
+
+  .lyrics-ticker-track,
+  .cmd-lyrics-ticker {
+    display: inline-flex;
+    gap: 3rem;
+    animation: lyrics-ticker-scroll var(--lyrics-duration, 20s) linear infinite;
+  }
+
+  /* Terminal command lyrics ticker */
+  .cmd-lyrics-wrapper {
+    display: inline-block;
+    max-width: calc(100% - 10ch);
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: bottom;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 3%,
+      black 92%,
+      transparent
+    );
+  }
+
+  .cmd-lyrics-ticker {
+    color: var(--color-fg-secondary);
+  }
+
+  /* Shared keyframes for both widget and terminal lyrics ticker */
+  @keyframes lyrics-ticker-scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(calc(-50% - 1.5rem));
+    }
+  }
+}

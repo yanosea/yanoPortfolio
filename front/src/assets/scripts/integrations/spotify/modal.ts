@@ -5,7 +5,7 @@
 // utils
 import { getElement } from "@/assets/scripts/core/dom.ts";
 import { openImageModal } from "../../modal/modal-functions.ts";
-import { fetchLyrics } from "./lyrics.ts";
+import { fetchLyrics } from "../lrclib/lyrics.ts";
 import { startLyrics, stopLyrics } from "../../modal/lyrics-renderer.ts";
 
 /** Current track info for lyrics fetching */
