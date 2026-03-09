@@ -92,11 +92,14 @@
     flex: 0 1 auto;
     width: auto;
     min-width: 0;
+    padding: 0;
+    margin: 0;
     background-color: transparent;
     border: none;
     outline: none;
     color: var(--color-fg-primary);
     font-size: var(--font-size-medium);
+    line-height: inherit;
     caret-color: transparent;
   }
 
@@ -129,9 +132,22 @@
     display: none;
   }
 
+  /* Waiting cursor on next line during command execution */
+  .terminal-wait-line::before {
+    content: "";
+    display: inline-block;
+    width: 1ch;
+    height: 1.2em;
+    vertical-align: middle;
+    background-color: var(--color-accent-primary);
+    pointer-events: none;
+    animation: cursor-blink 1s step-end infinite;
+  }
+
   /* Accessibility: disable animation for users who prefer reduced motion */
   @media (prefers-reduced-motion: reduce) {
-    .terminal-cursor {
+    .terminal-cursor,
+    .terminal-wait-line::before {
       animation: none;
     }
   }

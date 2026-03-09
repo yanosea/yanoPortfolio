@@ -8,7 +8,7 @@ import type { Command } from "@/types/terminal.ts";
 import { CSS_CLASSES } from "@/assets/scripts/core/constants.ts";
 import { RESTRICTED_UNIX_COMMANDS } from "./config.ts";
 // utils
-import { escapeHtml, getPromptHtml } from "./utils.ts";
+import { escapeHtml, getPromptHtml, scrollToBottom } from "./utils.ts";
 
 /**
  * localStorage key for persisting command history
@@ -175,8 +175,13 @@ export async function addToHistory(
   commandEl.appendChild(promptSpan);
   commandEl.appendChild(commandSpan);
   historyItem.appendChild(commandEl);
+  // add waiting cursor on next line
+  const waitLine = document.createElement("div");
+  waitLine.className = "terminal-wait-line";
+  historyItem.appendChild(waitLine);
   // add the command line to DOM immediately before clearing input
   historyEl.appendChild(historyItem);
+  scrollToBottom();
   // output - process and add after command execution
   const outputEl = document.createElement("div");
   outputEl.className = CSS_CLASSES.HISTORY_OUTPUT;
@@ -207,4 +212,6 @@ export async function addToHistory(
     }
     historyItem.appendChild(outputEl);
   }
+  // remove waiting cursor after command completes
+  waitLine.remove();
 }

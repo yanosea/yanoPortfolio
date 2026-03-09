@@ -19,6 +19,7 @@ export {
   clearRedirectCountdown,
   getPromptHtml,
   isDesktop,
+  measureTextWidth,
   redirectWithCountdown,
   scrollToBottom,
 } from "./utils.ts";
