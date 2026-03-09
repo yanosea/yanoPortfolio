@@ -55,4 +55,41 @@
       opacity: 0;
     }
   }
+
+  /* Niconico-style lyrics overlay (viewport-wide) */
+  .lyrics-overlay {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .lyrics-line,
+  .decoration-line {
+    position: absolute;
+    white-space: nowrap;
+    animation: lyrics-flow var(--lyrics-duration, 8s) linear forwards;
+    right: 0;
+    transform: translateX(100%);
+  }
+
+  .lyrics-line {
+    color: var(--color-fg-primary);
+    font-weight: bold;
+  }
+
+  .decoration-line {
+    color: var(--color-fg-secondary);
+    font-weight: normal;
+  }
+
+  @keyframes lyrics-flow {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(calc(-100vw - 100%));
+    }
+  }
 }

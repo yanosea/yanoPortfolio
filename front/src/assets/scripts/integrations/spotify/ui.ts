@@ -11,6 +11,7 @@ import {
   SPOTIFY_ELEMENT_IDS,
 } from "@/assets/scripts/core/config.ts";
 import { SPOTIFY_FIELD_ICONS } from "@/assets/scripts/core/constants.ts";
+import { updateCurrentTrack } from "./modal.ts";
 
 /** Duration for fade animation (matches CSS --duration-normal) */
 const FADE_DURATION = 300;
@@ -317,6 +318,8 @@ export function updateUI(isNowPlaying: boolean, track: Track): void {
   const contentChanged = hasTrackChanged(track, isNowPlaying);
   // store current track for future comparison
   previousTrack = { ...track };
+  // update track info for lyrics fetching
+  updateCurrentTrack(track.artistName, track.trackName);
   previousIsNowPlaying = isNowPlaying;
   // skip animation if content unchanged
   if (!contentChanged) {
