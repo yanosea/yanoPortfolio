@@ -1,11 +1,17 @@
 /**
- * Image modal component
+ * Fullscreen image modal with niconico-style lyrics overlay
  */
 
 /**
  * Modal for displaying images
+ * @param filters - Lume filters including icon
  */
-export default function ImageModal() {
+export default function ImageModal(
+  _props: unknown,
+  filters: Lume.Helpers,
+) {
+  const icon = (name: string, library: string) =>
+    filters.icon.call(undefined, name, library);
   return (
     <dialog
       id="image-modal"
@@ -36,7 +42,13 @@ export default function ImageModal() {
           className="fixed top-4 right-4 w-10 h-10 flex items-center justify-center bg-elevated/90 hover:bg-elevated rounded-full text-primary cursor-pointer transition-colors"
           aria-label="Close fullscreen image"
         >
-          ×
+          <img
+            src={icon("x", "lucide")}
+            className="w-5 h-5"
+            alt=""
+            aria-hidden="true"
+            inline
+          />
         </button>
       </div>
     </dialog>
