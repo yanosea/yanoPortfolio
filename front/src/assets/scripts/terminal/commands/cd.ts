@@ -20,8 +20,11 @@ import {
  * Error messages
  */
 const MESSAGES = {
+  /** Directory not found error */
   NO_SUCH_DIR: "No such file or directory",
+  /** Access denied error */
   PERMISSION_DENIED: "Permission denied",
+  /** Previous directory not set error */
   OLDPWD_NOT_SET: "OLDPWD not set",
 } as const;
 

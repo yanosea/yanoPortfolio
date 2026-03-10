@@ -8,6 +8,7 @@ import { type Theme, THEME_CONFIG } from "@/assets/scripts/core/config.ts";
 
 /**
  * Get the current theme, prioritizing stored preference over system setting
+ * @returns Current theme
  */
 const getCurrentTheme = (): Theme => {
   const stored = getItem(THEME_CONFIG.STORAGE_KEY);

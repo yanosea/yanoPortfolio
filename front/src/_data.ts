@@ -24,6 +24,7 @@ export const site = {
   /** Blog comments repository powered by Utterances */
   utterancesRepo: "yanosea/yanoPortfolioBlogComments",
 };
+
 // social links
 export const social = {
   /** GitHub profile URL */
@@ -39,11 +40,13 @@ export const social = {
   /** Email address */
   email: "mailto:contact@yanosea.org",
 };
+
 // credits
 export const credits = {
   /** Everforest theme URL */
   everforest: "https://github.com/sainnhe/everforest",
 };
+
 // default page metadata
 export const metas = {
   /** Meta site tag */
@@ -67,7 +70,7 @@ export const metas = {
  * @param page - Lume page
  * @returns URL string
  */
-export function url(page: Lume.Page) {
+export function url(page: Lume.Page): string {
   const path = page.src.path.replace(/^\//, "");
   if (path === "index") {
     return "/";

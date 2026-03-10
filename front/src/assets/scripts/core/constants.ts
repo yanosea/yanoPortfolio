@@ -6,36 +6,53 @@
  * CSS class names used in terminal output and structure
  */
 export const CSS_CLASSES = {
-  // terminal output states
+  /** Error output style */
   ERROR: "terminal-error",
+  /** Success output style */
   SUCCESS: "terminal-success",
+  /** Info output style */
   INFO: "terminal-info",
-  // terminal structure
+  /** Clickable link style */
   LINK: "terminal-link",
+  /** Command name style */
   COMMAND: "terminal-command",
-  // terminal prompt
+  /** Prompt container */
   PROMPT: "terminal-prompt",
+  /** Username in prompt */
   USER: "terminal-user",
+  /** Hostname in prompt */
   HOST: "terminal-host",
+  /** Path in prompt */
   PATH: "terminal-path",
+  /** @ separator in prompt */
   AT: "terminal-at",
+  /** : separator in prompt */
   COLON: "terminal-colon",
+  /** $ indicator in prompt */
   DOLLAR: "terminal-dollar",
-  // terminal history
+  /** History item container */
   HISTORY_ITEM: "terminal-history-item",
+  /** Command display in history */
   HISTORY_COMMAND: "terminal-history-command",
+  /** Output display in history */
   HISTORY_OUTPUT: "terminal-history-output",
-  // terminal UI
+  /** Autocomplete hint style */
   HINT: "terminal-hint",
+  /** ASCII art style */
   ASCII_ART: "terminal-ascii-art",
+  /** Stdin prompt style */
   STDIN_PROMPT: "terminal-stdin-prompt",
-  // terminal help
+  /** Help list container */
   HELP_LIST: "terminal-help-list",
+  /** Help item style */
   HELP_ITEM: "terminal-help-item",
+  /** Help description style */
   HELP_DESC: "terminal-help-desc",
-  // spotify
+  /** Spotify field key style */
   SPOTIFY_KEY: "spotify-key",
+  /** Spotify field value style */
   SPOTIFY_VALUE: "spotify-value",
+  /** Spotify album image style */
   SPOTIFY_ALBUM_IMAGE: "spotify-album-image",
 } as const;
 

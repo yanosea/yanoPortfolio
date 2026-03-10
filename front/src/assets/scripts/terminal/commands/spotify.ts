@@ -28,8 +28,11 @@ const CMD_LYRICS_SCROLL_SPEED = 30;
  * Spotify command messages
  */
 const MESSAGES = {
+  /** No track available message */
   NO_TRACK: "No track is currently playing or recently played",
+  /** API fetch failure message */
   API_ERROR: "Failed to fetch Spotify status",
+  /** Loading state message */
   LOADING: "Loading Spotify status...",
 } as const;
 

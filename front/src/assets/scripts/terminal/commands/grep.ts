@@ -20,9 +20,13 @@ import { startStdinMode } from "../core/stdin.ts";
  * Grep error messages
  */
 const MESSAGES = {
+  /** Usage help text */
   USAGE: "usage: grep [options] pattern [file...]",
+  /** No pattern specified error */
   NO_PATTERN: "grep: no pattern specified",
+  /** No matches found message */
   NO_MATCHES: "grep: no matches found",
+  /** No matching files found message */
   NO_FILES: "grep: no matching files found",
 } as const;
 

@@ -13,6 +13,7 @@ export const THEME_CONFIG = {
   /** Light theme */
   LIGHT: "light",
 } as const;
+
 export type Theme = typeof THEME_CONFIG.DARK | typeof THEME_CONFIG.LIGHT;
 
 /**
