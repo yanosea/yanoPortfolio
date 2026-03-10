@@ -6,16 +6,25 @@
  * Also renders decorative niconico-style comments alongside lyrics.
  */
 
+import {
+  FIXED_COMMENTS,
+  FIXED_DECORATIONS,
+  generateApplause,
+  generateKita,
+  generateLaughter,
+  KAOMOJI,
+  REPEATABLE_DECORATIONS,
+} from "./decorations/index.ts";
+
 /** Possible intervals between each lyrics line (ms) */
-const LYRICS_INTERVALS = [500, 1000, 1500, 2000, 2500, 3000];
+const LYRICS_INTERVALS = [3000, 3500, 4000, 4500, 5000];
 
 /** Flow animation duration range (seconds) */
-const FLOW_DURATION_MIN = 2;
-const FLOW_DURATION_MAX = 10;
+const FLOW_DURATION_MIN = 3;
+const FLOW_DURATION_MAX = 8;
 
-/** Font size CSS variable names from typography.css */
-const FONT_SIZE_VARS = [
-  "--font-size-large",
+/** Font size CSS variable names for lyrics */
+const LYRICS_FONT_SIZE_VARS = [
   "--font-size-xl",
   "--font-size-2xl",
   "--font-size-3xl",
@@ -23,66 +32,36 @@ const FONT_SIZE_VARS = [
   "--font-size-5xl",
 ];
 
+/** Font size CSS variable names for decoration comments */
+const DECORATION_FONT_SIZE_VARS = [
+  "--font-size-large",
+  "--font-size-xl",
+  "--font-size-2xl",
+  "--font-size-3xl",
+  "--font-size-4xl",
+];
+
 /** Interval range for decoration comments (ms) */
 const DECORATION_INTERVAL_MIN = 200;
-const DECORATION_INTERVAL_MAX = 800;
+const DECORATION_INTERVAL_MAX = 1000;
 
-/** Fixed comment texts */
-const FIXED_COMMENTS = [
-  "ktkr",
-  "wktk",
-  "GJ",
-  "ここすき",
-  "神曲",
-  "鳥肌",
-  "いいね",
-  "泣ける",
-  "最高",
-  "わかる",
-  "すこ",
-  "草",
-  "天才",
-  "うますぎ",
-  "職人",
-  "もっと評価されるべき",
+/** Viewport-based decoration interval scale steps [minWidth, multiplier] */
+const DECORATION_SCALE_STEPS: [number, number][] = [
+  [1920, 1.0],
+  [1600, 1.1],
+  [1280, 1.2],
+  [960, 1.3],
+  [640, 1.4],
+  [0, 1.5],
 ];
 
-/** Repeatable decoration characters */
-const REPEATABLE_DECORATIONS = ["☆", "★", "✦", "✧", "♪", "♫", "✿", "❀"];
-
-/** Fixed decoration patterns */
-const FIXED_DECORATIONS = [
-  "━━━━━━☆",
-  "・*:.｡. .｡.:*・゜",
-  "⋆｡˚ ☁︎ ˚｡⋆",
-];
-
-/** Kaomoji */
-const KAOMOJI = [
-  "(・∀・)",
-  "(´∀｀*)",
-  "(｀・ω・´)",
-  "(´・ω・`)",
-  "\\(^o^)／",
-  "(ﾟдﾟ)",
-  "(*´ω`*)",
-  "(ノ´∀`*)ノ",
-  "( ˘ω˘ )",
-  "(っ´ω`c)",
-  "(*ﾟ▽ﾟ*)",
-  "(ﾉ∀`)",
-  "( ﾟДﾟ)",
-  "(  ´∀｀)ﾉ",
-  "ヽ(´ー｀)ノ",
-  "(ﾟ∀ﾟ)ｱﾋｬ",
-  "ｷﾀ(ﾟ∀ﾟ)ｺﾚ",
-  "(´;ω;`)",
-  "( ;∀;)",
-  "(°▽°)",
-  "＼(＾o＾)／",
-  "(っ˘ω˘c)",
-  "(*´∀`*)",
-  "(ﾟ∀ﾟ≡ﾟ∀ﾟ)",
+/** Viewport-based flow duration scale steps [minWidth, multiplier] */
+const FLOW_DURATION_SCALE_STEPS: [number, number][] = [
+  [1920, 1.0],
+  [1280, 0.9],
+  [960, 0.8],
+  [640, 0.7],
+  [0, 0.6],
 ];
 
 /** Active timer IDs for cleanup */
@@ -90,34 +69,6 @@ let activeTimers: number[] = [];
 
 /** Reference to the overlay element */
 let overlayElement: HTMLElement | null = null;
-
-/**
- * Generate a random repeat of "8" for applause
- * @returns Applause string (e.g., "88888888")
- */
-function generateApplause(): string {
-  const count = 8 + Math.floor(Math.random() * 40);
-  return "8".repeat(count);
-}
-
-/**
- * Generate "ｷﾀ――(ﾟ∀ﾟ)――!!" with random dash count
- * @returns Kita string
- */
-function generateKita(): string {
-  const count = 4 + Math.floor(Math.random() * 20);
-  const dashes = "―".repeat(count);
-  return `ｷﾀ${dashes}(ﾟ∀ﾟ)${dashes}!!`;
-}
-
-/**
- * Generate a random repeat of "w" for laughter
- * @returns Laughter string (e.g., "wwwww")
- */
-function generateLaughter(): string {
-  const count = 4 + Math.floor(Math.random() * 28);
-  return "w".repeat(count);
-}
 
 /**
  * Pick a random element from an array
@@ -130,27 +81,26 @@ function pickRandom<T>(arr: T[]): T {
 
 /**
  * Generate a random decoration comment
+ *
  * @returns Random decoration text
  */
 function generateDecoration(): string {
-  const generators = [
+  const candidates: (() => string)[] = [
     generateApplause,
     generateLaughter,
     generateKita,
-    () => pickRandom(FIXED_COMMENTS),
-    () => {
-      const char = pickRandom(REPEATABLE_DECORATIONS);
+    ...FIXED_COMMENTS.map((text) => () => text),
+    ...REPEATABLE_DECORATIONS.map((char) => () => {
       const count = 1 + Math.floor(Math.random() * 10);
       return char.repeat(count);
-    },
-    () => {
-      const pattern = pickRandom(FIXED_DECORATIONS);
+    }),
+    ...FIXED_DECORATIONS.map((pattern) => () => {
       const count = 1 + Math.floor(Math.random() * 3);
       return pattern.repeat(count);
-    },
-    () => pickRandom(KAOMOJI),
+    }),
+    ...KAOMOJI.map((text) => () => text),
   ];
-  return pickRandom(generators)();
+  return pickRandom(candidates)();
 }
 
 /**
@@ -165,18 +115,27 @@ function getRandomLanePosition(): number {
  * Create and animate a single line element
  * @param text - Text to display
  * @param cssClass - CSS class for styling
+ * @param fontSizeVars - CSS variable names for random font size
  */
-function renderLine(text: string, cssClass: string): void {
+function renderLine(
+  text: string,
+  cssClass: string,
+  fontSizeVars: string[],
+): void {
   if (!overlayElement) return;
   const el = document.createElement("span");
   el.className = cssClass;
   el.textContent = text;
   el.style.top = `${getRandomLanePosition()}%`;
-  const duration = FLOW_DURATION_MIN +
-    Math.random() * (FLOW_DURATION_MAX - FLOW_DURATION_MIN);
+  const vw = globalThis.innerWidth;
+  // last entry [0, ...] always matches as fallback
+  const durationScale =
+    FLOW_DURATION_SCALE_STEPS.find(([minW]) => vw >= minW)![1];
+  const duration = (FLOW_DURATION_MIN +
+    Math.random() * (FLOW_DURATION_MAX - FLOW_DURATION_MIN)) *
+    durationScale;
   el.style.setProperty("--lyrics-duration", `${duration}s`);
-  // random font size using typography.css variables
-  el.style.fontSize = `var(${pickRandom(FONT_SIZE_VARS)})`;
+  el.style.fontSize = `var(${pickRandom(fontSizeVars)})`;
   overlayElement.appendChild(el);
   // remove element after animation completes
   const timerId = globalThis.setTimeout(() => {
@@ -195,7 +154,7 @@ function startLyricsFlow(lines: string[]): void {
       LYRICS_INTERVALS[Math.floor(Math.random() * LYRICS_INTERVALS.length)];
     const delay = i * interval;
     const timerId = globalThis.setTimeout(() => {
-      renderLine(line, "lyrics-line");
+      renderLine(line, "lyrics-line", LYRICS_FONT_SIZE_VARS);
     }, delay);
     activeTimers.push(timerId);
   });
@@ -206,10 +165,18 @@ function startLyricsFlow(lines: string[]): void {
  */
 function startDecorationFlow(): void {
   const scheduleNext = () => {
-    const interval = DECORATION_INTERVAL_MIN +
-      Math.random() * (DECORATION_INTERVAL_MAX - DECORATION_INTERVAL_MIN);
+    const vw = globalThis.innerWidth;
+    // last entry [0, ...] always matches as fallback
+    const scale = DECORATION_SCALE_STEPS.find(([minW]) => vw >= minW)![1];
+    const interval = (DECORATION_INTERVAL_MIN +
+      Math.random() * (DECORATION_INTERVAL_MAX - DECORATION_INTERVAL_MIN)) *
+      scale;
     const timerId = globalThis.setTimeout(() => {
-      renderLine(generateDecoration(), "decoration-line");
+      renderLine(
+        generateDecoration(),
+        "decoration-line",
+        DECORATION_FONT_SIZE_VARS,
+      );
       scheduleNext();
     }, interval);
     activeTimers.push(timerId);
