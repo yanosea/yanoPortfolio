@@ -97,7 +97,9 @@ export function resolveVirtualPath(arg: string, cwd: string): string {
  * Page information structure
  */
 export interface PageInfo {
+  /** Page display name */
   name: string;
+  /** Page URL path */
   path: string;
 }
 

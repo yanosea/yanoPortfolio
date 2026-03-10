@@ -28,7 +28,9 @@ const LONG_FORMAT_SEPARATOR = " ";
  * Ls error messages
  */
 const MESSAGES = {
+  /** Access error prefix */
   CANNOT_ACCESS: "cannot access",
+  /** File not found error */
   NO_SUCH_FILE: "No such file or directory",
 } as const;
 

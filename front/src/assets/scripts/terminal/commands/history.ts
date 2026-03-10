@@ -9,11 +9,16 @@ import { HISTORY_CONFIG } from "../core/config.ts";
 // core
 import { clearCommandHistory, getCommandHistory } from "../core/history.ts";
 
+/** Starting line number for history display */
 const LINE_NUMBER_START = 1;
+
+/** Separator between line number and command */
 const LINE_NUMBER_SEPARATOR = "  ";
 
 const MESSAGES = {
+  /** Empty history message */
   NO_HISTORY: "No commands in history.",
+  /** History cleared confirmation */
   HISTORY_CLEARED: "History cleared.",
 } as const;
 

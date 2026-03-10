@@ -34,6 +34,10 @@ export function openImageModal(
   }
   // show modal
   imageModal.showModal();
+  // prevent auto-focus on close button
+  if (document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur();
+  }
 }
 
 /**
