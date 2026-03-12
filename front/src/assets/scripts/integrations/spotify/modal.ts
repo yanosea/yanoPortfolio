@@ -30,46 +30,31 @@ export function updateCurrentTrack(
  * Initialize Spotify album image modal
  */
 export function initImageModal(): void {
-  // get album image and link elements
+  // get album image element
   const albumImage = getElement("spotify-album-image", HTMLImageElement);
-  const albumLink = getElement("spotify-album-link", HTMLAnchorElement);
-  // exit early if elements not found
-  if (!albumImage || !albumLink) {
+  // exit early if element not found
+  if (!albumImage) {
     return;
   }
   // add click handler to open modal with album artwork
   albumImage.addEventListener("click", async () => {
-    const albumName = albumLink.textContent ?? "";
     openImageModal(albumImage.src, albumImage.alt);
-    // build icon-styled caption (track, album, artist) matching widget layout
+    // set track name with icon as caption
     const captionEl = getElement("modal-image-caption", HTMLElement);
     if (captionEl) {
       captionEl.replaceChildren();
-      if (currentTrack && currentArtist) {
-        // single row with all track info
-        const row = document.createElement("div");
-        row.className = "flex items-center gap-4 flex-wrap justify-center";
-        const items: { icon: string; text: string }[] = [
-          { icon: SPOTIFY_FIELD_ICONS.TRACK, text: currentTrack },
-          { icon: SPOTIFY_FIELD_ICONS.ALBUM, text: albumName },
-          { icon: SPOTIFY_FIELD_ICONS.ARTIST, text: currentArtist },
-        ];
-        for (const { icon, text } of items) {
-          const item = document.createElement("span");
-          item.className = "inline-flex items-center gap-1";
-          // icon is a trusted SVG constant from SPOTIFY_FIELD_ICONS, not user input
-          const iconSpan = document.createElement("span");
-          iconSpan.className = "flex items-center";
-          iconSpan.innerHTML = icon;
-          const textSpan = document.createElement("span");
-          textSpan.textContent = text;
-          item.appendChild(iconSpan);
-          item.appendChild(textSpan);
-          row.appendChild(item);
-        }
-        captionEl.appendChild(row);
-      } else {
-        captionEl.textContent = albumName;
+      if (currentTrack) {
+        const item = document.createElement("span");
+        item.className = "inline-flex items-center gap-1";
+        // icon is a trusted SVG constant from SPOTIFY_FIELD_ICONS, not user input
+        const iconSpan = document.createElement("span");
+        iconSpan.className = "flex items-center";
+        iconSpan.innerHTML = SPOTIFY_FIELD_ICONS.TRACK;
+        const textSpan = document.createElement("span");
+        textSpan.textContent = currentTrack;
+        item.appendChild(iconSpan);
+        item.appendChild(textSpan);
+        captionEl.appendChild(item);
       }
     }
     // fetch and render lyrics
