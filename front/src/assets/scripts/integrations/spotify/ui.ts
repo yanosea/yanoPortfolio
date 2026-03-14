@@ -384,7 +384,7 @@ export function updateUI(isNowPlaying: boolean, track: Track): void {
   // store current track for future comparison
   previousTrack = { ...track };
   // update track info for lyrics fetching
-  updateCurrentTrack(track.artistName, track.trackName);
+  updateCurrentTrack(track.artistName, track.trackName, track.trackUrl);
   previousIsNowPlaying = isNowPlaying;
   // skip animation if content unchanged
   if (!contentChanged) {
