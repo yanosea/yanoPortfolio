@@ -9,7 +9,7 @@
   },
   "imports": {
     "@/": "./src/",
-    "@cloudflare/workers-types": "npm:@cloudflare/workers-types@^4.20251209.0"
+    "@cloudflare/workers-types": "npm:@cloudflare/workers-types@^5.0.0"
   },
   "compilerOptions": {
     "checkJs": true,
