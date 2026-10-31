@@ -1,16 +1,16 @@
 {
   "version": "5",
   "specifiers": {
-    "npm:@cloudflare/workers-types@^4.20251209.0": "4.20251209.0"
+    "npm:@cloudflare/workers-types@5": "5.20261030.1"
   },
   "npm": {
-    "@cloudflare/workers-types@4.20251209.0": {
-      "integrity": "sha512-O+cbUVwgb4NgUB39R1cITbRshlAAPy1UQV0l8xEy2xcZ3wTh3fMl9f5oBwLsVmE9JRhIZx6llCLOBVf53eI5xA=="
+    "@cloudflare/workers-types@5.20261030.1": {
+      "integrity": "sha512-oKHewMzKBtXq3dWiYL9GpHFnBfg8juBOir9PPREMPT8G2MHotAxIBIQ2w1rpO1xCN9etRlAxJaeoQbMGSlXqlQ=="
     }
   },
   "workspace": {
     "dependencies": [
-      "npm:@cloudflare/workers-types@^4.20251209.0"
+      "npm:@cloudflare/workers-types@5"
     ]
   }
 }
