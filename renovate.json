@@ -25,7 +25,9 @@
   "vulnerabilityAlerts": {
     "enabled": true
   },
-  "dependencyDashboard": false,
+  "dependencyDashboard": {
+    "enabled": false
+  },
   "osvVulnerabilityAlerts": true,
   "packageRules": [
     {
